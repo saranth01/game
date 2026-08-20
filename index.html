@@ -4,238 +4,305 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ดวงดาว &amp; ไพ่</title>
-<meta name="description" content="เกมดูดวง: คำนวณ Sun / Moon / Rising จากวันเวลาและพิกัดเกิด แล้วเปิดไพ่ทาโรต์ 3 ใบ อ่านผ่านเลนส์ตัวตนของคุณ">
+<meta name="description" content="เกมดูดวง: คำนวณ Sun / Moon / Rising จากวันเวลาและสถานที่เกิด อ่านคำถามให้ขาด แล้วเปิดไพ่ทาโรต์ 9 ใบใน 3 สเปรด">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,200;0,300;0,400;0,500;0,600;1,300&display=swap">
 <style>
 :root{
-  --ink:#0a0713; --ink2:#140d24; --panel:rgba(30,20,54,.72); --panel2:rgba(42,28,74,.55);
-  --line:rgba(214,178,106,.28); --line2:rgba(214,178,106,.5);
-  --gold:#e8c37a; --gold2:#c9a057; --violet:#a98bf0; --rose:#f0a3b8; --mint:#7fd8c4;
-  --text:#efe9f7; --muted:#b6abd0; --shadow:0 18px 45px rgba(0,0,0,.55);
-  --r:18px;
+  --night:#0A0B1E; --night2:#101230; --panel:rgba(20,22,52,.78); --panel2:rgba(28,26,64,.6);
+  --line:rgba(227,190,121,.20); --line2:rgba(227,190,121,.45);
+  --gold:#E3BE79; --gold2:#A87F3D; --aura:#8B7BE8; --rose:#E9A0B4;
+  --text:#EDE8F5; --muted:#A79FC4; --shadow:0 22px 50px rgba(0,0,0,.6);
+  --wands:#E2703C; --cups:#4FB3C9; --swords:#9FB6DA; --pentacles:#93B96A; --major:#B08CF0;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
-  min-height:100vh; color:var(--text); background:var(--ink);
-  font-family:"Noto Sans Thai","Sarabun","IBM Plex Sans Thai",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  font-size:16px; line-height:1.75; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  min-height:100vh; color:var(--text); background:var(--night);
+  font-family:'Prompt',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-weight:300; font-size:16px; line-height:1.8; overflow-x:hidden; -webkit-font-smoothing:antialiased;
 }
-/* ---------- starfield ---------- */
-.sky{position:fixed; inset:0; z-index:-2; background:
-  radial-gradient(1200px 700px at 15% -10%, #2b1c4d 0%, transparent 60%),
-  radial-gradient(1000px 600px at 90% 0%, #1b2b4d 0%, transparent 55%),
-  radial-gradient(900px 800px at 50% 110%, #35204a 0%, transparent 60%),
-  linear-gradient(180deg,#0a0713 0%,#100a1e 50%,#0a0713 100%);}
-.stars,.stars2{position:fixed; inset:-50px; z-index:-1; pointer-events:none;}
-.stars{background-image:
-  radial-gradient(1.6px 1.6px at 12% 22%, #fff, transparent),
-  radial-gradient(1.4px 1.4px at 32% 68%, #ffeec9, transparent),
-  radial-gradient(1.2px 1.2px at 58% 14%, #fff, transparent),
-  radial-gradient(1.7px 1.7px at 76% 52%, #dfe7ff, transparent),
-  radial-gradient(1.3px 1.3px at 88% 84%, #fff, transparent),
-  radial-gradient(1.1px 1.1px at 45% 88%, #ffe9c0, transparent),
-  radial-gradient(1.5px 1.5px at 6% 60%, #fff, transparent),
-  radial-gradient(1.2px 1.2px at 66% 30%, #fff, transparent);
-  opacity:.75; animation:tw 6s ease-in-out infinite alternate;}
-.stars2{background-image:
-  radial-gradient(1px 1px at 22% 40%, #cfd8ff, transparent),
-  radial-gradient(1px 1px at 40% 12%, #fff, transparent),
-  radial-gradient(1px 1px at 70% 76%, #ffd9a8, transparent),
-  radial-gradient(1px 1px at 92% 34%, #fff, transparent),
-  radial-gradient(1px 1px at 14% 90%, #fff, transparent);
-  opacity:.45; animation:tw 9s 1.5s ease-in-out infinite alternate;}
-@keyframes tw{from{opacity:.28}to{opacity:.9}}
-/* ---------- layout ---------- */
-.wrap{max-width:1080px; margin:0 auto; padding:28px 18px 90px}
-.screen{display:none; animation:rise .5s ease both}
-.screen.on{display:block}
-@keyframes rise{from{opacity:0; transform:translateY(18px)}to{opacity:1; transform:none}}
-.center{text-align:center}
-.panel{background:linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line);
-  border-radius:var(--r); padding:22px; box-shadow:var(--shadow); backdrop-filter:blur(6px)}
+/* ── ท้องฟ้า ── */
+.sky{position:fixed;inset:0;z-index:-3;background:
+  radial-gradient(1100px 700px at 12% -8%, #221a52 0%, transparent 62%),
+  radial-gradient(900px 620px at 88% 4%, #13284d 0%, transparent 58%),
+  radial-gradient(900px 800px at 50% 112%, #2a1a4a 0%, transparent 60%),
+  linear-gradient(180deg,#0A0B1E,#0E0F26 55%,#08091A)}
+.stars{position:fixed;inset:-40px;z-index:-2;pointer-events:none;opacity:.8;background-image:
+  radial-gradient(1.6px 1.6px at 12% 22%,#fff,transparent),radial-gradient(1.3px 1.3px at 32% 68%,#ffe8bd,transparent),
+  radial-gradient(1.2px 1.2px at 58% 14%,#fff,transparent),radial-gradient(1.6px 1.6px at 76% 52%,#dbe4ff,transparent),
+  radial-gradient(1.2px 1.2px at 88% 84%,#fff,transparent),radial-gradient(1.1px 1.1px at 45% 88%,#ffe9c0,transparent),
+  radial-gradient(1.5px 1.5px at 6% 60%,#fff,transparent),radial-gradient(1.2px 1.2px at 66% 30%,#fff,transparent),
+  radial-gradient(1px 1px at 22% 40%,#cfd8ff,transparent),radial-gradient(1px 1px at 70% 76%,#ffd9a8,transparent);
+  animation:tw 7s ease-in-out infinite alternate}
+@keyframes tw{from{opacity:.35}to{opacity:.92}}
+/* วงแหวนราศีจาง ๆ หลังหน้าเปิด */
+.zring{position:fixed;top:50%;left:50%;width:min(150vw,1100px);aspect-ratio:1;transform:translate(-50%,-50%);
+  z-index:-1;opacity:.13;pointer-events:none;animation:spin 220s linear infinite}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+/* ── โครง ── */
+.wrap{max-width:1080px;margin:0 auto;padding:26px 18px 96px}
+.screen{display:none}
+.screen.on{display:block;animation:rise .55s cubic-bezier(.2,.7,.3,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.panel{position:relative;background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
+  border-radius:16px;padding:24px;box-shadow:var(--shadow);backdrop-filter:blur(7px)}
+.panel::before,.panel::after{content:"";position:absolute;width:12px;height:12px;border:1px solid var(--line2);opacity:.75}
+.panel::before{top:8px;left:8px;border-right:0;border-bottom:0}
+.panel::after{bottom:8px;right:8px;border-left:0;border-top:0}
 .panel+.panel{margin-top:16px}
-h1,h2,h3{font-family:"Noto Serif Thai",Georgia,serif; line-height:1.35; margin:0 0 10px}
-h1{font-size:clamp(28px,6vw,46px); letter-spacing:.5px}
-h2{font-size:clamp(21px,3.6vw,28px)}
+h1,h2,h3{font-weight:500;line-height:1.35;margin:0 0 10px;letter-spacing:.2px}
+h1{font-size:clamp(30px,6.4vw,52px);font-weight:200;letter-spacing:2px}
+h2{font-size:clamp(21px,3.5vw,28px)}
 h3{font-size:18px}
-.grad{background:linear-gradient(100deg,var(--gold),#fff5dc 40%,var(--violet) 85%);
-  -webkit-background-clip:text; background-clip:text; color:transparent}
-.sub{color:var(--muted); margin:0 auto; max-width:56ch}
-.eyebrow{letter-spacing:3px; text-transform:uppercase; font-size:11px; color:var(--gold2)}
-.hr{height:1px; background:linear-gradient(90deg,transparent,var(--line2),transparent); margin:22px 0}
-/* ---------- buttons ---------- */
-.btn{display:inline-flex; align-items:center; justify-content:center; gap:9px; cursor:pointer;
-  font:inherit; font-weight:600; padding:13px 26px; border-radius:999px; border:1px solid var(--line2);
-  background:linear-gradient(180deg,#f2d69b,#c9a057); color:#2a1c06; transition:.22s; box-shadow:0 8px 24px rgba(201,160,87,.28)}
-.btn:hover{transform:translateY(-2px); box-shadow:0 14px 30px rgba(201,160,87,.4)}
-.btn:disabled{opacity:.4; cursor:not-allowed; transform:none; box-shadow:none; filter:grayscale(.4)}
-.btn.ghost{background:transparent; color:var(--gold); box-shadow:none}
-.btn.ghost:hover{background:rgba(232,195,122,.12)}
-.btn.sm{padding:9px 18px; font-size:14px}
-.btnrow{display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:20px}
-/* ---------- form ---------- */
-.grid{display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
-label{display:block; font-size:13px; color:var(--muted); margin-bottom:6px; font-weight:600}
-input,select,textarea{width:100%; font:inherit; color:var(--text); background:rgba(10,7,19,.6);
-  border:1px solid var(--line); border-radius:12px; padding:11px 13px; transition:.2s}
-input:focus,select:focus,textarea:focus{outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(232,195,122,.15)}
-textarea{resize:vertical; min-height:92px}
-select option{background:#160f28; color:var(--text)}
-.hint{font-size:12px; color:var(--muted); margin-top:6px; line-height:1.6}
-.err{color:#ff9d9d; font-size:13px; margin-top:10px; min-height:20px}
-.check{display:flex; align-items:center; gap:9px; color:var(--muted); font-size:14px; cursor:pointer}
-.check input{width:18px; height:18px; accent-color:var(--gold)}
-/* ---------- big three ---------- */
-.three{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
-.bigcard{position:relative; overflow:hidden; border-radius:var(--r); padding:20px;
-  background:linear-gradient(160deg,rgba(60,40,100,.65),rgba(24,16,44,.85)); border:1px solid var(--line)}
-.bigcard::after{content:""; position:absolute; inset:0; background:radial-gradient(220px 120px at 90% -10%,rgba(232,195,122,.22),transparent 70%)}
-.bigcard .glyph{font-size:34px; line-height:1}
-.bigcard .role{font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--gold2); margin-top:8px}
-.bigcard .signname{font-family:"Noto Serif Thai",Georgia,serif; font-size:25px; margin:2px 0 2px}
-.bigcard .deg{font-size:12.5px; color:var(--muted); font-variant-numeric:tabular-nums}
-.bigcard p{font-size:14.5px; color:#ded6ee; margin:10px 0 0; position:relative; z-index:1}
-.tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:12px}
-.tag{font-size:11.5px; padding:3px 10px; border-radius:999px; border:1px solid var(--line); color:var(--gold); background:rgba(232,195,122,.08)}
-/* ---------- topic chips ---------- */
-.chips{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px}
-.chip{cursor:pointer; padding:9px 16px; border-radius:999px; font-size:14px; transition:.2s;
-  border:1px solid var(--line); background:rgba(255,255,255,.03); color:var(--muted)}
-.chip:hover{border-color:var(--line2); color:var(--text)}
-.chip.on{background:linear-gradient(180deg,rgba(232,195,122,.25),rgba(169,139,240,.18)); color:#fff; border-color:var(--gold)}
-/* ---------- deck ---------- */
-.deckhead{display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:8px}
-.slots{display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin:6px 0 22px}
-.slot{width:104px; height:160px; border-radius:12px; border:1.5px dashed var(--line2);
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
-  color:var(--muted); font-size:12px; text-align:center; padding:8px; background:rgba(255,255,255,.02)}
-.slot.filled{border-style:solid; border-color:var(--gold); background:linear-gradient(165deg,#241a3f,#150e28); color:var(--text)}
-.slot .sname{font-size:12.5px; font-weight:700; color:var(--gold); line-height:1.35}
-.slot .srev{font-size:11px; color:var(--rose)}
-.deck{display:flex; flex-wrap:wrap; gap:7px; justify-content:center; padding:6px 0}
-.back{width:52px; height:82px; border-radius:8px; cursor:pointer; position:relative; flex:0 0 auto;
-  border:1px solid rgba(232,195,122,.45); transition:transform .18s, box-shadow .18s, opacity .3s;
-  background:
-   radial-gradient(circle at 50% 34%, rgba(232,195,122,.85) 0 2.5px, transparent 3px),
-   repeating-linear-gradient(45deg, rgba(232,195,122,.14) 0 5px, transparent 5px 10px),
-   linear-gradient(160deg,#3a2668,#1a1030);
-  box-shadow:0 6px 14px rgba(0,0,0,.45)}
-.back:hover{transform:translateY(-12px) rotate(-2deg); box-shadow:0 16px 26px rgba(232,195,122,.28); border-color:var(--gold)}
-.back.gone{opacity:0; transform:scale(.5) translateY(-40px); pointer-events:none}
-.deck.done .back{pointer-events:none; opacity:.32}
-/* ---------- reading ---------- */
-.readcard{display:grid; grid-template-columns:132px 1fr; gap:18px; align-items:start; margin-top:16px;
-  border:1px solid var(--line); border-radius:var(--r); padding:18px; background:rgba(20,13,36,.6)}
-.readcard.main{border-color:var(--line2); background:linear-gradient(150deg,rgba(58,38,104,.5),rgba(20,13,36,.75))}
-.face{width:132px; aspect-ratio:2/3.1; border-radius:12px; padding:10px; position:relative; overflow:hidden;
-  border:1px solid var(--line2); background:linear-gradient(170deg,#221741,#120c24); box-shadow:var(--shadow);
-  display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center}
-.face.rev{transform:rotate(180deg)}
-.face .fnum{font-size:11px; color:var(--gold2); letter-spacing:1px}
-.face .fsym{font-size:32px; line-height:1; color:var(--gold)}
-.face .fname{font-size:11px; color:var(--text); font-weight:700; line-height:1.3}
-.face .fsuit{font-size:10px; color:var(--muted)}
-.pos{font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--gold2)}
-.cardtitle{font-family:"Noto Serif Thai",Georgia,serif; font-size:21px; margin:2px 0 4px}
-.orient{display:inline-block; font-size:11.5px; padding:2px 10px; border-radius:999px; border:1px solid var(--line); color:var(--muted)}
-.orient.r{color:var(--rose); border-color:rgba(240,163,184,.4)}
-.readcard p{margin:10px 0 0; font-size:15px; color:#e2dcf0}
-.readcard .lens{margin-top:12px; padding:11px 14px; border-left:2px solid var(--gold2); background:rgba(232,195,122,.07);
-  border-radius:0 10px 10px 0; font-size:14.5px; color:#f2ead9}
-.summary{background:linear-gradient(150deg,rgba(74,50,128,.5),rgba(20,13,36,.8)); border:1px solid var(--line2)}
+.grad{background:linear-gradient(96deg,var(--gold),#FFF3D6 42%,var(--aura));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--muted);max-width:60ch;margin:0}
+.eyebrow{letter-spacing:1.6px;text-transform:uppercase;font-size:10.5px;font-weight:400;color:var(--gold2)}
+.rule{height:1px;background:linear-gradient(90deg,transparent,var(--line2),transparent);margin:20px 0}
+.center{text-align:center}
+.dim{color:var(--muted)}
+/* ── ปุ่ม ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;cursor:pointer;font:inherit;font-weight:500;
+  padding:12px 26px;border-radius:999px;border:1px solid var(--line2);background:linear-gradient(180deg,#F0D69E,#BE9552);
+  color:#251A08;transition:.22s;box-shadow:0 10px 26px rgba(190,149,82,.26)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 16px 32px rgba(190,149,82,.4)}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none;filter:grayscale(.5)}
+.btn.ghost{background:transparent;color:var(--gold);box-shadow:none}
+.btn.ghost:hover{background:rgba(227,190,121,.12)}
+.btn.sm{padding:8px 16px;font-size:13.5px}
+.btnrow{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:22px}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+/* ── ฟอร์ม ── */
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px;letter-spacing:.4px}
+input,select,textarea{width:100%;font:inherit;font-weight:300;color:var(--text);background:rgba(8,9,26,.66);
+  border:1px solid var(--line);border-radius:11px;padding:11px 13px;transition:.18s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(227,190,121,.14)}
+textarea{resize:vertical;min-height:96px;line-height:1.7}
+select option{background:#131434;color:var(--text)}
+.hint{font-size:12.5px;color:var(--muted);margin-top:7px;line-height:1.7}
+.err{color:#FF9E9E;font-size:13px;margin-top:10px;min-height:20px}
+.check{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:14px;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--gold)}
+/* ── ช่องค้นหาสถานที่ ── */
+.combo{position:relative}
+.combo-list{position:absolute;z-index:30;top:calc(100% + 6px);left:0;right:0;background:#141637;border:1px solid var(--line2);
+  border-radius:12px;box-shadow:var(--shadow);overflow:hidden;max-height:290px;overflow-y:auto}
+.combo-list button{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;background:none;border:0;
+  color:var(--text);font:inherit;font-weight:300;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05)}
+.combo-list button:hover,.combo-list button.act{background:rgba(227,190,121,.14)}
+.combo-list .reg{color:var(--muted);font-size:12px;white-space:nowrap}
+.picked{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;font-size:13.5px;color:var(--muted)}
+.picked b{color:var(--gold);font-weight:500}
+/* ── รางขั้นตอน ── */
+.steps{display:flex;gap:6px;justify-content:center;margin-bottom:22px;flex-wrap:wrap}
+.step{font-size:11px;letter-spacing:1.4px;color:var(--muted);padding:5px 13px;border-radius:999px;border:1px solid transparent}
+.step.on{color:var(--gold);border-color:var(--line);background:rgba(227,190,121,.09)}
+/* ── วงล้อดวงชะตา ── */
+.wheelwrap{display:grid;grid-template-columns:minmax(230px,300px) 1fr;gap:26px;align-items:center}
+.wheel{width:100%;height:auto}
+.wheel .ring{fill:none;stroke:var(--line2)}
+.wheel .spoke{stroke:rgba(227,190,121,.16)}
+.wheel .tick{stroke:rgba(227,190,121,.3)}
+.wheel .glyph{fill:var(--gold);font-size:9px;font-family:inherit;text-anchor:middle;dominant-baseline:middle}
+.wheel .mk{font-size:11px;text-anchor:middle;dominant-baseline:middle}
+.wheel .mkline{stroke-width:1.5}
+.legend{display:flex;flex-direction:column;gap:12px}
+.legend .row{display:flex;gap:12px;align-items:baseline}
+.legend .sym{font-size:19px;width:26px;color:var(--gold)}
+.legend .lab{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold2)}
+.legend .val{font-size:19px;font-weight:400}
+.legend .deg{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+/* ── การ์ดตัวตน ── */
+.three{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.bigcard{position:relative;overflow:hidden;border-radius:14px;padding:20px;
+  background:linear-gradient(158deg,rgba(48,40,102,.6),rgba(16,18,44,.9));border:1px solid var(--line)}
+.bigcard::after{content:"";position:absolute;inset:0;background:radial-gradient(200px 110px at 88% -12%,rgba(227,190,121,.2),transparent 70%);pointer-events:none}
+.bigcard .glyph{font-size:30px;color:var(--gold);line-height:1}
+.bigcard .role{font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold2);margin-top:10px}
+.bigcard .signname{font-size:23px;font-weight:400;margin:2px 0}
+.bigcard .deg{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bigcard p{font-size:14.5px;color:#DCD5EE;margin:10px 0 0;position:relative;z-index:1}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.tag{font-size:11px;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--gold);background:rgba(227,190,121,.07)}
+/* ── หมวดคำถาม ── */
+.chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:6px}
+.chip{cursor:pointer;padding:9px 16px;border-radius:999px;font:inherit;font-size:14px;font-weight:300;transition:.18s;
+  border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--muted)}
+.chip:hover{border-color:var(--line2);color:var(--text)}
+.chip.on{background:linear-gradient(180deg,rgba(227,190,121,.24),rgba(139,123,232,.18));color:#fff;border-color:var(--gold)}
+</style>
+<style>
+/* ── ไพ่ ── */
+.tcard{position:relative;flex:0 0 auto;border-radius:12px;padding:9px 8px 10px;text-align:center;
+  background:linear-gradient(178deg,var(--cbg1),var(--cbg2));border:1px solid var(--cline);
+  box-shadow:0 10px 24px rgba(0,0,0,.5)}
+.s-wands{--c:var(--wands);--cbg1:#2B1408;--cbg2:#150A05;--cline:rgba(226,112,60,.5)}
+.s-cups{--c:var(--cups);--cbg1:#07222D;--cbg2:#04121A;--cline:rgba(79,179,201,.45)}
+.s-swords{--c:var(--swords);--cbg1:#0E1730;--cbg2:#070C1B;--cline:rgba(159,182,218,.45)}
+.s-pentacles{--c:var(--pentacles);--cbg1:#15250F;--cbg2:#0A1408;--cline:rgba(147,185,106,.45)}
+.s-major{--c:var(--major);--cbg1:#221338;--cbg2:#120A20;--cline:rgba(176,140,240,.5)}
+.v-full{width:158px}
+.v-mini{width:104px;padding:7px 6px 8px}
+.tcard-top{display:flex;justify-content:space-between;align-items:center;font-size:10px;letter-spacing:1.4px;color:var(--c);opacity:.9}
+.tcard-top .rank{font-weight:500}
+.tcard-top .el{opacity:.7}
+.tcard-art{margin:5px 0 7px;height:184px;display:flex;align-items:center;justify-content:center;transition:transform .5s}
+.v-mini .tcard-art{height:112px}
+.art{max-height:100%}
+.tcard.rev .tcard-art{transform:rotate(180deg)}
+.art{width:100%;height:auto;display:block}
+.art .cl{fill:none;stroke:var(--c);stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
+.art .cf{fill:var(--c);stroke:none}
+.art .ring{fill:none;stroke:var(--c);stroke-width:1;opacity:.4}
+.v-mini .art .cl{stroke-width:2.8}
+.tcard-foot{border-top:1px solid rgba(255,255,255,.1);padding-top:6px}
+.tname{font-size:13px;font-weight:400;line-height:1.35;color:#fff}
+.v-mini .tname{font-size:11.5px}
+.ten{font-size:9.5px;letter-spacing:.6px;color:var(--muted);margin-top:1px}
+.tkeys{font-size:10.5px;color:var(--c);opacity:.85;margin-top:4px;line-height:1.4}
+.revbadge{position:absolute;top:-8px;right:-8px;width:24px;height:24px;border-radius:50%;background:#1A1130;
+  border:1px solid var(--rose);color:var(--rose);font-size:12px;line-height:22px}
+/* ── สำรับ ── */
+.deckhead{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+.stageline{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 4px}
+.stagepill{font-size:12px;padding:6px 14px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.stagepill.on{color:#fff;border-color:var(--gold);background:rgba(227,190,121,.14)}
+.stagepill.done{color:var(--gold);border-color:var(--line2)}
+.slots{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:14px 0 20px;min-height:150px}
+.slot{width:104px;min-height:150px;border-radius:12px;border:1.4px dashed var(--line2);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:5px;color:var(--muted);font-size:11px;text-align:center;padding:8px;background:rgba(255,255,255,.02)}
+.slot b{color:var(--gold);font-weight:500;font-size:12px}
+.deck{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:8px 0 2px}
+.back{width:50px;height:80px;border-radius:8px;cursor:pointer;flex:0 0 auto;border:1px solid rgba(227,190,121,.4);
+  transition:transform .18s,box-shadow .18s,opacity .35s;background:
+   radial-gradient(circle at 50% 32%,rgba(227,190,121,.9) 0 2.4px,transparent 2.9px),
+   repeating-linear-gradient(45deg,rgba(227,190,121,.13) 0 5px,transparent 5px 10px),
+   linear-gradient(160deg,#33245E,#16102C)}
+.back:hover{transform:translateY(-12px) rotate(-2deg);box-shadow:0 16px 26px rgba(227,190,121,.3);border-color:var(--gold)}
+.back.gone{opacity:0;transform:scale(.5) translateY(-40px);pointer-events:none}
+.deck.done .back{pointer-events:none;opacity:.28}
+/* ── คำอ่าน ── */
+.qbox{border:1px dashed var(--line2);border-radius:13px;padding:14px 16px;background:rgba(255,255,255,.02)}
+.qlab{font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--gold2)}
+.qtxt{font-size:17px;font-weight:300;color:#fff;line-height:1.6}
+.subtext{margin-top:16px;border-left:2px solid var(--aura);background:rgba(139,123,232,.1);border-radius:0 12px 12px 0;padding:14px 16px}
+.subtext .lab{font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:#B9AEF5}
+.subtext p{margin:8px 0 0;font-size:15px;color:#E6E1F7}
+.realq{margin-top:12px;font-size:16px;color:#fff;border-top:1px solid rgba(255,255,255,.12);padding-top:12px}
+.realq span{color:var(--gold);font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;display:block;margin-bottom:4px}
+.spreadhead{display:flex;align-items:center;gap:14px;margin-bottom:4px}
+.spreadnum{font-size:26px;font-weight:200;color:var(--gold2);letter-spacing:2px;min-width:34px}
+.spreadhead h3{margin:0;font-size:21px}
+.readcard{display:grid;grid-template-columns:158px 1fr;gap:20px;align-items:start;padding:16px 0;border-top:1px solid rgba(255,255,255,.07)}
+.readcard:first-of-type{border-top:0}
+.readcard.main .tcard{box-shadow:0 0 0 1px var(--cline),0 14px 34px rgba(0,0,0,.55)}
+.pos{font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--gold2)}
+.readcard p{margin:9px 0 0;font-size:15px;color:#E1DBF0}
+.lens{margin-top:12px;padding:10px 14px;border-left:2px solid var(--gold2);background:rgba(227,190,121,.07);
+  border-radius:0 10px 10px 0;font-size:14px;color:#F1E8D6}
+.hardtruth{border-color:rgba(233,160,180,.5);background:linear-gradient(150deg,rgba(90,30,55,.42),rgba(20,14,40,.8))}
+.hardtruth .qlab{color:var(--rose)}
+.hardtruth p{font-size:17px;color:#FFE7EE;margin:10px 0 0;line-height:1.75}
+.summary{background:linear-gradient(150deg,rgba(64,52,124,.5),rgba(16,18,44,.86));border-color:var(--line2)}
 .summary p{font-size:15.5px}
-.qbox{border:1px dashed var(--line); border-radius:14px; padding:14px 16px; background:rgba(255,255,255,.02); margin-bottom:6px}
-.qbox .qlab{font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--gold2)}
-.qbox .qtxt{font-size:16px; color:#fff; font-family:"Noto Serif Thai",Georgia,serif}
-.todo{margin:12px 0 0; padding-left:20px}
-.todo li{margin:7px 0; font-size:15px}
-.foot{margin-top:26px; font-size:12.5px; color:var(--muted); text-align:center; line-height:1.8}
-.steps{display:flex; gap:8px; justify-content:center; margin-bottom:22px; flex-wrap:wrap}
-.step{font-size:11.5px; letter-spacing:1px; color:var(--muted); padding:5px 13px; border-radius:999px; border:1px solid transparent}
-.step.on{color:var(--gold); border-color:var(--line); background:rgba(232,195,122,.08)}
-.chart{display:flex; gap:18px; flex-wrap:wrap; justify-content:center; font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums}
-@media (max-width:560px){
-  .readcard{grid-template-columns:1fr; justify-items:center}
-  .face{width:150px}
-  .readcard p,.readcard .lens{text-align:left}
-  .back{width:44px; height:70px}
-  .slot{width:92px; height:142px}
+.todo{margin:12px 0 0;padding-left:20px}
+.todo li{margin:8px 0;font-size:15px}
+.foot{margin-top:26px;font-size:12.5px;color:var(--muted);text-align:center;line-height:1.9}
+.readerid{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.readerid b{color:var(--gold);font-weight:400}
+@media (max-width:720px){
+  .wheelwrap{grid-template-columns:1fr}
+  .readcard{grid-template-columns:1fr;justify-items:center}
+  .readcard>div:last-child{width:100%}
+  .back{width:42px;height:68px}
+  .v-full{width:150px}
 }
-@media (prefers-reduced-motion:reduce){
-  *{animation:none!important; transition:none!important}
-}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media print{
-  body{background:#fff; color:#111}
-  .sky,.stars,.stars2{display:none}
-  .btnrow,.steps,.deck,.deckhead,.slots,.foot{display:none!important}
-  .panel,.readcard,.bigcard{border-color:#bbb; background:#fff!important; box-shadow:none; color:#111;
-    break-inside:avoid; page-break-inside:avoid}
-  .panel,.readcard{padding:14px}
-  h1,h2,h3,.grad,.cardtitle,.readcard p,.summary p,.todo li,.qtxt,.bigcard p{
-    color:#111!important; -webkit-text-fill-color:#111; background:none}
-  .eyebrow,.pos,.qlab,.deg,.role{color:#6b5320!important}
-  .hint,.orient,.tag{color:#444!important; border-color:#bbb}
-  .lens{background:#f4f0e6!important; color:#2a2312!important; border-left-color:#a8801f}
-  .qbox{border-color:#bbb}
-  .face{background:#fff!important; border-color:#8a6d2f; color:#111}
-  .face .fsym,.face .fnum{color:#8a6d2f}
-  .face .fname,.face .fsuit{color:#111}
+  body{background:#fff;color:#111}
+  .sky,.stars,.zring{display:none}
+  .btnrow,.steps,.deck,.deckhead,.stageline,.slots{display:none!important}
+  .panel,.readcard,.bigcard{background:#fff!important;border-color:#bbb;box-shadow:none;color:#111;break-inside:avoid}
+  h1,h2,h3,.grad,.qtxt,.readcard p,.summary p,.todo li,.bigcard p,.subtext p,.hardtruth p,.realq{
+    color:#111!important;-webkit-text-fill-color:#111;background:none}
+  .eyebrow,.pos,.qlab,.deg,.role{color:#6B5320!important}
+  .hint,.tag,.dim{color:#444!important}
+  .lens{background:#F5F1E7!important;color:#2A2312!important}
+  .subtext{background:#F0EEFA!important}.hardtruth{background:#FBEEF2!important}
 }
 </style>
 </head>
 <body>
-<div class="sky"></div><div class="stars"></div><div class="stars2"></div>
+<div class="sky"></div><div class="stars"></div>
+<svg class="zring" viewBox="0 0 400 400" aria-hidden="true">
+  <circle cx="200" cy="200" r="192" fill="none" stroke="#E3BE79" stroke-width=".6"/>
+  <circle cx="200" cy="200" r="164" fill="none" stroke="#E3BE79" stroke-width=".6"/>
+  <g id="zring-spokes"></g>
+</svg>
 <div class="wrap">
 
-<!-- ══════════ 0. หน้าเปิด ══════════ -->
+<!-- ══ 0 หน้าเปิด ══ -->
 <section id="s-intro" class="screen on">
-  <div class="panel center" style="padding:44px 24px">
+  <div class="panel center" style="padding:46px 24px">
     <div class="eyebrow">Western Astrology × Tarot</div>
     <h1 class="grad">ดวงดาว &amp; ไพ่</h1>
-    <p class="sub">คำนวณ <b>Sun · Moon · Rising</b> จากวันเวลาและพิกัดที่คุณเกิดจริง ๆ<br>
-      อ่านเป็นบุคลิกภาพ แล้วค่อยตั้งคำถาม เปิดไพ่ทาโรต์ 3 ใบ<br>
-      ตีความผ่านเลนส์ “ตัวตนของคุณ” ไม่ใช่อ่านความหมายไพ่ลอย ๆ</p>
-    <div class="hr"></div>
+    <p class="sub" style="margin:0 auto">คำนวณ Sun · Moon · Rising จากวันเวลาและสถานที่เกิดจริง<br>
+      อ่านคำถามให้ขาดก่อนว่าเธอกำลังถามอะไรอยู่จริง ๆ<br>
+      แล้วค่อยเปิดไพ่ 9 ใบใน 3 สเปรด</p>
+    <div class="rule"></div>
     <div class="three" style="text-align:left">
-      <div class="bigcard"><div class="glyph">☉</div><div class="role">ขั้นที่ 1</div>
-        <div class="signname">แผนที่ดาวเกิด</div>
-        <p>กรอกวัน–เดือน–ปีเกิด เวลาเกิด และพิกัด (latitude / longitude) ระบบคำนวณตำแหน่งดาวจริงด้วยสูตรดาราศาสตร์</p></div>
-      <div class="bigcard"><div class="glyph">☽</div><div class="role">ขั้นที่ 2</div>
-        <div class="signname">อ่านตัวตน</div>
-        <p>Sun = แรงขับ · Moon = โลกข้างในและอารมณ์ · Rising = ภาพที่คนอื่นเห็น อ่านรวมเป็นบุคลิกภาพหนึ่งเดียว</p></div>
-      <div class="bigcard"><div class="glyph">✦</div><div class="role">ขั้นที่ 3</div>
-        <div class="signname">ตั้งคำถาม แล้วจับไพ่</div>
-        <p>ถามก่อน จับไพ่ทีหลัง — สำรับคว่ำ 78 ใบ เลือก 3 ใบ: ไพ่หลัก 1 + ไพ่ขยาย 2</p></div>
+      <div class="bigcard"><div class="glyph">☉</div><div class="role">ขั้นที่ 1</div><div class="signname">แผนที่ดาวเกิด</div>
+        <p>พิมพ์ชื่อจังหวัดหรือเมืองที่เกิด ระบบหาพิกัดกับเขตเวลาให้เอง แล้วคำนวณตำแหน่งดาวจริงด้วยสูตรดาราศาสตร์</p></div>
+      <div class="bigcard"><div class="glyph">☽</div><div class="role">ขั้นที่ 2</div><div class="signname">อ่านตัวตน</div>
+        <p>Sun คือแรงขับ · Moon คือโลกข้างในและความปลอดภัย · Rising คือหน้ากากที่คนเห็นก่อน อ่านรวมเป็นบุคลิกเดียว</p></div>
+      <div class="bigcard"><div class="glyph">✦</div><div class="role">ขั้นที่ 3</div><div class="signname">ถามแล้วเปิดไพ่</div>
+        <p>ถามก่อนเสมอ แล้วเปิดไพ่ 3 ชุด: ขยายสถานการณ์ · ความรู้สึกของเธอ · คำทำนาย ชุดละ 3 ใบ</p></div>
+    </div>
+    <div class="rule"></div>
+    <div class="readerid">
+      <span>คนอ่านไพ่ในเกมนี้เป็น</span> <b>☉ เมถุน</b> <span>·</span> <b>☽ พิจิก</b> <span>·</span> <b>↑ เมถุน</b>
+      <span>— อ่านลึกถึงก้นบึ้ง แต่พูดออกมาให้เข้าใจง่าย และไม่ปลอบจนเธอหลงทาง</span>
     </div>
     <div class="btnrow"><button class="btn" id="go-form">เริ่มดูดวง ✦</button></div>
-    <p class="hint" style="margin-top:18px">ทุกอย่างคำนวณในเครื่องคุณเอง ไม่มีการส่งข้อมูลออกไปไหน</p>
+    <p class="hint">คำนวณในเครื่องเธอเองทั้งหมด ไม่มีการส่งข้อมูลออกไปไหน</p>
   </div>
 </section>
 
-<!-- ══════════ 1. ข้อมูลเกิด ══════════ -->
+<!-- ══ 1 ข้อมูลเกิด ══ -->
 <section id="s-form" class="screen">
   <div class="steps"><span class="step on">1 ข้อมูลเกิด</span><span class="step">2 ตัวตน</span><span class="step">3 คำถาม</span><span class="step">4 เปิดไพ่</span></div>
   <div class="panel">
+    <div class="eyebrow">ขั้นที่ 1</div>
     <h2 class="grad">ข้อมูลการเกิด</h2>
-    <p class="sub" style="margin:0 0 18px">Rising เปลี่ยนราศีทุก ๆ ประมาณ 2 ชั่วโมง เวลาและพิกัดจึงสำคัญมาก ยิ่งแม่นยิ่งดี</p>
+    <p class="sub" style="margin-bottom:20px">ลัคนาเปลี่ยนราศีทุก ๆ ราว 2 ชั่วโมง เวลากับสถานที่เกิดจึงสำคัญมาก</p>
     <div class="grid">
-      <div><label for="f-name">ชื่อเล่น (ไม่บังคับ)</label><input id="f-name" placeholder="เรียกว่าอะไรดี"></div>
+      <div><label for="f-name">เรียกเธอว่าอะไรดี (ไม่บังคับ)</label><input id="f-name" placeholder="ชื่อเล่น"></div>
       <div><label for="f-date">วัน / เดือน / ปีเกิด</label><input type="date" id="f-date"></div>
       <div><label for="f-time">เวลาเกิด</label><input type="time" id="f-time" value="12:00"></div>
     </div>
-    <div style="margin-top:10px"><label class="check"><input type="checkbox" id="f-notime"> ไม่รู้เวลาเกิด (จะใช้เที่ยงวัน และข้าม Rising ไป — ไม่เดามั่วให้)</label></div>
-    <div class="hr"></div>
-    <h3>พิกัดสถานที่เกิด</h3>
-    <div class="grid">
-      <div><label for="f-lat">Latitude (−90 ถึง 90 · เหนือเป็นบวก)</label><input type="number" id="f-lat" step="0.0001" placeholder="13.7563"></div>
-      <div><label for="f-lon">Longitude (−180 ถึง 180 · ตะวันออกเป็นบวก)</label><input type="number" id="f-lon" step="0.0001" placeholder="100.5018"></div>
-      <div><label for="f-tz">เขตเวลาตอนเกิด</label><select id="f-tz"></select></div>
+    <div style="margin-top:12px"><label class="check"><input type="checkbox" id="f-notime"> ไม่รู้เวลาเกิด — จะใช้เที่ยงวันและข้าม Rising ไป (ไม่เดาให้)</label></div>
+    <div class="rule"></div>
+    <label for="f-place">สถานที่เกิด</label>
+    <div class="combo">
+      <input id="f-place" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="place-list"
+             placeholder="พิมพ์ชื่อจังหวัดหรือเมือง เช่น เชียงใหม่ · โคราช · Tokyo">
+      <div id="place-list" class="combo-list" hidden></div>
     </div>
-    <p class="hint">หาพิกัดง่าย ๆ: เปิดแผนที่ ปักหมุดที่โรงพยาบาล/อำเภอที่เกิด แล้วก๊อปตัวเลขสองตัวมาวาง —
-      ตัวแรกคือ latitude ตัวหลังคือ longitude · ถ้าประเทศที่เกิดมี Daylight Saving ตอนนั้น ให้เลือกเขตเวลาที่บวกเพิ่มแล้ว</p>
-    <div class="btnrow" style="justify-content:flex-start">
-      <button class="btn ghost sm" id="btn-bkk">📍 กรุงเทพฯ</button>
-      <button class="btn ghost sm" id="btn-tzlon">🧭 เดาเขตเวลาจาก longitude</button>
+    <div class="picked" id="place-picked" hidden></div>
+    <p class="hint">มี 77 จังหวัดของไทยและเมืองใหญ่ทั่วโลก · ถ้าเกิดในอำเภอเล็ก ๆ ให้เลือกจังหวัดได้เลย
+      ระยะไม่กี่สิบกิโลเมตรแทบไม่เปลี่ยนผลลัพธ์</p>
+    <details style="margin-top:14px">
+      <summary class="hint" style="cursor:pointer">ไม่เจอที่ที่เกิด — กรอกพิกัดเอง</summary>
+      <div class="grid" style="margin-top:12px">
+        <div><label for="f-lat">Latitude (เหนือเป็นบวก)</label><input type="number" id="f-lat" step="0.0001" placeholder="13.7563"></div>
+        <div><label for="f-lon">Longitude (ตะวันออกเป็นบวก)</label><input type="number" id="f-lon" step="0.0001" placeholder="100.5018"></div>
+        <div><label for="f-tz">เขตเวลาตอนเกิด</label><select id="f-tz"></select></div>
+      </div>
+    </details>
+    <div id="dst-box" hidden style="margin-top:14px">
+      <label class="check"><input type="checkbox" id="f-dst"> ประเทศนี้มีการปรับเวลาหน้าร้อน (DST) — ติ๊กถ้าเกิดช่วงที่ใช้เวลาหน้าร้อน</label>
     </div>
     <div class="err" id="form-err"></div>
     <div class="btnrow">
@@ -245,39 +312,40 @@ select option{background:#160f28; color:var(--text)}
   </div>
 </section>
 
-<!-- ══════════ 2. บุคลิกภาพ ══════════ -->
+<!-- ══ 2 ตัวตน ══ -->
 <section id="s-persona" class="screen">
   <div class="steps"><span class="step">1 ข้อมูลเกิด</span><span class="step on">2 ตัวตน</span><span class="step">3 คำถาม</span><span class="step">4 เปิดไพ่</span></div>
   <div class="panel">
     <div class="eyebrow">Big Three</div>
-    <h2 class="grad" id="persona-title">ตัวตนของคุณ</h2>
-    <div class="chart" id="chart-meta"></div>
-    <div class="hr"></div>
-    <div class="three" id="big-three"></div>
+    <h2 class="grad" id="persona-title">ตัวตนของเธอ</h2>
+    <div class="rule"></div>
+    <div class="wheelwrap">
+      <div id="wheel-host"></div>
+      <div class="legend" id="wheel-legend"></div>
+    </div>
   </div>
-  <div class="panel">
-    <h3 class="grad">อ่านรวมเป็นบุคลิกภาพ</h3>
-    <div id="persona-read"></div>
-  </div>
+  <div class="panel"><div class="three" id="big-three"></div></div>
+  <div class="panel"><h3 class="grad">อ่านรวมเป็นบุคลิกภาพ</h3><div id="persona-read"></div></div>
   <div class="btnrow">
     <button class="btn ghost" data-back="s-form">แก้ข้อมูลเกิด</button>
     <button class="btn" id="go-question">ต่อไป: ตั้งคำถาม ✦</button>
   </div>
 </section>
 
-<!-- ══════════ 3. คำถาม ══════════ -->
+<!-- ══ 3 คำถาม ══ -->
 <section id="s-question" class="screen">
   <div class="steps"><span class="step">1 ข้อมูลเกิด</span><span class="step">2 ตัวตน</span><span class="step on">3 คำถาม</span><span class="step">4 เปิดไพ่</span></div>
   <div class="panel">
+    <div class="eyebrow">ขั้นที่ 3</div>
     <h2 class="grad">อยากถามเรื่องอะไร</h2>
-    <p class="sub" style="margin:0 0 16px">ตั้งคำถามให้ชัดก่อนจับไพ่ ไพ่จะตอบตรงขึ้นมาก —
-      ถามแบบ “ฉันควรทำยังไงกับ…” ได้คำตอบดีกว่า “เขาจะกลับมาไหม”</p>
+    <p class="sub" style="margin-bottom:16px">เขียนให้เหมือนเล่าให้เพื่อนฟัง มีบริบทหน่อยก็ได้ ยิ่งเล่าละเอียด
+      ยิ่งอ่านได้ขาด — และไม่ต้องกลัวว่าคำถามจะดูอ่อนแอ</p>
     <label>เลือกหมวด</label>
     <div class="chips" id="topics"></div>
     <div style="margin-top:18px">
-      <label for="f-q">คำถามของคุณ</label>
-      <textarea id="f-q" maxlength="300" placeholder="เช่น: ควรย้ายงานตอนนี้ หรือรออีกสักหน่อยดี?"></textarea>
-      <div class="hint"><span id="q-count">0</span>/300 ตัวอักษร</div>
+      <label for="f-q">คำถามของเธอ</label>
+      <textarea id="f-q" maxlength="500" placeholder="เช่น: อยู่บริษัทนี้มาสี่ปี เจ้านายไม่เคยเห็นค่า แต่เงินเดือนก็โอเค ควรทนต่อหรือลาออกดี"></textarea>
+      <div class="hint"><span id="q-count">0</span>/500 · ยิ่งเล่าบริบท ยิ่งอ่านคำถามที่ซ่อนอยู่ได้แม่น</div>
     </div>
     <div class="err" id="q-err"></div>
     <div class="btnrow">
@@ -287,17 +355,20 @@ select option{background:#160f28; color:var(--text)}
   </div>
 </section>
 
-<!-- ══════════ 4. เลือกไพ่ ══════════ -->
+<!-- ══ 4 เปิดไพ่ ══ -->
 <section id="s-deck" class="screen">
   <div class="steps"><span class="step">1 ข้อมูลเกิด</span><span class="step">2 ตัวตน</span><span class="step">3 คำถาม</span><span class="step on">4 เปิดไพ่</span></div>
   <div class="panel">
     <div class="deckhead">
-      <div><h2 class="grad" style="margin:0">เลือกไพ่ 3 ใบ</h2>
-        <p class="hint" style="margin:2px 0 0" id="deck-hint">ใบที่ 1 = ไพ่หลัก · ใบที่ 2–3 = ไพ่ขยาย</p></div>
-      <button class="btn ghost sm" id="btn-reshuffle">🔀 สับใหม่</button>
+      <div><div class="eyebrow" id="stage-eyebrow">สเปรดที่ 1</div>
+        <h2 class="grad" id="stage-title" style="margin:2px 0 2px">ขยายสถานการณ์</h2>
+        <p class="hint" id="stage-sub" style="margin:0"></p></div>
+      <button class="btn ghost sm" id="btn-reshuffle">สับใหม่ทั้งหมด</button>
     </div>
-    <div class="qbox"><div class="qlab">คำถามของคุณ</div><div class="qtxt" id="deck-q"></div></div>
+    <div class="stageline" id="stageline"></div>
+    <div class="qbox"><div class="qlab">คำถามของเธอ</div><div class="qtxt" id="deck-q"></div></div>
     <div class="slots" id="slots"></div>
+    <p class="hint center" id="deck-hint"></p>
     <div class="deck" id="deck"></div>
     <div class="btnrow">
       <button class="btn ghost" data-back="s-question">เปลี่ยนคำถาม</button>
@@ -306,27 +377,27 @@ select option{background:#160f28; color:var(--text)}
   </div>
 </section>
 
-<!-- ══════════ 5. คำอ่าน ══════════ -->
+<!-- ══ 5 คำอ่าน ══ -->
 <section id="s-read" class="screen">
   <div class="panel">
-    <div class="eyebrow">คำอ่านสำหรับ <span id="read-who">คุณ</span></div>
-    <h2 class="grad">ไพ่ตอบว่าอย่างนี้</h2>
+    <div class="eyebrow">คำอ่านสำหรับ <span id="read-who">เธอ</span> · <span id="read-chart"></span></div>
+    <h2 class="grad">ก่อนตอบ ขออ่านคำถามก่อน</h2>
     <div class="qbox" style="margin-top:14px"><div class="qlab" id="read-topic">คำถาม</div><div class="qtxt" id="read-q"></div></div>
-    <div id="read-lens" class="hint" style="font-size:13.5px"></div>
+    <div class="subtext" id="read-subtext"></div>
   </div>
-  <div id="read-cards"></div>
+  <div id="read-spreads"></div>
+  <div class="panel hardtruth" id="read-hard"></div>
   <div class="panel summary" id="read-summary"></div>
   <div class="btnrow">
     <button class="btn" id="go-again">ถามคำถามใหม่ (ใช้ดวงเดิม)</button>
-    <button class="btn ghost" id="go-print">🖨 บันทึก / พิมพ์</button>
+    <button class="btn ghost" id="go-print">บันทึก / พิมพ์</button>
     <button class="btn ghost" id="go-reset">เริ่มใหม่ทั้งหมด</button>
   </div>
   <p class="foot">เกมนี้ใช้เพื่อทบทวนตัวเองและเปิดมุมมองใหม่ ไม่ใช่คำแนะนำทางการแพทย์ การเงิน หรือกฎหมาย<br>
-    การตัดสินใจสุดท้ายเป็นของคุณเสมอ — ไพ่แค่ช่วยให้เห็นสิ่งที่ใจรู้อยู่แล้วชัดขึ้น</p>
+    ไพ่ไม่ได้ตัดสินอนาคตแทนเธอ — มันแค่ทำให้สิ่งที่เธอรู้อยู่แล้วมองเห็นได้ชัดขึ้น</p>
 </section>
 
 </div><!-- /wrap -->
-
 <script id="engine">
 /* ═══════════════════════════════════════════════════════════════
    ส่วนที่ 1 — ASTRO ENGINE
@@ -462,7 +533,6 @@ function computeChart({ year, month, day, hour, minute, lat, lon, tzOffset, hasT
   return chart;
 }
 </script>
-
 <script id="signs">
 /* ═══════════════════════════════════════════════════════════════
    ส่วนที่ 2 — ข้อมูล 12 ราศี
@@ -472,64 +542,64 @@ function computeChart({ year, month, day, hour, minute, lat, lon, tzOffset, hasT
 const SIGNS = [
 { th:'เมษ', en:'Aries', glyph:'♈', el:'ไฟ', mod:'ริเริ่ม', ruler:'อังคาร',
   tags:['ลุยก่อนคิดทีหลัง','ตรงไปตรงมา','เบื่อง่าย'],
-  sun:'ข้างในคุณมีเครื่องยนต์ที่ติดเร็วมาก พอมีอะไรน่าสนใจปุ๊บคือขยับก่อนคนอื่นเสมอ คุณมีชีวิตชีวาที่สุดตอนได้เริ่มอะไรใหม่ ๆ และรู้สึกตายทั้งเป็นเวลาต้องนั่งรอ',
-  moon:'อารมณ์มาไวไปไว โกรธแรงแต่ไม่ค่อยเก็บ สิ่งที่ทำให้คุณรู้สึกปลอดภัยคือ “ได้ทำอะไรสักอย่าง” การถูกบังคับให้อยู่เฉย ๆ กับปัญหาคือสิ่งที่ทรมานคุณที่สุด',
-  rising:'คนอื่นเห็นคุณเป็นคนพลังเยอะ พูดตรง เข้าหาก่อน ดูมั่นใจแม้ตอนที่ในใจยังไม่ชัวร์ เจอสถานการณ์ใหม่คุณจะพุ่งชนก่อนแล้วค่อยหาทางแก้' },
+  sun:'ข้างในเธอมีเครื่องยนต์ที่ติดเร็วมาก พอมีอะไรน่าสนใจปุ๊บคือขยับก่อนคนอื่นเสมอ เธอมีชีวิตชีวาที่สุดตอนได้เริ่มอะไรใหม่ ๆ และรู้สึกตายทั้งเป็นเวลาต้องนั่งรอ',
+  moon:'อารมณ์มาไวไปไว โกรธแรงแต่ไม่ค่อยเก็บ สิ่งที่ทำให้เธอรู้สึกปลอดภัยคือ “ได้ทำอะไรสักอย่าง” การถูกบังคับให้อยู่เฉย ๆ กับปัญหาคือสิ่งที่ทรมานเธอที่สุด',
+  rising:'คนอื่นเห็นเธอเป็นคนพลังเยอะ พูดตรง เข้าหาก่อน ดูมั่นใจแม้ตอนที่ในใจยังไม่ชัวร์ เจอสถานการณ์ใหม่เธอจะพุ่งชนก่อนแล้วค่อยหาทางแก้' },
 { th:'พฤษภ', en:'Taurus', glyph:'♉', el:'ดิน', mod:'มั่นคง', ruler:'ศุกร์',
   tags:['ช้าแต่ชัวร์','รักความสบาย','ดื้อเงียบ'],
-  sun:'คุณสร้างชีวิตแบบวางอิฐทีละก้อน ไม่หวือหวาแต่พังยาก คุณมีความสุขกับของจริงที่จับต้องได้ — เงินในบัญชี ข้าวอร่อย ที่นอนดี ๆ คนที่อยู่ด้วยแล้วไม่ต้องเดาใจ',
-  moon:'ใจคุณต้องการความแน่นอนก่อนอย่างอื่น อะไรที่เปลี่ยนกะทันหันทำให้คุณเครียดกว่าที่คนอื่นคิดเยอะ เวลาเสียใจคุณเยียวยาตัวเองด้วยของกินและพื้นที่คุ้นเคย',
-  rising:'คนมองคุณว่านิ่ง อบอุ่น ไว้ใจได้ ไม่ตื่นตูม เจอเรื่องใหม่คุณจะขอเวลาดูก่อน ไม่รีบตอบ และพอตัดสินใจแล้วจะเปลี่ยนใจยากมาก' },
+  sun:'เธอสร้างชีวิตแบบวางอิฐทีละก้อน ไม่หวือหวาแต่พังยาก เธอมีความสุขกับของจริงที่จับต้องได้ — เงินในบัญชี ข้าวอร่อย ที่นอนดี ๆ คนที่อยู่ด้วยแล้วไม่ต้องเดาใจ',
+  moon:'ใจเธอต้องการความแน่นอนก่อนอย่างอื่น อะไรที่เปลี่ยนกะทันหันทำให้เธอเครียดกว่าที่คนอื่นคิดเยอะ เวลาเสียใจเธอเยียวยาตัวเองด้วยของกินและพื้นที่คุ้นเคย',
+  rising:'คนมองเธอว่านิ่ง อบอุ่น ไว้ใจได้ ไม่ตื่นตูม เจอเรื่องใหม่เธอจะขอเวลาดูก่อน ไม่รีบตอบ และพอตัดสินใจแล้วจะเปลี่ยนใจยากมาก' },
 { th:'เมถุน', en:'Gemini', glyph:'♊', el:'ลม', mod:'ยืดหยุ่น', ruler:'พุธ',
   tags:['สมองไม่หยุด','คุยเก่ง','เปลี่ยนใจไว'],
-  sun:'คุณมีชีวิตอยู่ด้วยความอยากรู้ สนใจอะไรพร้อมกันหลายอย่าง และเรียนรู้ไวจนคนตามไม่ทัน จุดแข็งคือคุณอธิบายเรื่องยากให้เป็นเรื่องง่ายได้',
-  moon:'คุณย่อยอารมณ์ด้วยการ “พูดออกมา” ถ้าไม่ได้ระบายกับใครสักคน มันจะวนอยู่ในหัวทั้งคืน ข้อควรระวังคือบางทีคุณวิเคราะห์ความรู้สึกจนลืมรู้สึกจริง ๆ',
-  rising:'คนเจอคุณครั้งแรกจะรู้สึกว่าคุยง่าย สนุก มีเรื่องเล่าเยอะ ดูอ่อนกว่าวัย เจอสถานการณ์ใหม่คุณจะถามคำถามและเก็บข้อมูลก่อนเสมอ' },
+  sun:'เธอมีชีวิตอยู่ด้วยความอยากรู้ สนใจอะไรพร้อมกันหลายอย่าง และเรียนรู้ไวจนคนตามไม่ทัน จุดแข็งคือเธออธิบายเรื่องยากให้เป็นเรื่องง่ายได้',
+  moon:'เธอย่อยอารมณ์ด้วยการ “พูดออกมา” ถ้าไม่ได้ระบายกับใครสักคน มันจะวนอยู่ในหัวทั้งคืน ข้อควรระวังคือบางทีเธอวิเคราะห์ความรู้สึกจนลืมรู้สึกจริง ๆ',
+  rising:'คนเจอเธอครั้งแรกจะรู้สึกว่าคุยง่าย สนุก มีเรื่องเล่าเยอะ ดูอ่อนกว่าวัย เจอสถานการณ์ใหม่เธอจะถามคำถามและเก็บข้อมูลก่อนเสมอ' },
 { th:'กรกฎ', en:'Cancer', glyph:'♋', el:'น้ำ', mod:'ริเริ่ม', ruler:'จันทร์',
   tags:['ใจอ่อนแต่ปกป้องเก่ง','จำได้ทุกอย่าง','ถอยเข้ากระดอง'],
-  sun:'คุณเป็นคนที่ดูแลคนอื่นโดยอัตโนมัติ อ่านบรรยากาศเก่งจนรู้ว่าใครไม่โอเคก่อนเจ้าตัวจะพูด ความสำเร็จของคุณผูกกับการมี “คนของเรา” ที่ปลอดภัยจริง ๆ',
-  moon:'ความรู้สึกคุณลึกและยาว เรื่องที่คนอื่นลืมไปแล้วคุณยังจำได้แม่น เวลาเจ็บคุณจะถอยเข้าไปเงียบ ๆ ไม่ใช่เพราะไม่รักแต่เพราะต้องซ่อมตัวเองก่อน',
-  rising:'คนรู้สึกว่าคุณเข้าถึงง่ายและอบอุ่น แต่กว่าจะสนิทจริงต้องใช้เวลา เจอเรื่องใหม่คุณจะสแกนก่อนว่า “ที่นี่ปลอดภัยกับฉันไหม”' },
+  sun:'เธอเป็นคนที่ดูแลคนอื่นโดยอัตโนมัติ อ่านบรรยากาศเก่งจนรู้ว่าใครไม่โอเคก่อนเจ้าตัวจะพูด ความสำเร็จของเธอผูกกับการมี “คนของเรา” ที่ปลอดภัยจริง ๆ',
+  moon:'ความรู้สึกเธอลึกและยาว เรื่องที่คนอื่นลืมไปแล้วเธอยังจำได้แม่น เวลาเจ็บเธอจะถอยเข้าไปเงียบ ๆ ไม่ใช่เพราะไม่รักแต่เพราะต้องซ่อมตัวเองก่อน',
+  rising:'คนรู้สึกว่าเธอเข้าถึงง่ายและอบอุ่น แต่กว่าจะสนิทจริงต้องใช้เวลา เจอเรื่องใหม่เธอจะสแกนก่อนว่า “ที่นี่ปลอดภัยกับฉันไหม”' },
 { th:'สิงห์', en:'Leo', glyph:'♌', el:'ไฟ', mod:'มั่นคง', ruler:'อาทิตย์',
   tags:['ใจใหญ่','อยากถูกมองเห็น','ภูมิใจสูง'],
-  sun:'คุณเกิดมาเพื่อเปล่งแสง ไม่ใช่ในแง่อวด แต่ในแง่ที่ว่าคุณทำให้ห้องอุ่นขึ้นเวลาคุณอยู่ คุณให้เต็มที่กับคนที่รัก และต้องการรู้ว่าสิ่งที่ให้ไปมีความหมาย',
-  moon:'ใจคุณต้องการการยอมรับแบบตรง ๆ คำชมไม่ใช่ของฟุ่มเฟือยสำหรับคุณ มันคืออาหาร เวลาถูกมองข้ามคุณจะเจ็บกว่าที่ยอมรับ',
-  rising:'คุณมีออร่าที่คนจำได้ ดูมั่นใจ อบอุ่น มีสไตล์ เจอสถานการณ์ใหม่คุณจะเข้าไปแบบเปิดเผยและกล้าเป็นจุดสนใจ' },
+  sun:'เธอเกิดมาเพื่อเปล่งแสง ไม่ใช่ในแง่อวด แต่ในแง่ที่ว่าเธอทำให้ห้องอุ่นขึ้นเวลาเธออยู่ เธอให้เต็มที่กับคนที่รัก และต้องการรู้ว่าสิ่งที่ให้ไปมีความหมาย',
+  moon:'ใจเธอต้องการการยอมรับแบบตรง ๆ คำชมไม่ใช่ของฟุ่มเฟือยสำหรับเธอ มันคืออาหาร เวลาถูกมองข้ามเธอจะเจ็บกว่าที่ยอมรับ',
+  rising:'เธอมีออร่าที่คนจำได้ ดูมั่นใจ อบอุ่น มีสไตล์ เจอสถานการณ์ใหม่เธอจะเข้าไปแบบเปิดเผยและกล้าเป็นจุดสนใจ' },
 { th:'กันย์', en:'Virgo', glyph:'♍', el:'ดิน', mod:'ยืดหยุ่น', ruler:'พุธ',
   tags:['เห็นรายละเอียด','ช่วยเหลือคน','คิดเยอะ'],
-  sun:'คุณคือคนที่ทำให้ของที่พังกลับมาใช้ได้ คุณเห็นจุดที่คนอื่นมองข้ามและปรับมันเงียบ ๆ ความสุขของคุณคือได้เป็นประโยชน์กับใครสักคนจริง ๆ',
-  moon:'คุณสงบใจด้วยการจัดการ — เขียนลิสต์ เคลียร์โต๊ะ วางแผน สิ่งที่กัดกินคุณคือเสียงในหัวที่บอกว่า “ยังไม่ดีพอ” ทั้งที่คนอื่นว่าดีมากแล้ว',
-  rising:'คนเห็นคุณเป็นคนสุภาพ เนี้ยบ ไว้ใจได้ ไม่พูดเกินจริง เจอเรื่องใหม่คุณจะประเมินและหาข้อผิดพลาดก่อน ซึ่งช่วยได้เยอะแต่ก็ทำให้เริ่มช้า' },
+  sun:'เธอคือคนที่ทำให้ของที่พังกลับมาใช้ได้ เธอเห็นจุดที่คนอื่นมองข้ามและปรับมันเงียบ ๆ ความสุขของเธอคือได้เป็นประโยชน์กับใครสักคนจริง ๆ',
+  moon:'เธอสงบใจด้วยการจัดการ — เขียนลิสต์ เคลียร์โต๊ะ วางแผน สิ่งที่กัดกินเธอคือเสียงในหัวที่บอกว่า “ยังไม่ดีพอ” ทั้งที่คนอื่นว่าดีมากแล้ว',
+  rising:'คนเห็นเธอเป็นคนสุภาพ เนี้ยบ ไว้ใจได้ ไม่พูดเกินจริง เจอเรื่องใหม่เธอจะประเมินและหาข้อผิดพลาดก่อน ซึ่งช่วยได้เยอะแต่ก็ทำให้เริ่มช้า' },
 { th:'ตุลย์', en:'Libra', glyph:'♎', el:'ลม', mod:'ริเริ่ม', ruler:'ศุกร์',
   tags:['เกรงใจ','เห็นสองด้าน','ตัดสินใจยาก'],
-  sun:'คุณมีเรดาร์เรื่องความยุติธรรมและความงาม อยู่ตรงกลางความสัมพันธ์ได้ดีเพราะเข้าใจทั้งสองฝ่ายจริง ๆ ชีวิตคุณเบ่งบานเมื่อมีคนดี ๆ อยู่รอบตัว',
-  moon:'ใจคุณสงบเมื่อความสัมพันธ์รอบตัวไม่มีรอยร้าว ความขัดแย้งทำให้คุณกินไม่ได้นอนไม่หลับ จนบางครั้งคุณยอมทิ้งความต้องการตัวเองเพื่อรักษาบรรยากาศ',
-  rising:'คนเจอคุณแล้วรู้สึกสบายใจ คุณดูมีมารยาท มีรสนิยม และปรับตัวเข้ากับคนได้ไว เจอเรื่องใหม่คุณจะดูก่อนว่าคนอื่นคิดยังไง' },
+  sun:'เธอมีเรดาร์เรื่องความยุติธรรมและความงาม อยู่ตรงกลางความสัมพันธ์ได้ดีเพราะเข้าใจทั้งสองฝ่ายจริง ๆ ชีวิตเธอเบ่งบานเมื่อมีคนดี ๆ อยู่รอบตัว',
+  moon:'ใจเธอสงบเมื่อความสัมพันธ์รอบตัวไม่มีรอยร้าว ความขัดแย้งทำให้เธอกินไม่ได้นอนไม่หลับ จนบางครั้งเธอยอมทิ้งความต้องการตัวเองเพื่อรักษาบรรยากาศ',
+  rising:'คนเจอเธอแล้วรู้สึกสบายใจ เธอดูมีมารยาท มีรสนิยม และปรับตัวเข้ากับคนได้ไว เจอเรื่องใหม่เธอจะดูก่อนว่าคนอื่นคิดยังไง' },
 { th:'พิจิก', en:'Scorpio', glyph:'♏', el:'น้ำ', mod:'มั่นคง', ruler:'พลูโต / อังคาร',
   tags:['ลึก','อ่านคนขาด','ทุ่มสุดตัว'],
-  sun:'คุณไม่สนใจอะไรผิว ๆ ถ้าจะเอาก็เอาให้สุด ถ้าจะรู้ก็ต้องรู้ให้ถึงแก่น คุณมีพลังในการเปลี่ยนตัวเองใหม่ทั้งตัวได้หลังพังมาแล้ว',
-  moon:'อารมณ์คุณเข้ม ลึก และเก็บไว้ข้างใน คุณไว้ใจคนยากเพราะเคยเจ็บจริง แต่พอไว้ใจแล้วคือให้ทั้งหมด สิ่งที่ต้องระวังคือการเก็บความน้อยใจไว้จนกลายเป็นกำแพง',
-  rising:'คุณมีออร่านิ่ง ๆ ที่คนอ่านไม่ออกและอยากรู้ ดูสงบแต่ทรงพลัง เจอเรื่องใหม่คุณจะสังเกตเงียบ ๆ ก่อนตัดสินว่าใครไว้ใจได้บ้าง' },
+  sun:'เธอไม่สนใจอะไรผิว ๆ ถ้าจะเอาก็เอาให้สุด ถ้าจะรู้ก็ต้องรู้ให้ถึงแก่น เธอมีพลังในการเปลี่ยนตัวเองใหม่ทั้งตัวได้หลังพังมาแล้ว',
+  moon:'อารมณ์เธอเข้ม ลึก และเก็บไว้ข้างใน เธอไว้ใจคนยากเพราะเคยเจ็บจริง แต่พอไว้ใจแล้วคือให้ทั้งหมด สิ่งที่ต้องระวังคือการเก็บความน้อยใจไว้จนกลายเป็นกำแพง',
+  rising:'เธอมีออร่านิ่ง ๆ ที่คนอ่านไม่ออกและอยากรู้ ดูสงบแต่ทรงพลัง เจอเรื่องใหม่เธอจะสังเกตเงียบ ๆ ก่อนตัดสินว่าใครไว้ใจได้บ้าง' },
 { th:'ธนู', en:'Sagittarius', glyph:'♐', el:'ไฟ', mod:'ยืดหยุ่น', ruler:'พฤหัส',
   tags:['รักอิสระ','มองภาพใหญ่','พูดตรงจนเจ็บ'],
-  sun:'คุณต้องการพื้นที่ให้โต ทั้งทางความคิดและทางกายภาพ อะไรที่บีบคุณเข้ากล่องคือสิ่งที่คุณจะดิ้นออกเสมอ คุณมองเห็นความเป็นไปได้ก่อนคนอื่น',
-  moon:'ใจคุณจะโล่งเมื่อรู้สึกว่ายังมีทางเลือก การให้ความหมายกับสิ่งที่เกิดขึ้นคือวิธีเยียวยาของคุณ แต่ระวังการหนีไปข้างหน้าแทนที่จะอยู่กับความรู้สึกจริง ๆ',
-  rising:'คนมองคุณเป็นคนสนุก เปิดกว้าง พูดจริง ไม่อ้อมค้อม เจอเรื่องใหม่คุณจะกระโดดเข้าไปด้วยความอยากลองมากกว่ากลัว' },
+  sun:'เธอต้องการพื้นที่ให้โต ทั้งทางความคิดและทางกายภาพ อะไรที่บีบเธอเข้ากล่องคือสิ่งที่เธอจะดิ้นออกเสมอ เธอมองเห็นความเป็นไปได้ก่อนคนอื่น',
+  moon:'ใจเธอจะโล่งเมื่อรู้สึกว่ายังมีทางเลือก การให้ความหมายกับสิ่งที่เกิดขึ้นคือวิธีเยียวยาของเธอ แต่ระวังการหนีไปข้างหน้าแทนที่จะอยู่กับความรู้สึกจริง ๆ',
+  rising:'คนมองเธอเป็นคนสนุก เปิดกว้าง พูดจริง ไม่อ้อมค้อม เจอเรื่องใหม่เธอจะกระโดดเข้าไปด้วยความอยากลองมากกว่ากลัว' },
 { th:'มังกร', en:'Capricorn', glyph:'♑', el:'ดิน', mod:'ริเริ่ม', ruler:'เสาร์',
   tags:['อดทนสูง','รับผิดชอบ','กดดันตัวเอง'],
-  sun:'คุณเล่นเกมยาวเป็น ยอมเหนื่อยวันนี้เพื่อผลลัพธ์อีกสามปีข้างหน้าได้โดยไม่บ่น คุณเป็นคนที่คนอื่นพิงได้ และมักโตเร็วกว่าวัยเพราะต้องรับผิดชอบมาตั้งแต่เด็ก',
-  moon:'คุณไม่ค่อยปล่อยให้ใครเห็นตอนอ่อนแอ ความมั่นคงทางอารมณ์ของคุณผูกกับ “ฉันจัดการมันได้” เวลาเหนื่อยคุณมักจะทำงานหนักขึ้นแทนที่จะพัก',
-  rising:'คนเห็นคุณเป็นผู้ใหญ่ นิ่ง ดูน่าเชื่อถือ พูดน้อยแต่ทำจริง เจอเรื่องใหม่คุณจะประเมินความเสี่ยงและต้นทุนก่อนเสมอ' },
+  sun:'เธอเล่นเกมยาวเป็น ยอมเหนื่อยวันนี้เพื่อผลลัพธ์อีกสามปีข้างหน้าได้โดยไม่บ่น เธอเป็นคนที่คนอื่นพิงได้ และมักโตเร็วกว่าวัยเพราะต้องรับผิดชอบมาตั้งแต่เด็ก',
+  moon:'เธอไม่ค่อยปล่อยให้ใครเห็นตอนอ่อนแอ ความมั่นคงทางอารมณ์ของเธอผูกกับ “ฉันจัดการมันได้” เวลาเหนื่อยเธอมักจะทำงานหนักขึ้นแทนที่จะพัก',
+  rising:'คนเห็นเธอเป็นผู้ใหญ่ นิ่ง ดูน่าเชื่อถือ พูดน้อยแต่ทำจริง เจอเรื่องใหม่เธอจะประเมินความเสี่ยงและต้นทุนก่อนเสมอ' },
 { th:'กุมภ์', en:'Aquarius', glyph:'♒', el:'ลม', mod:'มั่นคง', ruler:'ยูเรนัส / เสาร์',
   tags:['คิดต่าง','เป็นตัวเอง','เหินห่างเวลาอึดอัด'],
-  sun:'คุณมองโลกจากมุมที่คนอื่นไม่ได้ยืน จึงเห็นทางแก้แปลก ๆ ที่ได้ผล คุณแคร์ภาพรวมและความเป็นธรรมมากกว่าจะแคร์ว่าใครจะว่ายังไง',
-  moon:'คุณต้องการระยะห่างเพื่อจะรู้สึกปลอดภัย เวลาอารมณ์ท่วม คุณจะถอยไปวิเคราะห์มันเหมือนดูจากข้างนอก วิธีนี้ช่วยได้จริง แต่บางทีก็ทำให้คนใกล้ตัวรู้สึกเอื้อมไม่ถึง',
-  rising:'คนรู้สึกว่าคุณมีอะไรไม่เหมือนใคร เป็นมิตรแต่ไม่ติดใคร เจอเรื่องใหม่คุณจะตั้งคำถามกับกติกาเดิมก่อนว่าจำเป็นจริงไหม' },
+  sun:'เธอมองโลกจากมุมที่คนอื่นไม่ได้ยืน จึงเห็นทางแก้แปลก ๆ ที่ได้ผล เธอแคร์ภาพรวมและความเป็นธรรมมากกว่าจะแคร์ว่าใครจะว่ายังไง',
+  moon:'เธอต้องการระยะห่างเพื่อจะรู้สึกปลอดภัย เวลาอารมณ์ท่วม เธอจะถอยไปวิเคราะห์มันเหมือนดูจากข้างนอก วิธีนี้ช่วยได้จริง แต่บางทีก็ทำให้คนใกล้ตัวรู้สึกเอื้อมไม่ถึง',
+  rising:'คนรู้สึกว่าเธอมีอะไรไม่เหมือนใคร เป็นมิตรแต่ไม่ติดใคร เจอเรื่องใหม่เธอจะตั้งคำถามกับกติกาเดิมก่อนว่าจำเป็นจริงไหม' },
 { th:'มีน', en:'Pisces', glyph:'♓', el:'น้ำ', mod:'ยืดหยุ่น', ruler:'เนปจูน / พฤหัส',
   tags:['ไวต่อความรู้สึก','เมตตา','ขอบเขตบาง'],
-  sun:'คุณรับรู้สิ่งที่คนอื่นไม่พูดออกมาได้ มีจินตนาการและความเห็นอกเห็นใจเป็นทุนสูง คุณเก่งเรื่องทำให้คนรู้สึกว่าไม่ได้อยู่คนเดียว',
-  moon:'อารมณ์คนอื่นซึมเข้ามาหาคุณง่ายมากจนบางครั้งแยกไม่ออกว่าอันไหนของเรา คุณต้องการเวลาอยู่คนเดียวเพื่อล้างของที่ไม่ใช่ของตัวเองออก',
-  rising:'คนรู้สึกว่าคุณนุ่ม เข้าถึงง่าย ไม่ตัดสิน เจอเรื่องใหม่คุณจะซึมซับบรรยากาศก่อนแล้วค่อย ๆ ปรับตัวตามน้ำ' }
+  sun:'เธอรับรู้สิ่งที่คนอื่นไม่พูดออกมาได้ มีจินตนาการและความเห็นอกเห็นใจเป็นทุนสูง เธอเก่งเรื่องทำให้คนรู้สึกว่าไม่ได้อยู่คนเดียว',
+  moon:'อารมณ์คนอื่นซึมเข้ามาหาเธอง่ายมากจนบางครั้งแยกไม่ออกว่าอันไหนของเรา เธอต้องการเวลาอยู่คนเดียวเพื่อล้างของที่ไม่ใช่ของตัวเองออก',
+  rising:'คนรู้สึกว่าเธอนุ่ม เข้าถึงง่าย ไม่ตัดสิน เจอเรื่องใหม่เธอจะซึมซับบรรยากาศก่อนแล้วค่อย ๆ ปรับตัวตามน้ำ' }
 ];
 const ELEMENT_INFO = {
   'ไฟ':{ drive:'ลงมือและพลังใจ', need:'ได้ขยับ ได้เห็นผล', risk:'ใจร้อน เผาตัวเอง' },
@@ -538,12 +608,11 @@ const ELEMENT_INFO = {
   'น้ำ':{ drive:'ความรู้สึกและสายสัมพันธ์', need:'รู้สึกปลอดภัยกับคน', risk:'เอาอารมณ์นำจนเสียมุมมอง' }
 };
 const MOD_INFO = {
-  'ริเริ่ม':'พอตัดสินใจแล้วคุณเป็นคนเปิดเกมเอง ไม่รอให้ใครมาเริ่มให้',
-  'มั่นคง':'คุณเปลี่ยนทิศช้า แต่พอลงหลักแล้วอึดกว่าใคร',
-  'ยืดหยุ่น':'คุณปรับตัวไว แต่บางทีก็เปลี่ยนใจเร็วจนพลาดของที่ควรอดทนรอ'
+  'ริเริ่ม':'พอตัดสินใจแล้วเธอเป็นคนเปิดเกมเอง ไม่รอให้ใครมาเริ่มให้',
+  'มั่นคง':'เธอเปลี่ยนทิศช้า แต่พอลงหลักแล้วอึดกว่าใคร',
+  'ยืดหยุ่น':'เธอปรับตัวไว แต่บางทีก็เปลี่ยนใจเร็วจนพลาดของที่ควรอดทนรอ'
 };
 </script>
-
 <script id="tarot-major">
 /* ═══════════════════════════════════════════════════════════════
    ส่วนที่ 3 — ไพ่ทาโรต์ 78 ใบ
@@ -557,14 +626,14 @@ const MAJOR = [
  lv:'ความสัมพันธ์ที่เพิ่งเริ่มหรือกำลังจะเริ่ม สนุกแต่ยังไม่มีรูปร่าง',wk:'โอกาสใหม่ที่ยังไม่ชัดเจน เหมาะกับการทดลองมากกว่าลงทุนหนัก',
  ad:'ก้าวเล็ก ๆ หนึ่งก้าวดีกว่าวางแผนสมบูรณ์แบบอีกสามเดือน'},
 {n:'The Magician',th:'นักมายากล',num:'I',g:'✶',e:'ลม',k:['มีของครบ','ลงมือ','สื่อสาร'],
- u:'คุณมีทรัพยากรและความสามารถพอแล้วสำหรับสิ่งที่คิดอยู่ ขาดแค่การหยิบมันมาใช้จริงจัง นี่คือช่วงที่การพูด การเสนอ การเริ่มต้นจะได้ผล',
+ u:'เธอมีทรัพยากรและความสามารถพอแล้วสำหรับสิ่งที่คิดอยู่ ขาดแค่การหยิบมันมาใช้จริงจัง นี่คือช่วงที่การพูด การเสนอ การเริ่มต้นจะได้ผล',
  r:'มีของแต่ไม่ได้ใช้ หรือใช้ไปกับเป้าหมายที่ไม่ใช่ของตัวเอง ระวังคนที่พูดเก่งแต่ไม่มีของด้วย',
  lv:'จังหวะที่การเปิดปากคุยตรง ๆ จะเปลี่ยนเกมได้',wk:'ทักษะที่มีขายได้จริง ถึงเวลานำเสนอตัวเอง',
- ad:'เขียนออกมาว่าคุณมีอะไรอยู่ในมือบ้าง แล้วจะเห็นว่าขาดน้อยกว่าที่กลัว'},
+ ad:'เขียนออกมาว่าเธอมีอะไรอยู่ในมือบ้าง แล้วจะเห็นว่าขาดน้อยกว่าที่กลัว'},
 {n:'The High Priestess',th:'นักบวชหญิง',num:'II',g:'☾',e:'น้ำ',k:['สัญชาตญาณ','ความลับ','รอ'],
- u:'ยังมีข้อมูลที่ไม่ถูกเปิด และคำตอบที่แท้อยู่ข้างในคุณมากกว่าข้างนอก ช่วงนี้การเงียบและสังเกตให้ผลดีกว่าการรีบประกาศ',
- r:'คุณกำลังไม่ฟังเสียงตัวเอง หรือมีบางอย่างถูกปิดไว้จนทำให้ตัดสินใจบนข้อมูลไม่ครบ',
- lv:'มีอะไรที่อีกฝ่ายยังไม่พูด หรือคุณเองยังไม่พูด',wk:'ยังไม่ถึงเวลาเปิดไพ่ทั้งหมด เก็บข้อมูลต่ออีกนิด',
+ u:'ยังมีข้อมูลที่ไม่ถูกเปิด และคำตอบที่แท้อยู่ข้างในเธอมากกว่าข้างนอก ช่วงนี้การเงียบและสังเกตให้ผลดีกว่าการรีบประกาศ',
+ r:'เธอกำลังไม่ฟังเสียงตัวเอง หรือมีบางอย่างถูกปิดไว้จนทำให้ตัดสินใจบนข้อมูลไม่ครบ',
+ lv:'มีอะไรที่อีกฝ่ายยังไม่พูด หรือเธอเองยังไม่พูด',wk:'ยังไม่ถึงเวลาเปิดไพ่ทั้งหมด เก็บข้อมูลต่ออีกนิด',
  ad:'ก่อนถามคนอื่น ลองถามตัวเองเงียบ ๆ ว่ารู้คำตอบอยู่แล้วหรือเปล่า'},
 {n:'The Empress',th:'จักรพรรดินี',num:'III',g:'✿',e:'ดิน',k:['หล่อเลี้ยง','อุดมสมบูรณ์','ผลผลิต'],
  u:'ช่วงที่สิ่งที่ปลูกไว้กำลังงอกงาม ความอ่อนโยน การดูแล และการให้เวลากับสิ่งที่รักจะให้ผลตอบแทนกลับมา',
@@ -578,38 +647,38 @@ const MAJOR = [
  ad:'ตั้งกฎกับตัวเองสักข้อที่ทำได้ทุกวัน แล้วยึดมันไว้'},
 {n:'The Hierophant',th:'สังฆราช',num:'V',g:'⛪',e:'ดิน',k:['ขนบ','คำสอน','ที่ปรึกษา'],
  u:'ทางที่มีคนเดินมาก่อนใช้ได้ผลกับเรื่องนี้ หาคนที่ผ่านมาแล้วมาช่วย หรือทำตามขั้นตอนมาตรฐานไปก่อน',
- r:'กฎเดิมไม่เหมาะกับคุณอีกแล้ว หรือคุณกำลังทำตามความคาดหวังคนอื่นจนไม่เหลือตัวเอง',
+ r:'กฎเดิมไม่เหมาะกับเธออีกแล้ว หรือเธอกำลังทำตามความคาดหวังคนอื่นจนไม่เหลือตัวเอง',
  lv:'เรื่องความคาดหวังจากครอบครัวหรือสังคมกำลังมีน้ำหนัก',wk:'องค์กร คอร์ส หรือใบรับรอง จะช่วยเปิดประตูให้',
  ad:'หาคนที่เคยเดินทางนี้มาก่อนสักคน แล้วถามให้ตรงคำถาม'},
 {n:'The Lovers',th:'คู่รัก',num:'VI',g:'♡',e:'ลม',k:['ทางเลือก','คุณค่า','ผูกพัน'],
- u:'ไพ่ของการเลือก ไม่ใช่แค่เลือกคน แต่เลือกว่าจะอยู่กับคุณค่าแบบไหน การตัดสินใจนี้ควรมาจากสิ่งที่คุณเชื่อจริง ๆ ไม่ใช่สิ่งที่ควรจะเชื่อ',
- r:'ค่านิยมไม่ตรงกัน หรือคุณเลือกด้วยความกลัวมากกว่าความต้องการ',
+ u:'ไพ่ของการเลือก ไม่ใช่แค่เลือกคน แต่เลือกว่าจะอยู่กับคุณค่าแบบไหน การตัดสินใจนี้ควรมาจากสิ่งที่เธอเชื่อจริง ๆ ไม่ใช่สิ่งที่ควรจะเชื่อ',
+ r:'ค่านิยมไม่ตรงกัน หรือเธอเลือกด้วยความกลัวมากกว่าความต้องการ',
  lv:'ความสัมพันธ์กำลังถึงจุดที่ต้องเลือกและตกลงกันจริงจัง',wk:'ต้องเลือกทางใดทางหนึ่ง เลือกทั้งสองไม่ได้แล้ว',
  ad:'ถามตัวเองว่า “ถ้าไม่มีใครรู้เลย ฉันจะเลือกอะไร” คำตอบนั้นคือของจริง'},
 {n:'The Chariot',th:'ราชรถ',num:'VII',g:'⚔',e:'น้ำ',k:['มุ่งหน้า','ควบคุม','ชัยชนะ'],
- u:'พลังกำลังมาทางคุณ แต่ต้องบังคับทิศเอง ชนะได้ด้วยการโฟกัสเป้าหมายเดียวและไม่ปล่อยมือจากพวงมาลัย',
+ u:'พลังกำลังมาทางเธอ แต่ต้องบังคับทิศเอง ชนะได้ด้วยการโฟกัสเป้าหมายเดียวและไม่ปล่อยมือจากพวงมาลัย',
  r:'พุ่งแรงแต่ไม่มีทิศ หรือแรงต้านสองด้านดึงกันจนรถไม่ไปไหน',
  lv:'ต้องตัดสินใจว่าจะไปด้วยกันทางไหน ไม่ใช่ปล่อยไหลไปเรื่อย ๆ',wk:'ดันโปรเจกต์ให้จบได้ถ้าตัดสิ่งรบกวนออก',
  ad:'เลือกเป้าหมายเดียวสำหรับเดือนนี้ แล้วพักเรื่องอื่นไว้ก่อน'},
 {n:'Strength',th:'พลัง',num:'VIII',g:'🦁',e:'ไฟ',k:['ใจนิ่ง','อ่อนโยนแต่หนักแน่น','อดทน'],
- u:'ชนะเรื่องนี้ด้วยความนิ่ง ไม่ใช่ด้วยการปะทะ คุณมีแรงพอ แค่ต้องใช้แบบละมุนและสม่ำเสมอ',
+ u:'ชนะเรื่องนี้ด้วยความนิ่ง ไม่ใช่ด้วยการปะทะ เธอมีแรงพอ แค่ต้องใช้แบบละมุนและสม่ำเสมอ',
  r:'หมดพลัง สงสัยตัวเอง หรือใช้กำลังฝืนในจุดที่ควรใช้ความเข้าใจ',
  lv:'ใช้ความอดทนและความเมตตา จะได้ผลกว่าการกดดัน',wk:'ความสม่ำเสมอชนะความเก่งเป็นพัก ๆ',
  ad:'เวลาอยากระเบิด ให้รอ 24 ชั่วโมงแล้วค่อยตอบ'},
 {n:'The Hermit',th:'ฤๅษี',num:'IX',g:'🕯',e:'ดิน',k:['ถอยมาทบทวน','หาคำตอบข้างใน','ครู'],
- u:'ช่วงนี้เหมาะกับการถอยออกมาจากเสียงรอบตัว คำตอบจะชัดเมื่อคุณอยู่กับตัวเองพอ ไม่ใช่การหนี แต่คือการตั้งหลัก',
+ u:'ช่วงนี้เหมาะกับการถอยออกมาจากเสียงรอบตัว คำตอบจะชัดเมื่อเธออยู่กับตัวเองพอ ไม่ใช่การหนี แต่คือการตั้งหลัก',
  r:'โดดเดี่ยวเกินไปจนกลายเป็นตัดขาด หรือหนีการอยู่กับตัวเองด้วยการทำตัวยุ่ง',
  lv:'ต้องการพื้นที่ส่วนตัว ไม่ได้แปลว่าไม่รัก',wk:'หยุดทบทวนทิศทางก่อนเดินต่อ จะประหยัดเวลากว่ามาก',
  ad:'จัดเวลาเงียบ ๆ กับตัวเองสัปดาห์ละครั้ง โดยไม่มีโทรศัพท์'},
 {n:'Wheel of Fortune',th:'วงล้อโชคชะตา',num:'X',g:'☸',e:'ไฟ',k:['จังหวะเปลี่ยน','วัฏจักร','โชค'],
- u:'สถานการณ์กำลังหมุนเข้าสู่รอบใหม่ สิ่งที่ติดขัดมานานจะเริ่มขยับ ไม่ใช่ทุกอย่างอยู่ในมือคุณ แต่จังหวะกำลังเป็นใจ',
+ u:'สถานการณ์กำลังหมุนเข้าสู่รอบใหม่ สิ่งที่ติดขัดมานานจะเริ่มขยับ ไม่ใช่ทุกอย่างอยู่ในมือเธอ แต่จังหวะกำลังเป็นใจ',
  r:'เจอจังหวะลง หรือติดอยู่ในวงจรเดิมเพราะยังทำแบบเดิม',
  lv:'มีการเปลี่ยนแปลงเข้ามา อาจมาจากปัจจัยภายนอก',wk:'โอกาสมาแบบไม่ทันตั้งตัว เตรียมพร้อมไว้',
  ad:'สิ่งที่ควบคุมไม่ได้ ปล่อย — สิ่งที่ควบคุมได้ ทำให้ดีที่สุด'},
 {n:'Justice',th:'ความยุติธรรม',num:'XI',g:'⚖',e:'ลม',k:['ผลจากเหตุ','ความจริง','สมดุล'],
- u:'ทุกอย่างจะออกมาตามเหตุที่ทำไว้ ตรงไปตรงมา ถ้าคุณทำถูกต้อง ผลจะเข้าข้างคุณ ช่วงนี้เหมาะกับเรื่องเอกสาร สัญญา และการพูดความจริง',
- r:'มีอะไรไม่แฟร์ในเรื่องนี้ หรือคุณกำลังเลี่ยงการรับผิดชอบส่วนของตัวเอง',
- lv:'ต้องเคลียร์กันด้วยความจริง ไม่ใช่ด้วยการเดา',wk:'อ่านสัญญาให้ครบทุกบรรทัด ผลจะยุติธรรมกับคุณ',
+ u:'ทุกอย่างจะออกมาตามเหตุที่ทำไว้ ตรงไปตรงมา ถ้าเธอทำถูกต้อง ผลจะเข้าข้างเธอ ช่วงนี้เหมาะกับเรื่องเอกสาร สัญญา และการพูดความจริง',
+ r:'มีอะไรไม่แฟร์ในเรื่องนี้ หรือเธอกำลังเลี่ยงการรับผิดชอบส่วนของตัวเอง',
+ lv:'ต้องเคลียร์กันด้วยความจริง ไม่ใช่ด้วยการเดา',wk:'อ่านสัญญาให้ครบทุกบรรทัด ผลจะยุติธรรมกับเธอ',
  ad:'ยอมรับส่วนที่เป็นของเราก่อน แล้วค่อยเรียกร้องส่วนที่เป็นของเรา'},
 {n:'The Hanged Man',th:'นักโทษแขวน',num:'XII',g:'⁂',e:'น้ำ',k:['หยุดชั่วคราว','มองมุมกลับ','ยอมปล่อย'],
  u:'ตอนนี้ดันไปก็ไม่ขยับ สิ่งที่ต้องเปลี่ยนคือมุมมอง ไม่ใช่ความเร็ว การยอมรอแบบตั้งใจคือการกระทำอย่างหนึ่ง',
@@ -627,17 +696,17 @@ const MAJOR = [
  lv:'ต้องปรับจังหวะให้ตรงกัน ไม่มีใครต้องเปลี่ยนหมดทั้งตัว',wk:'อย่ารีบ ทำสม่ำเสมอแล้วมันจะเข้าที่',
  ad:'ลดสิ่งที่ล้นลงนิด เติมสิ่งที่ขาดขึ้นหน่อย แค่นั้นจริง ๆ'},
 {n:'The Devil',th:'ปีศาจ',num:'XV',g:'⛓',e:'ดิน',k:['ถูกผูกไว้','ความอยาก','วงจรเดิม'],
- u:'มีบางอย่างที่คุณรู้ว่าไม่ดีแต่ยังวนกลับไปหา — นิสัย ความสัมพันธ์ หรือความกลัว โซ่เส้นนี้หลวมกว่าที่คิด คุณถอดเองได้',
+ u:'มีบางอย่างที่เธอรู้ว่าไม่ดีแต่ยังวนกลับไปหา — นิสัย ความสัมพันธ์ หรือความกลัว โซ่เส้นนี้หลวมกว่าที่คิด เธอถอดเองได้',
  r:'กำลังเริ่มเห็นโซ่และเริ่มถอดออก เป็นสัญญาณที่ดีของการหลุดพ้น',
  lv:'ความผูกพันที่ปนความหมกมุ่นหรือการพึ่งพาเกินพอดี',wk:'ติดอยู่กับงาน/เงินที่ทำให้ไม่กล้าขยับ',
- ad:'ตั้งชื่อสิ่งที่คุณกำลังติดกับมันให้ตรง ๆ การเรียกชื่อคือครึ่งทางของการหลุด'},
+ ad:'ตั้งชื่อสิ่งที่เธอกำลังติดกับมันให้ตรง ๆ การเรียกชื่อคือครึ่งทางของการหลุด'},
 {n:'The Tower',th:'หอคอย',num:'XVI',g:'⚡',e:'ไฟ',k:['พังทลาย','ความจริงเปิด','เริ่มใหม่'],
  u:'สิ่งที่ตั้งอยู่บนฐานไม่จริงกำลังถล่ม อาจเจ็บและมาเร็ว แต่สิ่งที่เหลือหลังจากนั้นคือของจริงที่สร้างต่อได้',
  r:'ยื้อการพังไว้ หรือเพิ่งผ่านช่วงพังมาและกำลังเก็บซาก ค่อย ๆ ตั้งหลักใหม่',
  lv:'ความจริงบางอย่างจะถูกเปิด และมันจะเปลี่ยนทุกอย่าง',wk:'แผนเดิมอาจล้ม เตรียมแผนสำรองไว้',
  ad:'อย่ารีบสร้างใหม่ทันที เคลียร์ซากให้เสร็จก่อน'},
 {n:'The Star',th:'ดวงดาว',num:'XVII',g:'★',e:'ลม',k:['ความหวัง','เยียวยา','ศรัทธา'],
- u:'หลังพายุมีฟ้าใส ไพ่ใบนี้บอกว่าคุณกำลังฟื้น และสิ่งที่หวังไว้มีทางเป็นไปได้จริง ค่อย ๆ ไป อย่าเพิ่งเร่ง',
+ u:'หลังพายุมีฟ้าใส ไพ่ใบนี้บอกว่าเธอกำลังฟื้น และสิ่งที่หวังไว้มีทางเป็นไปได้จริง ค่อย ๆ ไป อย่าเพิ่งเร่ง',
  r:'ความหวังริบหรี่ เหนื่อยจนไม่อยากเชื่ออะไรอีก ต้องเติมพลังก่อนคิดเรื่องใหญ่',
  lv:'ความสัมพันธ์ที่กำลังกลับมาดีขึ้น หรือคนที่ทำให้ใจสงบ',wk:'เส้นทางที่ตรงกับตัวตนจริงกำลังเปิด',
  ad:'ทำสิ่งเล็ก ๆ ที่ทำให้ใจฟื้นทุกวัน มันสะสมเร็วกว่าที่คิด'},
@@ -647,7 +716,7 @@ const MAJOR = [
  lv:'มีความเข้าใจผิดหรือเรื่องที่ยังไม่พูดกันตรง ๆ',wk:'ข้อมูลยังไม่ครบ อย่าเพิ่งเซ็น',
  ad:'แยกให้ออกว่าอันไหน “ข้อเท็จจริง” อันไหน “เรื่องที่เราแต่งเอง”'},
 {n:'The Sun',th:'ดวงอาทิตย์',num:'XIX',g:'☀',e:'ไฟ',k:['ความชัดเจน','ความสำเร็จ','ความสุข'],
- u:'ไพ่ที่ดีที่สุดใบหนึ่ง ทุกอย่างสว่างและตรงไปตรงมา สิ่งที่ทำอยู่จะออกผลดี และคุณจะได้เป็นตัวเองเต็มที่',
+ u:'ไพ่ที่ดีที่สุดใบหนึ่ง ทุกอย่างสว่างและตรงไปตรงมา สิ่งที่ทำอยู่จะออกผลดี และเธอจะได้เป็นตัวเองเต็มที่',
  r:'ความสุขถูกบังชั่วคราว หรือกำลังทำดีแต่ยังไม่มีใครเห็น อีกไม่นานจะชัด',
  lv:'ความสัมพันธ์ที่เปิดเผย อบอุ่น และไม่ต้องเดาใจ',wk:'ผลงานได้รับการยอมรับ เป็นจังหวะที่ควรเปิดตัว',
  ad:'ให้เครดิตตัวเองบ้าง แล้วทำสิ่งที่ทำให้ยิ้มได้จริง ๆ วันนี้'},
@@ -660,10 +729,9 @@ const MAJOR = [
  u:'บทนี้จบอย่างสมบูรณ์ สิ่งที่ทุ่มไปได้ผลแล้ว ฉลองให้ตัวเองก่อน แล้วค่อยเริ่มวงรอบใหม่ที่ใหญ่ขึ้น',
  r:'เกือบถึงแล้วแต่ยังขาดชิ้นสุดท้าย อย่าเพิ่งวางมือตอนนี้',
  lv:'ความสัมพันธ์ที่ลงตัวและครบถ้วน หรือบทเรียนที่เรียนจบแล้ว',wk:'ปิดโปรเจกต์ได้สวย และมีประตูใหม่รออยู่',
- ad:'ทบทวนว่าอะไรที่พาคุณมาถึงจุดนี้ แล้วเอามันไปใช้ต่อ'}
+ ad:'ทบทวนว่าอะไรที่พาเธอมาถึงจุดนี้ แล้วเอามันไปใช้ต่อ'}
 ];
 </script>
-
 <script id="tarot-minor-1">
 const SUIT_INFO = {
   wands:{ th:'ไม้เท้า', e:'ไฟ', g:'🜂', about:'พลังใจ แรงผลัก การลงมือ และความอยากทำ' },
@@ -673,7 +741,7 @@ const SUIT_INFO = {
 };
 const WANDS = [
 {num:'A',n:'Ace of Wands',th:'ไม้เท้า เอซ',k:['ประกายไฟ','แรงบันดาลใจ'],
- u:'ไฟดวงใหม่เพิ่งจุดติด มีไอเดียหรือโอกาสที่ทำให้คุณตื่นเต้นอีกครั้ง ตอนนี้แรงมี ให้รีบใช้',
+ u:'ไฟดวงใหม่เพิ่งจุดติด มีไอเดียหรือโอกาสที่ทำให้เธอตื่นเต้นอีกครั้ง ตอนนี้แรงมี ให้รีบใช้',
  r:'ไอเดียดีแต่ยังไม่ได้เริ่ม หรือเริ่มแล้วไฟมอดเร็ว',
  lv:'ความสนใจแรกเริ่มที่ยังร้อนแรง',wk:'โปรเจกต์ใหม่ที่ควรลงมือตอนไฟยังแรง',ad:'ทำก้าวแรกภายใน 48 ชั่วโมง ก่อนไฟจะหรี่'},
 {num:'2',n:'Two of Wands',th:'ไม้เท้า สอง',k:['วางแผน','เลือกทาง'],
@@ -691,25 +759,25 @@ const WANDS = [
 {num:'5',n:'Five of Wands',th:'ไม้เท้า ห้า',k:['แข่งขัน','เถียงกัน'],
  u:'มีการชนกันของความเห็นหรือผลประโยชน์ วุ่นวายแต่ไม่ถึงกับร้ายแรง มันคือการแข่งที่ทำให้เก่งขึ้นถ้าเล่นแฟร์',
  r:'เลี่ยงการปะทะจนปัญหาสะสม หรือทะเลาะกันเรื่องที่ไม่คุ้ม',
- lv:'เถียงกันบ่อยเพราะยังไม่ได้ฟังกันจริง ๆ',wk:'การแข่งขันสูง ต้องชัดว่าคุณต่างจากคนอื่นตรงไหน',ad:'เลือกสนามที่คุ้มจะสู้ อย่าสู้ทุกสนาม'},
+ lv:'เถียงกันบ่อยเพราะยังไม่ได้ฟังกันจริง ๆ',wk:'การแข่งขันสูง ต้องชัดว่าเธอต่างจากคนอื่นตรงไหน',ad:'เลือกสนามที่คุ้มจะสู้ อย่าสู้ทุกสนาม'},
 {num:'6',n:'Six of Wands',th:'ไม้เท้า หก',k:['ชัยชนะ','ได้รับการยอมรับ'],
- u:'ความพยายามเริ่มถูกมองเห็น มีข่าวดีหรือคำชมเข้ามา นี่คือช่วงที่คุณควรก้าวออกมารับมันเต็ม ๆ',
+ u:'ความพยายามเริ่มถูกมองเห็น มีข่าวดีหรือคำชมเข้ามา นี่คือช่วงที่เธอควรก้าวออกมารับมันเต็ม ๆ',
  r:'ทำดีแต่ยังไม่มีใครเห็น หรือกังวลว่าจะรักษาระดับไว้ไม่ได้',
- lv:'ความมั่นใจของคุณกำลังดึงดูดคนที่ใช่',wk:'ผลงานเข้าตาผู้ใหญ่ ถึงเวลาขอในสิ่งที่ควรได้',ad:'พูดถึงผลงานตัวเองให้คนอื่นรู้บ้าง ไม่ใช่การอวด'},
+ lv:'ความมั่นใจของเธอกำลังดึงดูดคนที่ใช่',wk:'ผลงานเข้าตาผู้ใหญ่ ถึงเวลาขอในสิ่งที่ควรได้',ad:'พูดถึงผลงานตัวเองให้คนอื่นรู้บ้าง ไม่ใช่การอวด'},
 {num:'7',n:'Seven of Wands',th:'ไม้เท้า เจ็ด',k:['ยืนหยัด','ป้องกันจุดยืน'],
- u:'คุณกำลังต้องปกป้องสิ่งที่สร้างมา จะมีเสียงค้านเข้ามา แต่ถ้ายืนหยัดต่อคุณจะรักษามันไว้ได้',
+ u:'เธอกำลังต้องปกป้องสิ่งที่สร้างมา จะมีเสียงค้านเข้ามา แต่ถ้ายืนหยัดต่อเธอจะรักษามันไว้ได้',
  r:'เหนื่อยกับการต้องพิสูจน์ตัวเองตลอดเวลา จนเริ่มอยากยอมแพ้',
- lv:'ต้องกล้าบอกความต้องการของตัวเองแม้จะขัดใจอีกฝ่าย',wk:'มีคนไม่เห็นด้วย แต่ข้อมูลอยู่ข้างคุณ',ad:'ตอบเฉพาะเสียงที่มีน้ำหนัก อย่าตอบทุกเสียง'},
+ lv:'ต้องกล้าบอกความต้องการของตัวเองแม้จะขัดใจอีกฝ่าย',wk:'มีคนไม่เห็นด้วย แต่ข้อมูลอยู่ข้างเธอ',ad:'ตอบเฉพาะเสียงที่มีน้ำหนัก อย่าตอบทุกเสียง'},
 {num:'8',n:'Eight of Wands',th:'ไม้เท้า แปด',k:['เร็ว','ข่าวสาร','พุ่ง'],
  u:'ทุกอย่างจะเร่งความเร็วขึ้นทันที มีข่าว การติดต่อ หรือความคืบหน้าเข้ามาถี่ อย่ามัวลังเล',
  r:'ทุกอย่างช้าและติดขัด หรือรีบจนสื่อสารพลาด',
  lv:'มีการติดต่อเข้ามา เรื่องจะขยับเร็ว',wk:'จังหวะเดินหน้าเต็มสูบ ตอบให้ไว',ad:'เคลียร์ข้อความที่ค้างในมือถือให้หมดวันนี้'},
 {num:'9',n:'Nine of Wands',th:'ไม้เท้า เก้า',k:['เหนื่อยแต่ยังยืน','ระแวง'],
- u:'คุณผ่านมาเยอะและเหนื่อยจริง แต่เหลืออีกนิดเดียว ความระแวงที่มีคือแผลจากรอบก่อน ไม่ใช่ความจริงของรอบนี้',
+ u:'เธอผ่านมาเยอะและเหนื่อยจริง แต่เหลืออีกนิดเดียว ความระแวงที่มีคือแผลจากรอบก่อน ไม่ใช่ความจริงของรอบนี้',
  r:'ล้าจนอยากทิ้งทุกอย่าง หรือปิดกำแพงสูงจนไม่มีใครเข้าถึง',
  lv:'ยังไม่กล้าเปิดใจเพราะแผลเก่า',wk:'ใกล้เส้นชัยแล้ว อย่าเพิ่งถอย',ad:'พักให้พอ แล้วเดินต่ออีกก้าวเดียว'},
 {num:'10',n:'Ten of Wands',th:'ไม้เท้า สิบ',k:['แบกเยอะ','ภาระ'],
- u:'คุณแบกมากเกินคนเดียวจะไหว หลายอย่างในกองนั้นไม่ใช่หน้าที่คุณด้วยซ้ำ ถึงเวลาวางบางอย่างลง',
+ u:'เธอแบกมากเกินคนเดียวจะไหว หลายอย่างในกองนั้นไม่ใช่หน้าที่เธอด้วยซ้ำ ถึงเวลาวางบางอย่างลง',
  r:'กำลังเริ่มวางภาระลงแล้ว หรือฝืนแบกจนใกล้พัง',
  lv:'ความสัมพันธ์ที่กลายเป็นภาระมากกว่าที่พักใจ',wk:'งานล้นมือ ต้องกระจายงานหรือปฏิเสธบ้าง',ad:'เขียนสิ่งที่แบกอยู่ทั้งหมด แล้วขีดฆ่าอย่างน้อยหนึ่งข้อ'},
 {num:'P',n:'Page of Wands',th:'ไม้เท้า เพจ',k:['อยากลอง','ข่าวใหม่'],
@@ -723,7 +791,7 @@ const WANDS = [
 {num:'Q',n:'Queen of Wands',th:'ไม้เท้า ราชินี',k:['มั่นใจ','อบอุ่น','มีเสน่ห์'],
  u:'พลังของคนที่รู้ว่าตัวเองเป็นใครและไม่ต้องขอโทษที่เป็นแบบนั้น เป็นที่รักเพราะจริงใจและกล้าหาญ',
  r:'ความมั่นใจสั่นคลอน หรือขี้หึง เปรียบเทียบตัวเองกับคนอื่น',
- lv:'ดึงดูดคนด้วยการเป็นตัวเอง ไม่ต้องพยายาม',wk:'เป็นผู้นำที่คนอยากตาม',ad:'ทำสิ่งที่ทำให้คุณรู้สึกเป็นตัวเองที่สุดวันนี้'},
+ lv:'ดึงดูดคนด้วยการเป็นตัวเอง ไม่ต้องพยายาม',wk:'เป็นผู้นำที่คนอยากตาม',ad:'ทำสิ่งที่ทำให้เธอรู้สึกเป็นตัวเองที่สุดวันนี้'},
 {num:'K',n:'King of Wands',th:'ไม้เท้า ราชา',k:['วิสัยทัศน์','ผู้นำ'],
  u:'มองเห็นภาพใหญ่และพาคนไปถึงได้ กล้าตัดสินใจ กล้ารับผิดชอบ นี่คือพลังของผู้นำตัวจริง',
  r:'เผด็จการ ใจร้อน หรือมีวิสัยทัศน์แต่ไม่ลงรายละเอียด',
@@ -737,13 +805,13 @@ const CUPS = [
 {num:'2',n:'Two of Cups',th:'ถ้วย สอง',k:['เชื่อมกัน','ตกลงใจ'],
  u:'การเชื่อมต่อแบบสองฝ่ายเท่ากัน มีความเข้าใจและให้เกียรติกัน เป็นไพ่ที่ดีมากสำหรับทั้งความรักและหุ้นส่วน',
  r:'ให้ไม่เท่ากัน หรือมีความเข้าใจผิดที่ต้องเคลียร์',
- lv:'ความรู้สึกตรงกันทั้งสองฝั่ง',wk:'พาร์ตเนอร์หรือดีลที่ลงตัว',ad:'เช็กว่าคุณให้และได้รับสมดุลกันไหม'},
+ lv:'ความรู้สึกตรงกันทั้งสองฝั่ง',wk:'พาร์ตเนอร์หรือดีลที่ลงตัว',ad:'เช็กว่าเธอให้และได้รับสมดุลกันไหม'},
 {num:'3',n:'Three of Cups',th:'ถ้วย สาม',k:['เพื่อน','ฉลอง'],
- u:'ช่วงเวลาดี ๆ กับคนรอบตัว มีคนคอยซัพพอร์ต ความสุขแบบนี้แหละที่เติมพลังให้คุณ',
+ u:'ช่วงเวลาดี ๆ กับคนรอบตัว มีคนคอยซัพพอร์ต ความสุขแบบนี้แหละที่เติมพลังให้เธอ',
  r:'สังคมที่เหนื่อย ดราม่าในกลุ่ม หรือรู้สึกโดดเดี่ยวในหมู่คน',
- lv:'ความสัมพันธ์ที่มีเพื่อนฝูงเข้ามาเกี่ยว',wk:'ทีมเวิร์กพาไปได้ไกลกว่าเดิม',ad:'นัดเจอคนที่ทำให้คุณหัวเราะได้จริง'},
+ lv:'ความสัมพันธ์ที่มีเพื่อนฝูงเข้ามาเกี่ยว',wk:'ทีมเวิร์กพาไปได้ไกลกว่าเดิม',ad:'นัดเจอคนที่ทำให้เธอหัวเราะได้จริง'},
 {num:'4',n:'Four of Cups',th:'ถ้วย สี่',k:['เบื่อ','มองข้ามของดี'],
- u:'รู้สึกเฉื่อยชาและไม่พอใจกับสิ่งที่มี ทั้งที่มีโอกาสยื่นอยู่ตรงหน้าแต่คุณยังไม่หันไปมอง',
+ u:'รู้สึกเฉื่อยชาและไม่พอใจกับสิ่งที่มี ทั้งที่มีโอกาสยื่นอยู่ตรงหน้าแต่เธอยังไม่หันไปมอง',
  r:'เริ่มตื่นจากความเบื่อและพร้อมรับสิ่งใหม่แล้ว',
  lv:'เบื่อ ๆ ในความสัมพันธ์ ต้องหาอะไรใหม่ทำด้วยกัน',wk:'งานเดิมไม่ท้าทาย แต่โอกาสอาจอยู่ใกล้กว่าที่คิด',ad:'ลิสต์สามอย่างที่มีอยู่แล้วและดีจริง'},
 {num:'5',n:'Five of Cups',th:'ถ้วย ห้า',k:['เสียใจ','โฟกัสสิ่งที่เสีย'],
@@ -759,13 +827,13 @@ const CUPS = [
  r:'เริ่มเห็นชัดแล้วว่าอันไหนของจริง ถึงเวลาตัดตัวเลือกทิ้ง',
  lv:'อุดมคติเกี่ยวกับคนคนหนึ่งอาจไม่ตรงกับตัวจริง',wk:'โอกาสหลายทาง เลือกที่มีข้อมูลรองรับ',ad:'ตัดตัวเลือกให้เหลือสองทาง แล้วเทียบด้วยข้อเท็จจริง'},
 {num:'8',n:'Eight of Cups',th:'ถ้วย แปด',k:['เดินจาก','หาสิ่งที่ใช่'],
- u:'บางอย่างเคยดีแต่ตอนนี้ไม่พอแล้ว การเดินออกมาไม่ใช่ความล้มเหลว มันคือการยอมรับว่าคุณต้องการมากกว่านี้',
+ u:'บางอย่างเคยดีแต่ตอนนี้ไม่พอแล้ว การเดินออกมาไม่ใช่ความล้มเหลว มันคือการยอมรับว่าเธอต้องการมากกว่านี้',
  r:'อยากไปแต่ยังไม่กล้า วนกลับมาที่เดิมซ้ำ ๆ',
- lv:'ถึงเวลาถอยออกจากสิ่งที่ไม่เติมใจ',wk:'งานที่หมดความหมายกับคุณแล้ว',ad:'ถามตัวเองว่าอีกหนึ่งปีในจุดเดิม ยังไหวไหม'},
+ lv:'ถึงเวลาถอยออกจากสิ่งที่ไม่เติมใจ',wk:'งานที่หมดความหมายกับเธอแล้ว',ad:'ถามตัวเองว่าอีกหนึ่งปีในจุดเดิม ยังไหวไหม'},
 {num:'9',n:'Nine of Cups',th:'ถ้วย เก้า',k:['สมหวัง','พอใจ'],
- u:'ไพ่แห่งความสมปรารถนา สิ่งที่ขอไว้มีโอกาสได้จริง และคุณจะพอใจกับมัน',
+ u:'ไพ่แห่งความสมปรารถนา สิ่งที่ขอไว้มีโอกาสได้จริง และเธอจะพอใจกับมัน',
  r:'ได้ตามที่ขอแต่ยังไม่อิ่ม หรือความสุขผูกกับสิ่งภายนอกมากไป',
- lv:'ความสัมพันธ์ที่ทำให้ยิ้มได้จริง',wk:'ผลตอบแทนที่คุ้มค่ากับที่ลงแรง',ad:'พูดออกมาให้ชัดว่าคุณต้องการอะไร แล้วขอมันจริง ๆ'},
+ lv:'ความสัมพันธ์ที่ทำให้ยิ้มได้จริง',wk:'ผลตอบแทนที่คุ้มค่ากับที่ลงแรง',ad:'พูดออกมาให้ชัดว่าเธอต้องการอะไร แล้วขอมันจริง ๆ'},
 {num:'10',n:'Ten of Cups',th:'ถ้วย สิบ',k:['ครอบครัว','ความสุขยั่งยืน'],
  u:'ความสุขแบบที่อยู่ได้นาน มีคนที่รักอยู่รอบตัว ความสัมพันธ์ที่ลงตัวทั้งใจและชีวิตประจำวัน',
  r:'ภาพครอบครัวในฝันกับความจริงยังห่างกัน ต้องคุยกันมากขึ้น',
@@ -777,7 +845,7 @@ const CUPS = [
 {num:'N',n:'Knight of Cups',th:'ถ้วย อัศวิน',k:['ตามหัวใจ','คำชวน'],
  u:'มีข้อเสนอหรือคำชวนที่มาจากความรู้สึก โรแมนติกและจริงใจ เดินตามหัวใจได้แต่ให้ลืมตาไปด้วย',
  r:'คำหวานที่ไม่มีการกระทำรองรับ หรือเจ้าอารมณ์',
- lv:'มีคนเข้ามาจีบหรือคุณกำลังจะขยับก่อน',wk:'งานที่ตรงกับความฝัน แต่ต้องเช็กความเป็นจริงด้วย',ad:'ดูการกระทำมากกว่าคำพูด ทั้งของเขาและของเรา'},
+ lv:'มีคนเข้ามาจีบหรือเธอกำลังจะขยับก่อน',wk:'งานที่ตรงกับความฝัน แต่ต้องเช็กความเป็นจริงด้วย',ad:'ดูการกระทำมากกว่าคำพูด ทั้งของเขาและของเรา'},
 {num:'Q',n:'Queen of Cups',th:'ถ้วย ราชินี',k:['เข้าใจคน','ใจนิ่ง'],
  u:'พลังของคนที่เข้าใจความรู้สึกลึกซึ้งโดยไม่จมไปกับมัน เป็นที่พึ่งทางใจให้คนอื่นได้',
  r:'ซึมซับอารมณ์คนอื่นจนหมดพลัง หรือเก็บกดความรู้สึกตัวเอง',
@@ -788,11 +856,10 @@ const CUPS = [
  lv:'ความสัมพันธ์ที่ต้องการวุฒิภาวะมากกว่าความหวือหวา',wk:'จัดการคนและความขัดแย้งได้ดีในช่วงนี้',ad:'รู้สึกให้เต็มที่ แต่ตัดสินใจตอนใจนิ่งแล้ว'}
 ];
 </script>
-
 <script id="tarot-minor-2">
 const SWORDS = [
 {num:'A',n:'Ace of Swords',th:'ดาบ เอซ',k:['ความจริง','ความชัดเจน'],
- u:'ความคิดกระจ่างขึ้นทันที คุณเห็นแล้วว่าอะไรคืออะไร นี่คือจังหวะที่ควรพูดความจริงและตัดสินใจด้วยเหตุผล',
+ u:'ความคิดกระจ่างขึ้นทันที เธอเห็นแล้วว่าอะไรคืออะไร นี่คือจังหวะที่ควรพูดความจริงและตัดสินใจด้วยเหตุผล',
  r:'ข้อมูลสับสน หรือพูดความจริงแบบที่ทำร้ายกันโดยไม่จำเป็น',
  lv:'ถึงเวลาคุยกันตรง ๆ สักที',wk:'ไอเดียที่คมและใช้ได้จริง',ad:'เขียนสถานการณ์ออกมาเป็นข้อ ๆ ความจริงจะโผล่เอง'},
 {num:'2',n:'Two of Swords',th:'ดาบ สอง',k:['ลังเล','ไม่กล้ามอง'],
@@ -816,15 +883,15 @@ const SWORDS = [
  r:'อยากไปแต่ยังลากอดีตติดไปด้วย',
  lv:'ผ่านช่วงยากมาแล้ว กำลังค่อย ๆ ดีขึ้น',wk:'การเปลี่ยนที่ทำงานหรือวิธีทำงานจะช่วยได้จริง',ad:'เอาไปเฉพาะสิ่งที่จำเป็น ที่เหลือวางไว้ที่เดิม'},
 {num:'7',n:'Seven of Swords',th:'ดาบ เจ็ด',k:['กลยุทธ์','ไม่ตรงไปตรงมา'],
- u:'มีบางอย่างที่ไม่ถูกบอกหมด อาจเป็นคนอื่นหรือตัวคุณเอง เล่นแบบมีชั้นเชิงได้ แต่อย่าข้ามเส้นความซื่อสัตย์',
+ u:'มีบางอย่างที่ไม่ถูกบอกหมด อาจเป็นคนอื่นหรือตัวเธอเอง เล่นแบบมีชั้นเชิงได้ แต่อย่าข้ามเส้นความซื่อสัตย์',
  r:'ความลับกำลังถูกเปิด หรือถึงเวลาสารภาพเอง',
- lv:'มีเรื่องที่ยังไม่พูดกันหมด',wk:'ระวังคนแอบเอาเครดิต เก็บหลักฐานไว้',ad:'เช็กว่ามีอะไรที่คุณเลี่ยงไม่พูดอยู่หรือเปล่า'},
+ lv:'มีเรื่องที่ยังไม่พูดกันหมด',wk:'ระวังคนแอบเอาเครดิต เก็บหลักฐานไว้',ad:'เช็กว่ามีอะไรที่เธอเลี่ยงไม่พูดอยู่หรือเปล่า'},
 {num:'8',n:'Eight of Swords',th:'ดาบ แปด',k:['รู้สึกติดกับ','ความคิดขังตัวเอง'],
- u:'รู้สึกว่าไม่มีทางออก แต่ที่จริงเชือกไม่ได้แน่นขนาดนั้น สิ่งที่ขังคุณคือความคิด ไม่ใช่สถานการณ์ทั้งหมด',
+ u:'รู้สึกว่าไม่มีทางออก แต่ที่จริงเชือกไม่ได้แน่นขนาดนั้น สิ่งที่ขังเธอคือความคิด ไม่ใช่สถานการณ์ทั้งหมด',
  r:'เริ่มมองเห็นทางออกและขยับได้แล้ว',
  lv:'รู้สึกติดในความสัมพันธ์ ทั้งที่มีทางเลือกอยู่',wk:'คิดว่าออกไปไหนไม่ได้ ลองสำรวจจริง ๆ ดูก่อน',ad:'เขียนทางเลือกออกมาสามทาง แม้จะยังไม่ชอบสักทาง'},
 {num:'9',n:'Nine of Swords',th:'ดาบ เก้า',k:['กังวล','นอนไม่หลับ'],
- u:'ความกังวลกำลังกินคุณตอนกลางคืน และมันขยายเรื่องให้ใหญ่กว่าความจริงเสมอ ส่วนมากสิ่งที่กลัวจะไม่เกิด',
+ u:'ความกังวลกำลังกินเธอตอนกลางคืน และมันขยายเรื่องให้ใหญ่กว่าความจริงเสมอ ส่วนมากสิ่งที่กลัวจะไม่เกิด',
  r:'ความกังวลเริ่มคลาย หรือถึงจุดที่ต้องหาคนช่วยแล้ว',
  lv:'คิดมากเกี่ยวกับสิ่งที่อีกฝ่ายอาจคิด',wk:'เครียดเรื่องงานจนกระทบสุขภาพ',ad:'เขียนสิ่งที่กลัวลงกระดาษก่อนนอน แล้วเช็กพรุ่งนี้ว่าจริงกี่ข้อ'},
 {num:'10',n:'Ten of Swords',th:'ดาบ สิบ',k:['จบแบบเจ็บ','ถึงก้นบึ้ง'],
@@ -842,9 +909,9 @@ const SWORDS = [
 {num:'Q',n:'Queen of Swords',th:'ดาบ ราชินี',k:['ตรงไปตรงมา','ขอบเขตชัด'],
  u:'พลังของคนที่มองสถานการณ์ตามจริงโดยไม่ให้อารมณ์บิดภาพ ตั้งขอบเขตเก่งและพูดในสิ่งที่ต้องพูด',
  r:'เย็นชาหรือวิจารณ์แรงเกิน จนคนไม่กล้าเข้าใกล้',
- lv:'ต้องการความจริงใจมากกว่าคำหวาน',wk:'ตัดสินใจด้วยข้อมูล ไม่ใช่ความเกรงใจ',ad:'พูด “ไม่” กับเรื่องที่ไม่ใช่ของคุณสักเรื่อง'},
+ lv:'ต้องการความจริงใจมากกว่าคำหวาน',wk:'ตัดสินใจด้วยข้อมูล ไม่ใช่ความเกรงใจ',ad:'พูด “ไม่” กับเรื่องที่ไม่ใช่ของเธอสักเรื่อง'},
 {num:'K',n:'King of Swords',th:'ดาบ ราชา',k:['เหตุผล','อำนาจตัดสิน'],
- u:'ตัดสินด้วยหลักการและข้อเท็จจริง เป็นช่วงที่ความมีเหตุผลและความเป็นมืออาชีพจะพาคุณชนะ',
+ u:'ตัดสินด้วยหลักการและข้อเท็จจริง เป็นช่วงที่ความมีเหตุผลและความเป็นมืออาชีพจะพาเธอชนะ',
  r:'แข็งทื่อ ยึดเหตุผลจนไม่เหลือความเข้าใจคน',
  lv:'อย่าวิเคราะห์ความสัมพันธ์เหมือนงาน',wk:'ปรึกษาผู้เชี่ยวชาญ กฎหมาย หรือคนที่รู้จริง',ad:'แยกข้อเท็จจริงกับความรู้สึกออกมาเป็นสองคอลัมน์'}
 ];
@@ -858,7 +925,7 @@ const PENTACLES = [
  r:'เสียสมดุล ของหล่นเพราะรับมามากไป',
  lv:'ไม่มีเวลาให้ความสัมพันธ์เพราะเรื่องอื่นเยอะ',wk:'หลายโปรเจกต์พร้อมกัน ต้องจัดลำดับ',ad:'เลือกสองอย่างที่สำคัญที่สุด ที่เหลือเลื่อนได้'},
 {num:'3',n:'Three of Pentacles',th:'เหรียญ สาม',k:['ทีมเวิร์ก','ฝีมือ'],
- u:'งานจะไปได้ดีเมื่อร่วมมือกัน ฝีมือของคุณได้รับการยอมรับ นี่คือช่วงสร้างของที่มีคุณภาพ',
+ u:'งานจะไปได้ดีเมื่อร่วมมือกัน ฝีมือของเธอได้รับการยอมรับ นี่คือช่วงสร้างของที่มีคุณภาพ',
  r:'ทีมไม่ลงรอย หรือทำคนเดียวทั้งที่ควรขอความช่วยเหลือ',
  lv:'ต้องสร้างความสัมพันธ์ไปด้วยกัน ไม่ใช่ฝ่ายเดียว',wk:'ขอฟีดแบ็กจากคนเก่งกว่าจะช่วยได้มาก',ad:'ขอความช่วยเหลือหนึ่งเรื่องที่ติดอยู่'},
 {num:'4',n:'Four of Pentacles',th:'เหรียญ สี่',k:['กำไว้แน่น','กลัวขาด'],
@@ -868,11 +935,11 @@ const PENTACLES = [
 {num:'5',n:'Five of Pentacles',th:'เหรียญ ห้า',k:['ขัดสน','รู้สึกถูกทิ้ง'],
  u:'ช่วงที่ลำบากทั้งกายและใจ และรู้สึกว่าไม่มีใครช่วย แต่ประตูที่มีแสงอยู่ใกล้กว่าที่คิด — ความช่วยเหลือมี แค่ต้องเอ่ยปากขอ',
  r:'สถานการณ์เริ่มดีขึ้น หรือถึงเวลายอมรับความช่วยเหลือแล้ว',
- lv:'รู้สึกโดดเดี่ยวแม้มีคนอยู่ข้าง ๆ',wk:'การเงินตึง ต้องวางแผนใหม่',ad:'บอกใครสักคนว่าคุณกำลังไม่ไหว — นั่นคือก้าวแรกจริง ๆ'},
+ lv:'รู้สึกโดดเดี่ยวแม้มีคนอยู่ข้าง ๆ',wk:'การเงินตึง ต้องวางแผนใหม่',ad:'บอกใครสักคนว่าเธอกำลังไม่ไหว — นั่นคือก้าวแรกจริง ๆ'},
 {num:'6',n:'Six of Pentacles',th:'เหรียญ หก',k:['ให้และรับ','ความช่วยเหลือ'],
- u:'มีการให้และรับที่กำลังเกิดขึ้น อาจมีคนช่วยคุณหรือคุณได้ช่วยคนอื่น ตรวจดูว่าสมดุลกันไหม',
+ u:'มีการให้และรับที่กำลังเกิดขึ้น อาจมีคนช่วยเธอ หรือเธอได้ช่วยคนอื่น ตรวจดูว่าสมดุลกันไหม',
  r:'ให้ฝ่ายเดียวจนหมด หรือรับโดยมีเงื่อนไขแอบแฝง',
- lv:'ความสัมพันธ์ที่อำนาจไม่เท่ากัน ต้องปรับ',wk:'มีคนสนับสนุน หรือถึงเวลาขอในสิ่งที่ควรได้',ad:'ขอความช่วยเหลือได้ ไม่ได้แปลว่าคุณอ่อนแอ'},
+ lv:'ความสัมพันธ์ที่อำนาจไม่เท่ากัน ต้องปรับ',wk:'มีคนสนับสนุน หรือถึงเวลาขอในสิ่งที่ควรได้',ad:'ขอความช่วยเหลือได้ ไม่ได้แปลว่าเธออ่อนแอ'},
 {num:'7',n:'Seven of Pentacles',th:'เหรียญ เจ็ด',k:['รอผล','ประเมินความคุ้ม'],
  u:'ลงแรงไปเยอะและกำลังรอเก็บเกี่ยว เป็นจังหวะที่ควรหยุดประเมินว่าสิ่งที่ปลูกคุ้มจะรดน้ำต่อไหม',
  r:'เหนื่อยกับการรอ หรือทุ่มลงในที่ที่ไม่ให้ผล',
@@ -882,7 +949,7 @@ const PENTACLES = [
  r:'ทำแบบขอไปที หรือฝึกจนหมกมุ่นไม่ยอมพัก',
  lv:'ความสัมพันธ์ต้องการการดูแลสม่ำเสมอ',wk:'พัฒนาทักษะตอนนี้จะได้ผลชัดใน 3–6 เดือน',ad:'ให้เวลาเรื่องนี้วันละนิดอย่างสม่ำเสมอ ดีกว่าอัดทีเดียว'},
 {num:'9',n:'Nine of Pentacles',th:'เหรียญ เก้า',k:['พึ่งตัวเองได้','ผลของความอดทน'],
- u:'คุณสร้างความมั่นคงด้วยตัวเองได้แล้ว และมีสิทธิ์เต็มที่จะเพลิดเพลินกับมัน ไม่ต้องรอใครมาทำให้ชีวิตสมบูรณ์',
+ u:'เธอสร้างความมั่นคงด้วยตัวเองได้แล้ว และมีสิทธิ์เต็มที่จะเพลิดเพลินกับมัน ไม่ต้องรอใครมาทำให้ชีวิตสมบูรณ์',
  r:'ยังพึ่งคนอื่นมากไป หรือทำงานหนักจนไม่ได้ใช้ชีวิต',
  lv:'มีความสุขกับตัวเองได้ ทำให้ความสัมพันธ์ดีขึ้นด้วย',wk:'ผลของวินัยที่สะสมมากำลังออกดอกออกผล',ad:'ใช้เงินหรือเวลาให้ตัวเองสักอย่างโดยไม่รู้สึกผิด'},
 {num:'10',n:'Ten of Pentacles',th:'เหรียญ สิบ',k:['มั่นคงระยะยาว','ครอบครัว'],
@@ -916,50 +983,428 @@ const DECK = [
   ...PENTACLES.map(c => ({ ...c, suit:'pentacles', suitTh:SUIT_INFO.pentacles.th, e:SUIT_INFO.pentacles.e, g:SUIT_INFO.pentacles.g, weight:1 }))
 ];
 </script>
+<script id="feelings">
+/* ═══════════════════════════════════════════════════════════════
+   ชั้นอารมณ์ของไพ่ — ใช้เฉพาะสเปรด "ความรู้สึกคนถาม"
+   อ่านไพ่ในฐานะสภาวะข้างในที่คนถามยังไม่ได้พูดออกมา
+   ═══════════════════════════════════════════════════════════════ */
+const FEEL = {
+'The Fool':'อยากเริ่มใหม่ใจจะขาด แต่กลัวว่าจะกลายเป็นคนไม่รับผิดชอบในสายตาคนอื่น',
+'The Magician':'รู้ว่าตัวเองทำได้ แต่รอใครสักคนมาบอกว่า “เอาเลย” ก่อนถึงจะกล้าเริ่ม',
+'The High Priestess':'รู้คำตอบอยู่แล้วในใจ แต่ยังไม่พร้อมยอมรับ เลยเลือกจะไม่พูดถึงมัน',
+'The Empress':'อยากถูกดูแลบ้าง หลังจากเป็นคนดูแลคนอื่นมาตลอด',
+'The Emperor':'อยากได้ความชัดเจนและกติกา เพราะการไม่รู้ว่าตัวเองยืนตรงไหนทำให้ใจไม่มั่นคง',
+'The Hierophant':'กำลังชั่งใจระหว่างสิ่งที่ตัวเองต้องการ กับสิ่งที่คนอื่นคาดหวังให้เป็น',
+'The Lovers':'อยากได้คำตอบที่ถูกต้อง ทั้งที่จริงเป็นคำตอบที่ต้องเลือกด้วยตัวเอง',
+'The Chariot':'อยากคุมทุกอย่างให้อยู่มือ เพราะกลัวว่าถ้าปล่อยแล้วจะพัง',
+'Strength':'เหนื่อยกับการต้องเป็นคนใจเย็นตลอดเวลา แต่ก็ยังกลั้นไว้อยู่',
+'The Hermit':'อยากหายไปสักพักโดยไม่ต้องอธิบายใคร',
+'Wheel of Fortune':'รู้สึกว่าชีวิตกำลังหมุนไปเอง และตัวเองแทบไม่มีส่วนตัดสิน',
+'Justice':'รู้สึกว่ามันไม่แฟร์ และอยากให้มีใครสักคนยอมรับว่ามันไม่แฟร์จริง ๆ',
+'The Hanged Man':'ค้างอยู่ตรงกลาง ไปต่อก็ไม่ได้ ถอยก็ไม่ยอม จนเริ่มชาไปเอง',
+'Death':'รู้ว่ามันจบแล้ว แต่ยังไม่กล้าพูดออกมาดัง ๆ เพราะพูดแล้วมันจะจริง',
+'Temperance':'อยากให้ทุกอย่างสงบ เลยพยายามประนีประนอมจนลืมว่าตัวเองต้องการอะไร',
+'The Devil':'รู้ว่าไม่ดีกับตัวเอง แต่มันคุ้นเคยเกินกว่าจะทิ้ง',
+'The Tower':'กลัวว่าถ้าเรื่องนี้แตก ทุกอย่างที่สร้างมาจะพังตามไปหมด',
+'The Star':'เพิ่งเริ่มกลับมาหวังอีกครั้ง และกลัวมากที่จะหวังผิด',
+'The Moon':'ไม่แน่ใจว่าสิ่งที่รู้สึกอยู่คือความจริง หรือเป็นเรื่องที่คิดไปเอง',
+'The Sun':'อยากกลับไปเป็นตัวเองแบบเบา ๆ อีกครั้ง แบบที่ไม่ต้องคอยระวังใคร',
+'Judgement':'กำลังตัดสินตัวเองเรื่องเก่าอยู่เงียบ ๆ และยังไม่ให้อภัยตัวเองเลย',
+'The World':'รู้ว่าบทนี้จบแล้ว แต่ยังเสียดายจนไม่อยากปิดประตู',
+'Ace of Wands':'มีไฟอยู่ข้างในและอยากให้มีใครสักคนเห็นมันบ้าง',
+'Two of Wands':'อยากไปให้ไกลกว่านี้ แต่ยังไม่กล้าทิ้งของที่มีอยู่',
+'Three of Wands':'เหนื่อยกับการรอผลที่ยังไม่รู้ว่าจะมาไหม',
+'Four of Wands':'อยากรู้สึกว่ามีที่ที่เป็นของตัวเองจริง ๆ สักที',
+'Five of Wands':'อึดอัดที่ต้องคอยปกป้องความคิดตัวเองตลอดเวลา',
+'Six of Wands':'อยากให้คนเห็นความพยายาม ไม่ใช่เห็นแค่ผลลัพธ์',
+'Seven of Wands':'ล้ากับการต้องพิสูจน์ตัวเองซ้ำ ๆ ให้คนที่ไม่เคยพอ',
+'Eight of Wands':'ใจร้อนอยากให้เรื่องนี้จบ ๆ ไป เพราะการค้างคาทรมานกว่าคำตอบที่ไม่ชอบ',
+'Nine of Wands':'ระแวงไปหมด เพราะเคยเชื่อแล้วเจ็บมาก่อน',
+'Ten of Wands':'แบกไว้คนเดียวจนชิน จนไม่รู้แล้วว่าจะขอความช่วยเหลือยังไง',
+'Page of Wands':'อยากลองอะไรใหม่ แต่กลัวโดนหัวเราะว่าไม่จริงจัง',
+'Knight of Wands':'อยากทิ้งทุกอย่างแล้วไปเลย มากกว่าที่ยอมรับกับใคร',
+'Queen of Wands':'อยากมั่นใจในตัวเองเหมือนที่คนอื่นเห็น ทั้งที่ข้างในไม่ได้รู้สึกแบบนั้นตลอด',
+'King of Wands':'อยากเป็นคนกำหนดเกมเอง เบื่อการเป็นฝ่ายรอคำตอบ',
+'Ace of Cups':'ใจเริ่มเปิดอีกครั้ง และนั่นทำให้รู้สึกเปราะบางกว่าเดิม',
+'Two of Cups':'อยากรู้ว่าอีกฝ่ายรู้สึกเท่ากันไหม มากกว่าอยากรู้ว่าจะจบยังไง',
+'Three of Cups':'เหงาแบบที่อยู่ท่ามกลางคนเยอะ ๆ ก็ยังเหงา',
+'Four of Cups':'เบื่อจนเริ่มชา และรู้สึกผิดที่ไม่รู้สึกอะไรกับสิ่งที่ควรจะดี',
+'Five of Cups':'ยังเสียใจกับสิ่งที่เสียไป และยังไม่พร้อมให้ใครบอกให้มองข้าม',
+'Six of Cups':'คิดถึงตอนที่ทุกอย่างยังง่ายกว่านี้',
+'Seven of Cups':'อยากได้ทุกอย่างพร้อมกัน เลยไม่กล้าเลือกอะไรจริงจังสักอย่าง',
+'Eight of Cups':'รู้ว่าควรไป แต่ยังรอสัญญาณที่จะทำให้การไปดูมีเหตุผลพอ',
+'Nine of Cups':'อยากมีความสุขแบบไม่ต้องรู้สึกผิดที่มีความสุข',
+'Ten of Cups':'อยากได้ความสัมพันธ์ที่ไม่ต้องคอยเดาใจกันทุกวัน',
+'Page of Cups':'รู้สึกเยอะกว่าที่แสดงออก และกลัวว่าถ้าพูดไปจะดูอ่อนแอ',
+'Knight of Cups':'อยากเชื่อคำที่ได้ยิน มากกว่าจะยอมดูสิ่งที่เห็น',
+'Queen of Cups':'รับความรู้สึกคนอื่นมาเต็มมือ จนไม่เหลือที่ให้ความรู้สึกตัวเอง',
+'King of Cups':'เก็บอาการเก่งจนคนรอบตัวคิดว่าไม่เป็นไร ทั้งที่ข้างในไม่โอเค',
+'Ace of Swords':'อยากรู้ความจริงทั้งหมด แม้จะรู้ว่าความจริงนั้นอาจเจ็บ',
+'Two of Swords':'เลี่ยงที่จะมองตรง ๆ เพราะมองแล้วต้องตัดสินใจ',
+'Three of Swords':'ยังเจ็บอยู่ และแอบกลัวว่าคนอื่นจะคิดว่าควรหายได้แล้ว',
+'Four of Swords':'หมดพลังจนแค่ประคองวันให้ผ่านไปก็เต็มที่แล้ว',
+'Five of Swords':'อยากเอาชนะให้ได้ แต่รู้อยู่ลึก ๆ ว่าชนะแล้วก็ไม่ได้รู้สึกดีขึ้น',
+'Six of Swords':'อยากไปให้พ้นจากที่เดิม แต่ยังหอบความเศร้าไปด้วยทุกที่',
+'Seven of Swords':'มีบางอย่างที่ไม่ได้พูดทั้งหมด และรู้สึกไม่สบายใจกับมันเงียบ ๆ',
+'Eight of Swords':'เชื่อไปแล้วว่าตัวเองไม่มีทางเลือก ทั้งที่ยังไม่ได้ลองมองทางอื่นเลย',
+'Nine of Swords':'คิดวนตอนกลางคืนจนหลับยาก และไม่กล้าบอกใครว่าคิดเยอะขนาดนี้',
+'Ten of Swords':'รู้สึกว่าเจ็บถึงที่สุดแล้ว และเหนื่อยเกินจะแกล้งว่าไม่เป็นไร',
+'Page of Swords':'อยากรู้ให้หมดทุกอย่าง เพราะการไม่รู้ทำให้คุมอะไรไม่ได้เลย',
+'Knight of Swords':'อยากพูดออกไปให้จบ ๆ แม้รู้ว่าพูดตอนนี้อาจแรงเกิน',
+'Queen of Swords':'ตัดใจได้ในหัวแล้ว แต่ใจยังตามไม่ทัน',
+'King of Swords':'ใช้เหตุผลอธิบายทุกอย่าง เพราะถ้ายอมรู้สึกเมื่อไหร่มันจะคุมไม่อยู่',
+'Ace of Pentacles':'อยากได้อะไรที่แน่นอนสักอย่างในชีวิตตอนนี้',
+'Two of Pentacles':'รู้สึกว่าตัวเองกำลังจะหล่นสักลูก และไม่กล้าบอกว่าไม่ไหว',
+'Three of Pentacles':'อยากรู้ว่าที่ทำอยู่ดีพอหรือยังในสายตาคนอื่น',
+'Four of Pentacles':'กลัวสูญเสียมากกว่าที่อยากได้เพิ่ม เลยกำทุกอย่างไว้แน่น',
+'Five of Pentacles':'รู้สึกว่าต้องผ่านเรื่องนี้ลำพัง และไม่กล้าขอความช่วยเหลือ',
+'Six of Pentacles':'ไม่สบายใจที่ต้องเป็นฝ่ายรับ หรือรู้สึกว่าให้ไปเยอะกว่าที่ได้กลับมา',
+'Seven of Pentacles':'เริ่มสงสัยว่าที่ลงแรงไปทั้งหมดจะคุ้มไหม',
+'Eight of Pentacles':'ยอมก้มหน้าทำต่อไป เพราะกลัวว่าถ้าหยุดแล้วจะไม่มีอะไรเหลือ',
+'Nine of Pentacles':'ภูมิใจที่ยืนได้ด้วยตัวเอง แต่ก็แอบเหงากับความสำเร็จนี้',
+'Ten of Pentacles':'อยากมั่นคงระยะยาว แต่กลัวว่าความมั่นคงจะแลกมาด้วยอิสระ',
+'Page of Pentacles':'อยากเริ่มให้ถูกวิธีตั้งแต่แรก เลยยังไม่กล้าเริ่มสักที',
+'Knight of Pentacles':'ทนอยู่กับสิ่งเดิมได้นาน จนไม่แน่ใจว่านั่นคือความอดทนหรือความกลัว',
+'Queen of Pentacles':'ดูแลทุกคนจนลืมถามตัวเองว่าไหวไหม',
+'King of Pentacles':'ผูกคุณค่าตัวเองไว้กับผลลัพธ์ เลยพักไม่เป็น'
+};
+/* จังหวะเวลาโดยประมาณจากชุดไพ่ ใช้ในสเปรดคำทำนาย */
+const TIMING = {
+  swords:'เร็ว — ระดับวันถึงสัปดาห์ เรื่องนี้จะชัดเร็วกว่าที่คิด',
+  wands:'ค่อนข้างเร็ว — ระดับสัปดาห์ถึงเดือน ถ้าเธอขยับก่อน มันจะเร็วขึ้นอีก',
+  cups:'ช้าแบบค่อยเป็นค่อยไป — ระดับหลายสัปดาห์ถึงเดือน เร่งไม่ได้เพราะมันขึ้นกับใจคน',
+  pentacles:'ช้าและเป็นขั้นตอน — ระดับหลายเดือน แต่ผลที่ได้จะอยู่กับเธอนาน',
+  major:'ไม่ใช่เรื่องของปฏิทิน — มันจะเปลี่ยนตอนที่เธอเปลี่ยนมุมมอง ไม่ใช่ตอนที่ถึงวันที่'
+};
+</script>
+<script id="places">
+/* ═══════════════════════════════════════════════════════════════
+   สถานที่เกิด — พิมพ์ชื่อจังหวัด/เมือง แล้วระบบหาพิกัดกับเขตเวลาให้เอง
+   [ชื่อไทย, ชื่ออังกฤษ/คำค้นเพิ่ม, lat, lon, tz, ภูมิภาค, dst?]
+   ═══════════════════════════════════════════════════════════════ */
+const TH_PLACES = [
+['กรุงเทพมหานคร','Bangkok กทม บางกอก',13.7563,100.5018,7,'ภาคกลาง'],
+['นนทบุรี','Nonthaburi',13.8591,100.5217,7,'ภาคกลาง'],
+['ปทุมธานี','Pathum Thani',14.0208,100.5250,7,'ภาคกลาง'],
+['สมุทรปราการ','Samut Prakan ปากน้ำ',13.5991,100.5998,7,'ภาคกลาง'],
+['สมุทรสาคร','Samut Sakhon มหาชัย',13.5475,100.2740,7,'ภาคกลาง'],
+['สมุทรสงคราม','Samut Songkhram แม่กลอง',13.4098,100.0022,7,'ภาคกลาง'],
+['นครปฐม','Nakhon Pathom',13.8199,100.0621,7,'ภาคกลาง'],
+['พระนครศรีอยุธยา','Ayutthaya อยุธยา',14.3532,100.5689,7,'ภาคกลาง'],
+['อ่างทอง','Ang Thong',14.5896,100.4550,7,'ภาคกลาง'],
+['ลพบุรี','Lopburi',14.7995,100.6534,7,'ภาคกลาง'],
+['สิงห์บุรี','Sing Buri',14.8907,100.3969,7,'ภาคกลาง'],
+['ชัยนาท','Chai Nat',15.1852,100.1251,7,'ภาคกลาง'],
+['สระบุรี','Saraburi',14.5289,100.9101,7,'ภาคกลาง'],
+['สุพรรณบุรี','Suphan Buri',14.4745,100.1177,7,'ภาคกลาง'],
+['กาญจนบุรี','Kanchanaburi',14.0227,99.5328,7,'ภาคกลาง'],
+['ราชบุรี','Ratchaburi',13.5283,99.8134,7,'ภาคกลาง'],
+['เพชรบุรี','Phetchaburi',13.1119,99.9399,7,'ภาคกลาง'],
+['ประจวบคีรีขันธ์','Prachuap Khiri Khan หัวหิน',11.8126,99.7957,7,'ภาคกลาง'],
+['นครนายก','Nakhon Nayok',14.2069,101.2130,7,'ภาคกลาง'],
+['ปราจีนบุรี','Prachin Buri',14.0509,101.3660,7,'ภาคกลาง'],
+['สระแก้ว','Sa Kaeo',13.8240,102.0645,7,'ภาคกลาง'],
+['ฉะเชิงเทรา','Chachoengsao แปดริ้ว',13.6904,101.0779,7,'ภาคกลาง'],
+['ชลบุรี','Chonburi พัทยา ศรีราชา',13.3611,100.9847,7,'ภาคตะวันออก'],
+['ระยอง','Rayong',12.6814,101.2816,7,'ภาคตะวันออก'],
+['จันทบุรี','Chanthaburi',12.6113,102.1035,7,'ภาคตะวันออก'],
+['ตราด','Trat',12.2427,102.5150,7,'ภาคตะวันออก'],
+['เชียงใหม่','Chiang Mai',18.7883,98.9853,7,'ภาคเหนือ'],
+['เชียงราย','Chiang Rai',19.9105,99.8406,7,'ภาคเหนือ'],
+['ลำปาง','Lampang',18.2888,99.4908,7,'ภาคเหนือ'],
+['ลำพูน','Lamphun',18.5744,99.0087,7,'ภาคเหนือ'],
+['แม่ฮ่องสอน','Mae Hong Son',19.3020,97.9654,7,'ภาคเหนือ'],
+['น่าน','Nan',18.7756,100.7730,7,'ภาคเหนือ'],
+['พะเยา','Phayao',19.1664,99.9003,7,'ภาคเหนือ'],
+['แพร่','Phrae',18.1445,100.1405,7,'ภาคเหนือ'],
+['อุตรดิตถ์','Uttaradit',17.6200,100.0993,7,'ภาคเหนือ'],
+['ตาก','Tak แม่สอด',16.8839,99.1258,7,'ภาคเหนือ'],
+['สุโขทัย','Sukhothai',17.0068,99.8265,7,'ภาคเหนือ'],
+['พิษณุโลก','Phitsanulok',16.8211,100.2659,7,'ภาคเหนือ'],
+['พิจิตร','Phichit',16.4429,100.3487,7,'ภาคเหนือ'],
+['เพชรบูรณ์','Phetchabun',16.4190,101.1591,7,'ภาคเหนือ'],
+['กำแพงเพชร','Kamphaeng Phet',16.4828,99.5226,7,'ภาคเหนือ'],
+['นครสวรรค์','Nakhon Sawan ปากน้ำโพ',15.7047,100.1372,7,'ภาคเหนือ'],
+['อุทัยธานี','Uthai Thani',15.3835,100.0246,7,'ภาคเหนือ'],
+['นครราชสีมา','Nakhon Ratchasima โคราช',14.9799,102.0977,7,'ภาคอีสาน'],
+['ขอนแก่น','Khon Kaen',16.4419,102.8360,7,'ภาคอีสาน'],
+['อุดรธานี','Udon Thani',17.4138,102.7870,7,'ภาคอีสาน'],
+['อุบลราชธานี','Ubon Ratchathani',15.2448,104.8473,7,'ภาคอีสาน'],
+['หนองคาย','Nong Khai',17.8783,102.7420,7,'ภาคอีสาน'],
+['บึงกาฬ','Bueng Kan',18.3609,103.6466,7,'ภาคอีสาน'],
+['เลย','Loei',17.4860,101.7223,7,'ภาคอีสาน'],
+['หนองบัวลำภู','Nong Bua Lamphu',17.2042,102.4409,7,'ภาคอีสาน'],
+['สกลนคร','Sakon Nakhon',17.1555,104.1348,7,'ภาคอีสาน'],
+['นครพนม','Nakhon Phanom',17.3920,104.7690,7,'ภาคอีสาน'],
+['มุกดาหาร','Mukdahan',16.5420,104.7208,7,'ภาคอีสาน'],
+['กาฬสินธุ์','Kalasin',16.4315,103.5059,7,'ภาคอีสาน'],
+['มหาสารคาม','Maha Sarakham',16.1850,103.3007,7,'ภาคอีสาน'],
+['ร้อยเอ็ด','Roi Et',16.0538,103.6520,7,'ภาคอีสาน'],
+['ยโสธร','Yasothon',15.7921,104.1452,7,'ภาคอีสาน'],
+['อำนาจเจริญ','Amnat Charoen',15.8657,104.6265,7,'ภาคอีสาน'],
+['ศรีสะเกษ','Si Sa Ket',15.1186,104.3220,7,'ภาคอีสาน'],
+['สุรินทร์','Surin',14.8818,103.4936,7,'ภาคอีสาน'],
+['บุรีรัมย์','Buriram',14.9930,103.1029,7,'ภาคอีสาน'],
+['ชัยภูมิ','Chaiyaphum',15.8068,102.0317,7,'ภาคอีสาน'],
+['ชุมพร','Chumphon',10.4930,99.1800,7,'ภาคใต้'],
+['ระนอง','Ranong',9.9529,98.6085,7,'ภาคใต้'],
+['สุราษฎร์ธานี','Surat Thani สมุย',9.1382,99.3215,7,'ภาคใต้'],
+['พังงา','Phang Nga',8.4501,98.5255,7,'ภาคใต้'],
+['ภูเก็ต','Phuket',7.8804,98.3923,7,'ภาคใต้'],
+['กระบี่','Krabi',8.0863,98.9063,7,'ภาคใต้'],
+['นครศรีธรรมราช','Nakhon Si Thammarat',8.4304,99.9631,7,'ภาคใต้'],
+['ตรัง','Trang',7.5593,99.6114,7,'ภาคใต้'],
+['พัทลุง','Phatthalung',7.6167,100.0742,7,'ภาคใต้'],
+['สตูล','Satun',6.6238,100.0673,7,'ภาคใต้'],
+['สงขลา','Songkhla หาดใหญ่',7.1898,100.5951,7,'ภาคใต้'],
+['ปัตตานี','Pattani',6.8692,101.2500,7,'ภาคใต้'],
+['ยะลา','Yala',6.5410,101.2800,7,'ภาคใต้'],
+['นราธิวาส','Narathiwat',6.4254,101.8253,7,'ภาคใต้']
+];
+const WORLD_PLACES = [
+['เวียงจันทน์ (ลาว)','Vientiane Laos',17.9757,102.6331,7,'เอเชีย'],
+['พนมเปญ (กัมพูชา)','Phnom Penh Cambodia',11.5564,104.9282,7,'เอเชีย'],
+['ย่างกุ้ง (เมียนมา)','Yangon Myanmar',16.8409,96.1735,6.5,'เอเชีย'],
+['ฮานอย (เวียดนาม)','Hanoi Vietnam',21.0278,105.8342,7,'เอเชีย'],
+['โฮจิมินห์ (เวียดนาม)','Ho Chi Minh Saigon',10.8231,106.6297,7,'เอเชีย'],
+['กัวลาลัมเปอร์ (มาเลเซีย)','Kuala Lumpur Malaysia',3.1390,101.6869,8,'เอเชีย'],
+['สิงคโปร์','Singapore',1.3521,103.8198,8,'เอเชีย'],
+['จาการ์ตา (อินโดนีเซีย)','Jakarta Indonesia',-6.2088,106.8456,7,'เอเชีย'],
+['มะนิลา (ฟิลิปปินส์)','Manila Philippines',14.5995,120.9842,8,'เอเชีย'],
+['ฮ่องกง','Hong Kong',22.3193,114.1694,8,'เอเชีย'],
+['ไทเป (ไต้หวัน)','Taipei Taiwan',25.0330,121.5654,8,'เอเชีย'],
+['ปักกิ่ง (จีน)','Beijing China',39.9042,116.4074,8,'เอเชีย'],
+['เซี่ยงไฮ้ (จีน)','Shanghai China',31.2304,121.4737,8,'เอเชีย'],
+['กว่างโจว (จีน)','Guangzhou China',23.1291,113.2644,8,'เอเชีย'],
+['โตเกียว (ญี่ปุ่น)','Tokyo Japan',35.6762,139.6503,9,'เอเชีย'],
+['โอซาก้า (ญี่ปุ่น)','Osaka Japan',34.6937,135.5023,9,'เอเชีย'],
+['โซล (เกาหลีใต้)','Seoul Korea',37.5665,126.9780,9,'เอเชีย'],
+['นิวเดลี (อินเดีย)','New Delhi India',28.6139,77.2090,5.5,'เอเชีย'],
+['มุมไบ (อินเดีย)','Mumbai India',19.0760,72.8777,5.5,'เอเชีย'],
+['ธากา (บังกลาเทศ)','Dhaka Bangladesh',23.8103,90.4125,6,'เอเชีย'],
+['กาฐมาณฑุ (เนปาล)','Kathmandu Nepal',27.7172,85.3240,5.75,'เอเชีย'],
+['โคลัมโบ (ศรีลังกา)','Colombo Sri Lanka',6.9271,79.8612,5.5,'เอเชีย'],
+['ดูไบ (ยูเออี)','Dubai UAE',25.2048,55.2708,4,'ตะวันออกกลาง'],
+['โดฮา (กาตาร์)','Doha Qatar',25.2854,51.5310,3,'ตะวันออกกลาง'],
+['ริยาด (ซาอุฯ)','Riyadh Saudi',24.7136,46.6753,3,'ตะวันออกกลาง'],
+['เทลอาวีฟ (อิสราเอล)','Tel Aviv Israel',32.0853,34.7818,2,'ตะวันออกกลาง',1],
+['อิสตันบูล (ตุรกี)','Istanbul Turkey',41.0082,28.9784,3,'ตะวันออกกลาง'],
+['ลอนดอน (อังกฤษ)','London UK England',51.5074,-0.1278,0,'ยุโรป',1],
+['แมนเชสเตอร์ (อังกฤษ)','Manchester UK',53.4808,-2.2426,0,'ยุโรป',1],
+['ปารีส (ฝรั่งเศส)','Paris France',48.8566,2.3522,1,'ยุโรป',1],
+['เบอร์ลิน (เยอรมนี)','Berlin Germany',52.5200,13.4050,1,'ยุโรป',1],
+['มิวนิก (เยอรมนี)','Munich Germany',48.1351,11.5820,1,'ยุโรป',1],
+['อัมสเตอร์ดัม (เนเธอร์แลนด์)','Amsterdam Netherlands',52.3676,4.9041,1,'ยุโรป',1],
+['บรัสเซลส์ (เบลเยียม)','Brussels Belgium',50.8503,4.3517,1,'ยุโรป',1],
+['ซูริก (สวิตเซอร์แลนด์)','Zurich Switzerland',47.3769,8.5417,1,'ยุโรป',1],
+['เวียนนา (ออสเตรีย)','Vienna Austria',48.2082,16.3738,1,'ยุโรป',1],
+['โรม (อิตาลี)','Rome Italy',41.9028,12.4964,1,'ยุโรป',1],
+['มิลาน (อิตาลี)','Milan Italy',45.4642,9.1900,1,'ยุโรป',1],
+['มาดริด (สเปน)','Madrid Spain',40.4168,-3.7038,1,'ยุโรป',1],
+['บาร์เซโลนา (สเปน)','Barcelona Spain',41.3851,2.1734,1,'ยุโรป',1],
+['ลิสบอน (โปรตุเกส)','Lisbon Portugal',38.7223,-9.1393,0,'ยุโรป',1],
+['สตอกโฮล์ม (สวีเดน)','Stockholm Sweden',59.3293,18.0686,1,'ยุโรป',1],
+['ออสโล (นอร์เวย์)','Oslo Norway',59.9139,10.7522,1,'ยุโรป',1],
+['โคเปนเฮเกน (เดนมาร์ก)','Copenhagen Denmark',55.6761,12.5683,1,'ยุโรป',1],
+['เฮลซิงกิ (ฟินแลนด์)','Helsinki Finland',60.1699,24.9384,2,'ยุโรป',1],
+['วอร์ซอ (โปแลนด์)','Warsaw Poland',52.2297,21.0122,1,'ยุโรป',1],
+['ปราก (เช็ก)','Prague Czech',50.0755,14.4378,1,'ยุโรป',1],
+['เอเธนส์ (กรีซ)','Athens Greece',37.9838,23.7275,2,'ยุโรป',1],
+['มอสโก (รัสเซีย)','Moscow Russia',55.7558,37.6173,3,'ยุโรป'],
+['นิวยอร์ก (สหรัฐฯ)','New York USA NYC',40.7128,-74.0060,-5,'อเมริกา',1],
+['บอสตัน (สหรัฐฯ)','Boston USA',42.3601,-71.0589,-5,'อเมริกา',1],
+['วอชิงตัน ดีซี (สหรัฐฯ)','Washington DC USA',38.9072,-77.0369,-5,'อเมริกา',1],
+['ชิคาโก (สหรัฐฯ)','Chicago USA',41.8781,-87.6298,-6,'อเมริกา',1],
+['ฮิวสตัน (สหรัฐฯ)','Houston USA',29.7604,-95.3698,-6,'อเมริกา',1],
+['เดนเวอร์ (สหรัฐฯ)','Denver USA',39.7392,-104.9903,-7,'อเมริกา',1],
+['ลอสแอนเจลิส (สหรัฐฯ)','Los Angeles USA LA',34.0522,-118.2437,-8,'อเมริกา',1],
+['ซานฟรานซิสโก (สหรัฐฯ)','San Francisco USA',37.7749,-122.4194,-8,'อเมริกา',1],
+['ซีแอตเทิล (สหรัฐฯ)','Seattle USA',47.6062,-122.3321,-8,'อเมริกา',1],
+['ฮอนโนลูลู (ฮาวาย)','Honolulu Hawaii',21.3069,-157.8583,-10,'อเมริกา'],
+['แวนคูเวอร์ (แคนาดา)','Vancouver Canada',49.2827,-123.1207,-8,'อเมริกา',1],
+['โทรอนโต (แคนาดา)','Toronto Canada',43.6532,-79.3832,-5,'อเมริกา',1],
+['เม็กซิโกซิตี (เม็กซิโก)','Mexico City',19.4326,-99.1332,-6,'อเมริกา'],
+['เซาเปาลู (บราซิล)','Sao Paulo Brazil',-23.5505,-46.6333,-3,'อเมริกา'],
+['บัวโนสไอเรส (อาร์เจนตินา)','Buenos Aires Argentina',-34.6037,-58.3816,-3,'อเมริกา'],
+['ซิดนีย์ (ออสเตรเลีย)','Sydney Australia',-33.8688,151.2093,10,'โอเชียเนีย',1],
+['เมลเบิร์น (ออสเตรเลีย)','Melbourne Australia',-37.8136,144.9631,10,'โอเชียเนีย',1],
+['บริสเบน (ออสเตรเลีย)','Brisbane Australia',-27.4698,153.0251,10,'โอเชียเนีย'],
+['เพิร์ท (ออสเตรเลีย)','Perth Australia',-31.9505,115.8605,8,'โอเชียเนีย'],
+['โอ๊คแลนด์ (นิวซีแลนด์)','Auckland New Zealand',-36.8485,174.7633,12,'โอเชียเนีย',1],
+['ไคโร (อียิปต์)','Cairo Egypt',30.0444,31.2357,2,'แอฟริกา',1],
+['โจฮันเนสเบิร์ก (แอฟริกาใต้)','Johannesburg South Africa',-26.2041,28.0473,2,'แอฟริกา'],
+['ไนโรบี (เคนยา)','Nairobi Kenya',-1.2921,36.8219,3,'แอฟริกา'],
+['ลากอส (ไนจีเรีย)','Lagos Nigeria',6.5244,3.3792,1,'แอฟริกา']
+];
+const PLACES = [...TH_PLACES, ...WORLD_PLACES].map(p => ({
+  th:p[0], alt:p[1], lat:p[2], lon:p[3], tz:p[4], region:p[5], dst:!!p[6],
+  search:(p[0]+' '+p[1]).toLowerCase()
+}));
+/* ค้นหาแบบพิมพ์ผิดได้นิดหน่อย: ขึ้นต้นก่อน แล้วค่อยคำที่มีอยู่ข้างใน */
+function searchPlaces(q, limit = 8) {
+  const s = q.trim().toLowerCase();
+  if (!s) return [];
+  const starts = [], has = [];
+  for (const p of PLACES) {
+    const i = p.search.indexOf(s);
+    if (i === 0 || p.search.split(' ').some(w => w.startsWith(s))) starts.push(p);
+    else if (i > 0) has.push(p);
+  }
+  return [...starts, ...has].slice(0, limit);
+}
+</script>
+<script id="analyze">
+/* ═══════════════════════════════════════════════════════════════
+   อ่านคำถาม — หา "คำถามจริง" ที่อยู่ใต้คำถามที่พิมพ์มา
+   คนไม่ค่อยถามสิ่งที่อยากรู้ตรง ๆ เพราะฉะนั้นต้องอ่านรูปประโยค
+   ว่ากำลังขออนุญาต ขอความมั่นใจ หรือขอให้มีคนบอกว่าเลิกได้แล้ว
+   ═══════════════════════════════════════════════════════════════ */
+const CUES = [
+  { id:'abandoned', w:10, re:/โดนทิ้ง|ถูกทิ้ง|เขาทิ้ง|โดนเท|นอกใจ|ทรยศ|โดนหลอก|หายไปเฉย/,
+    read:'เรื่องนี้เริ่มจากการถูกทิ้งไว้ข้างหลัง ไม่ได้เริ่มจากการตัดสินใจของเธอเอง — ความเจ็บแบบนี้มักถูกแปลงเป็นคำถามว่า “เราไม่ดีตรงไหน” ทั้งที่คำตอบส่วนใหญ่ไม่ได้อยู่ที่เธอเลย',
+    real:'ฉันจะหยุดพิสูจน์คุณค่าตัวเองกับคนที่เลือกจะไม่อยู่แล้วได้ยังไง' },
+  { id:'otherMind', w:9, re:/(เขา|เค้า|มัน|แฟน|หัวหน้า|เจ้านาย|ลูกค้า|อีกฝ่าย|คนนั้น|คนนี้)\s*(จะ|ยัง|คิด|รู้สึก|มอง|รัก|สนใจ|กลับ|ชอบ|ทัก|ตอบ|เลือก)/,
+    read:'คำถามนี้เอาอำนาจตัดสินไปวางไว้ที่คนอื่นทั้งหมด — สิ่งที่กำลังทรมานจริง ๆ ไม่ใช่คำตอบของเขา แต่คือการที่ชีวิตเธอค้างอยู่เพราะรอคำตอบนั้น',
+    real:'ฉันจะยอมให้เรื่องนี้ค้างอยู่ในมือเขาไปอีกนานแค่ไหน' },
+  { id:'endure', w:8, re:/ทน|ยื้อ|ฝืน|อยู่ต่อ|ไปต่อ|ต่อไปดี|รอต่อ|รออีก/,
+    read:'คนที่ถามว่า “ควรทนต่อไหม” มักรู้คำตอบแล้ว แต่ยังไม่อยากจ่ายราคาของคำตอบนั้น คำถามนี้จึงไม่ใช่การหาข้อมูล แต่คือการขอเวลาอีกนิด',
+    real:'ราคาที่ฉันจ่ายอยู่ทุกวันนี้ ฉันยังจ่ายไหวจริงหรือเปล่า' },
+  { id:'leave', w:8, re:/ลาออก|เลิกกัน|เลิกกับ|เลิกดีไหม|ควรเลิก|ย้ายงาน|ย้ายบ้าน|ย้ายไป|ออกจาก|หย่า|จบความสัมพันธ์|เปลี่ยนงาน|ขอจบ|ไปต่อหรือ/,
+    read:'เมื่อคนเริ่มถามเรื่องการออกจากบางอย่าง แปลว่าใจได้ออกไปก่อนแล้ว ที่เหลือคือหาเหตุผลที่ฟังขึ้นพอจะให้ตัวเองและคนอื่นยอมรับ',
+    real:'ฉันต้องมีเหตุผลดีแค่ไหน ถึงจะอนุญาตให้ตัวเองไปได้' },
+  { id:'selfblame', w:8, re:/ผิดที่|เพราะเรา|เพราะฉัน|ไม่ดีพอ|ไม่เก่งพอ|แย่|โง่|สมควร|โทษตัวเอง/,
+    read:'ในคำถามมีการโทษตัวเองซ่อนอยู่ และการโทษตัวเองมักปลอมตัวมาในรูปของ “การรับผิดชอบ” — มันทำให้รู้สึกว่ายังคุมอะไรได้อยู่บ้าง แม้จะเจ็บก็ตาม',
+    real:'เรื่องนี้เป็นความผิดของฉันจริงกี่เปอร์เซ็นต์ และส่วนที่เหลือเป็นของใคร' },
+  { id:'why', w:7, re:/ทำไม|เพราะอะไร|เหตุผลอะไร|ทำไมถึง/,
+    read:'“ทำไม” เป็นคำถามที่ถามเพื่อจะได้เจ็บน้อยลง เพราะถ้ามีเหตุผลแล้วมันจะดูมีระเบียบขึ้น แต่ความจริงคือเหตุผลไม่เคยพอ และการหาต่อไปเรื่อย ๆ คือวิธีที่ใจใช้ยืดเวลาก่อนจะยอมรับ',
+    real:'ฉันจะหยุดหาเหตุผลแล้วเริ่มดูแลตัวเองได้เมื่อไหร่' },
+  { id:'choice2', w:6, re:/หรือ(?!เปล่า|ไม่)|ระหว่าง|อันไหน|ทางไหน|เลือก|ตัวไหน|คนไหน|ดีกว่ากัน/,
+    read:'ที่ตัดสินใจไม่ได้ ไม่ใช่เพราะข้อมูลไม่พอ แต่เพราะทั้งสองทางต้องเสียอะไรบางอย่าง และเธอยังไม่ยอมรับว่าต้องเสีย',
+    real:'ฉันกลัวจะเสียอะไรมากกว่ากัน' },
+  { id:'permission', w:5, re:/ควร|ดีไหม|ดีมั้ย|ดีมัย|ดีป่าว|ควรมั้ย|โอเคไหม|เหมาะไหม|ได้ไหม/,
+    read:'รูปประโยคแบบ “ควร…ไหม” คือการขออนุญาต ไม่ใช่การขอข้อมูล ส่วนใหญ่คนถามแบบนี้ตัดสินใจในใจไปแล้ว และกำลังรอให้มีใครสักคนบอกว่าไม่ผิดที่จะเลือกแบบนั้น',
+    real:'ฉันต้องรอให้ใครอนุญาตอีกไหม ถึงจะเลือกสิ่งที่อยากเลือกได้' },
+  { id:'timing', w:5, re:/เมื่อไหร่|เมื่อไร|กี่เดือน|กี่ปี|ตอนไหน|ช่วงไหน|นานแค่ไหน/,
+    read:'คำถามเรื่องเวลามักเกิดตอนที่ใจเริ่มหมดแรงรอ สิ่งที่ต้องการจริง ๆ ไม่ใช่วันที่ แต่คือการรู้ว่าการรอครั้งนี้มีปลายทาง',
+    real:'ฉันจะอยู่กับความไม่รู้นี้ยังไงโดยไม่ให้มันกินฉันไปหมด' },
+  { id:'tired', w:6, re:/เหนื่อย|หมดไฟ|ไม่ไหว|ท้อ|เบื่อ|หมดแรง|เครียด|burnout|พัง/,
+    read:'ในคำถามมีความล้าปนอยู่ชัดเจน และคนที่ล้าจะตัดสินใจจากความอยากให้มันจบ ไม่ใช่จากสิ่งที่อยากได้จริง ๆ',
+    real:'ฉันได้พักจริง ๆ ครั้งสุดท้ายเมื่อไหร่' },
+  { id:'fear', w:6, re:/กลัว|กังวล|ไม่กล้า|ระแวง|เสี่ยง|ไม่มั่นใจ|ไม่แน่ใจ/,
+    read:'ความกลัวในคำถามนี้ไม่ได้พูดถึงสิ่งที่จะเกิด แต่พูดถึงความสามารถของเธอในการรับมือกับมัน — ซึ่งเธอประเมินตัวเองต่ำกว่าความจริงอยู่',
+    real:'ถ้ามันออกมาแย่ที่สุดจริง ฉันรับไหวไหม' },
+  { id:'confirm', w:4, re:/ใช่ไหม|ใช่มั้ย|จริงไหม|จริงมั้ย|คิดถูก|ถูกไหม/,
+    read:'คำถามนี้ต้องการการยืนยันมากกว่าคำตอบ ซึ่งแปลว่าเธอมีคำตอบอยู่แล้วแต่ยังไม่กล้าถือมันไว้คนเดียว',
+    real:'ฉันเชื่อความรู้สึกของตัวเองได้ไหม โดยไม่ต้องมีใครมารับรอง' },
+  { id:'money', w:5, re:/เงิน|หนี้|ลงทุน|เงินเดือน|ทุน|ขาดทุน|รายได้|ค่าใช้จ่าย/,
+    read:'เรื่องเงินในคำถามนี้ไม่ได้เป็นแค่ตัวเลข มันคือความรู้สึกปลอดภัย และการกลัวจะกลับไปอยู่ในจุดที่ควบคุมชีวิตตัวเองไม่ได้',
+    real:'ความมั่นคงแบบไหนที่ฉันต้องการจริง ๆ และเท่าไหร่ถึงจะพอ' },
+  { id:'worth', w:5, re:/คุ้ม|เสียเวลา|เสียดาย|เสียของ|ทุ่มไป|ลงทุนไป/,
+    read:'นี่คือกับดักต้นทุนจม — เธอกำลังคิดถึงสิ่งที่ลงไปแล้ว ทั้งที่สิ่งที่ควรคิดคือสิ่งที่จะต้องจ่ายเพิ่มถ้าไปต่อ',
+    real:'ถ้าวันนี้เริ่มใหม่จากศูนย์ ฉันจะเลือกสิ่งนี้อีกไหม' },
+  { id:'future', w:3, re:/จะ.{0,12}(ไหม|มั้ย|รึเปล่า|หรือเปล่า)|จะได้|จะเจอ|จะกลับ|จะสำเร็จ|จะดีขึ้น/,
+    read:'คำถามนี้ถามถึงอนาคตที่เธอควบคุมได้แค่บางส่วน ไพ่ตอบเรื่องแนวโน้มได้ แต่ตอบได้ชัดกว่ามากในเรื่องที่เธอทำอะไรกับมันได้',
+    real:'ส่วนไหนของเรื่องนี้ที่ยังอยู่ในมือฉันจริง ๆ' }
+];
+/* น้ำหนักคำถามที่กำกวมเกินไป */
+function questionQuality(q) {
+  const t = q.trim();
+  if (t.length < 12) return 'สั้นมาก';
+  if (t.length < 30) return 'สั้น';
+  return 'พอใช้ได้';
+}
+const MOON_READ = {
+  'น้ำ':'ดวงจันทร์ธาตุน้ำของเธอทำให้ “รู้สึก” มาก่อน “คิด” เสมอ เวลาเรื่องนี้จี้ใจ เธอจะอ่านสถานการณ์ผ่านอารมณ์แล้วเชื่อว่านั่นคือข้อเท็จจริง',
+  'ดิน':'ดวงจันทร์ธาตุดินของเธอทำให้ความไม่แน่นอนแพงกว่าความเจ็บ เธอจึงยอมอยู่กับสิ่งที่ไม่ดีแต่คาดเดาได้ นานกว่าที่ควรจะอยู่',
+  'ลม':'ดวงจันทร์ธาตุลมของเธอจะแปลงความรู้สึกให้กลายเป็นการวิเคราะห์ทันที เธอเลยอธิบายเรื่องนี้ได้ดีมาก แต่ยังไม่ได้รู้สึกกับมันจริง ๆ สักที',
+  'ไฟ':'ดวงจันทร์ธาตุไฟของเธอทำให้พอเจ็บแล้วอยากลงมือทันที การนิ่งอยู่เฉย ๆ ทรมานกว่าการทำอะไรผิดพลาดเสียอีก'
+};
+const RISING_MASK = {
+  'ไฟ':'ข้างนอกเธอดูมีพลังและเอาอยู่ คนเลยไม่ค่อยถามว่าเธอไหวไหม',
+  'ดิน':'ข้างนอกเธอดูนิ่งและจัดการได้ คนเลยชินกับการพึ่งเธอ และไม่ทันเห็นตอนที่เธอล้า',
+  'ลม':'ข้างนอกเธอดูคุยง่ายและมีเหตุผล คนเลยคิดว่าเธอโอเคแล้ว ทั้งที่ยังไม่ได้พูดเรื่องจริงออกมาสักคำ',
+  'น้ำ':'ข้างนอกเธอดูอ่อนโยนและเข้าใจคน คนเลยเอาเรื่องมาลงกับเธอ แต่ไม่ค่อยมีใครถามกลับ'
+};
+function analyzeQuestion(q, topicId, persona) {
+  let hits = CUES.filter(c => c.re.test(q));
+  /* ถูกทิ้ง กับ เลือกจะไป คนละเรื่องกัน — ถ้าเจออันแรก ให้ตัดอันหลังทิ้ง */
+  if (hits.some(c => c.id === 'abandoned')) hits = hits.filter(c => c.id !== 'leave');
+  hits.sort((a, b) => b.w - a.w);
+  const top = hits.slice(0, 2);
+  const topic = TOPICS.find(t => t.id === topicId) || TOPICS[TOPICS.length - 1];
 
+  const reads = top.map(c => c.read);
+  if (!reads.length) reads.push(
+    `คำถามนี้เปิดกว้าง ซึ่งมักแปลว่าเธอยังไม่อยากเจาะจงว่ากำลังติดอยู่ตรงไหน — ไพ่จะอ่านจาก${topic.frame}เป็นหลัก แต่ถ้าถามให้แคบกว่านี้ คำตอบจะคมขึ้นอีกมาก`);
+
+  const realQ = top.length ? top[0].real : `จริง ๆ แล้วฉันอยากให้${topic.frame}เป็นแบบไหน`;
+  const moonLine = MOON_READ[persona.moonEl];
+  const maskLine = persona.risingEl ? RISING_MASK[persona.risingEl] : null;
+  const tensionLine = persona.tension
+    ? `และเพราะแกน${persona.sunEl}กับใจ${persona.moonEl}ของเธอดึงกันคนละทาง เธอมักตัดสินใจด้วยเสียงหนึ่ง แล้วมานั่งเสียใจกับอีกเสียงหนึ่งทีหลัง`
+    : `ข้อดีคือแกน${persona.sunEl}กับใจ${persona.moonEl}ของเธอไปทางเดียวกัน ถ้าเงียบพอเธอจะได้ยินคำตอบเอง`;
+
+  return {
+    drivers: top.map(c => c.id),
+    quality: questionQuality(q),
+    reads, realQ, moonLine, maskLine, tensionLine,
+    hasOther: top.some(c => c.id === 'otherMind')
+  };
+}
+</script>
 <script id="reading">
 /* ═══════════════════════════════════════════════════════════════
-   ส่วนที่ 4 — เครื่องตีความ
-   ลำดับสำคัญ: เข้าใจ "ตัวตน" จาก Sun/Moon/Rising ก่อน
-   → แล้วค่อยอ่านความหมายไพ่ → แล้วตีความตามสถานการณ์ที่ถาม
+   เครื่องตีความ — 3 สเปรด สเปรดละ 3 ใบ (หลัก 1 + ขยาย 2)
+   1) ขยายสถานการณ์  2) ความรู้สึกคนถาม  3) คำทำนาย
+   ทุกใบอ่านผ่านตัวตนจาก Sun/Moon/Rising และผ่านคำถามจริงที่วิเคราะห์ได้
    ═══════════════════════════════════════════════════════════════ */
 const TOPICS = [
-  { id:'love',     label:'💗 ความรัก / ความสัมพันธ์', field:'lv', frame:'เรื่องหัวใจ' },
-  { id:'work',     label:'💼 งาน / การเงิน',          field:'wk', frame:'เรื่องงานและเงิน' },
-  { id:'decision', label:'🧭 ต้องตัดสินใจ',           field:'ad', frame:'ทางเลือกที่ต้องตัดสินใจ' },
-  { id:'self',     label:'🌱 ตัวเอง / สุขภาพใจ',      field:'ad', frame:'เรื่องข้างในตัวคุณเอง' },
-  { id:'general',  label:'✦ ภาพรวมช่วงนี้',           field:null, frame:'ภาพรวมชีวิตช่วงนี้' }
+  { id:'love',     label:'ความรัก / ความสัมพันธ์', field:'lv', frame:'เรื่องหัวใจ' },
+  { id:'work',     label:'งาน / การเงิน',          field:'wk', frame:'เรื่องงานและเงิน' },
+  { id:'decision', label:'ต้องตัดสินใจ',           field:'ad', frame:'ทางเลือกที่ค้างอยู่' },
+  { id:'self',     label:'ตัวเอง / สุขภาพใจ',      field:'ad', frame:'เรื่องข้างในตัวเธอเอง' },
+  { id:'general',  label:'ภาพรวมช่วงนี้',          field:null, frame:'ภาพรวมชีวิตช่วงนี้' }
 ];
-const POSITIONS = [
-  { key:'main', tag:'ไพ่หลัก', role:'แก่นของเรื่องนี้ / คำตอบตรง ๆ',
-    lead:'สิ่งที่เป็นแกนกลางของคำถามนี้จริง ๆ คือ' },
-  { key:'ext1', tag:'ไพ่ขยาย 1', role:'สิ่งที่อยู่เบื้องหลัง / สิ่งที่คุณอาจมองข้าม',
-    lead:'ใต้เรื่องนี้ยังมีอีกชั้นที่คุณอาจไม่ทันสังเกต นั่นคือ' },
-  { key:'ext2', tag:'ไพ่ขยาย 2', role:'ทางไปต่อ / สิ่งที่ควรทำ',
-    lead:'ส่วนทางที่ไพ่ชี้ให้เดินต่อคือ' }
+const SPREADS = [
+  { id:'situation', num:'I', title:'ขยายสถานการณ์', glyph:'◆',
+    sub:'เรื่องนี้กำลังเกิดอะไรขึ้นจริง ๆ — ไม่ใช่เวอร์ชันที่เล่าให้คนอื่นฟัง',
+    pos:[
+      { tag:'ไพ่หลัก', role:'แก่นของสถานการณ์', lead:'แกนจริงของเรื่องนี้คือ' },
+      { tag:'ไพ่ขยาย 1', role:'แรงที่ผลักอยู่เบื้องหลัง', lead:'สิ่งที่ผลักให้มันมาถึงจุดนี้คือ' },
+      { tag:'ไพ่ขยาย 2', role:'สิ่งที่ยังมองไม่เห็น', lead:'มุมที่ยังไม่ได้ถูกมองคือ' }
+    ] },
+  { id:'feeling', num:'II', title:'ความรู้สึกของคนถาม', glyph:'☾',
+    sub:'สิ่งที่เกิดขึ้นข้างในเธอ ซึ่งอาจยังไม่ได้พูดกับใครเลย',
+    pos:[
+      { tag:'ไพ่หลัก', role:'ความรู้สึกที่แท้จริง', lead:'ข้างในเธอตอนนี้คือ' },
+      { tag:'ไพ่ขยาย 1', role:'สิ่งที่กลัวอยู่ลึก ๆ', lead:'ชั้นที่ลึกลงไปกว่านั้นคือ' },
+      { tag:'ไพ่ขยาย 2', role:'สิ่งที่ต้องการแต่ไม่ได้ขอ', lead:'และสิ่งที่ยังไม่ได้พูดออกมาเลยคือ' }
+    ] },
+  { id:'future', num:'III', title:'คำทำนาย', glyph:'✦',
+    sub:'ถ้าเดินแบบนี้ต่อ เรื่องนี้จะไปทางไหน และอะไรที่เปลี่ยนผลได้',
+    pos:[
+      { tag:'ไพ่หลัก', role:'ทิศทางที่กำลังไป', lead:'ถ้าไม่มีอะไรเปลี่ยน เรื่องนี้กำลังไปทาง' },
+      { tag:'ไพ่ขยาย 1', role:'เงื่อนไขที่เปลี่ยนผลได้', lead:'สิ่งที่จะพลิกผลลัพธ์ได้คือ' },
+      { tag:'ไพ่ขยาย 2', role:'สิ่งที่ต้องปล่อยเพื่อให้ไปต่อ', lead:'สิ่งที่ต้องวางลงก่อนถึงจะไปต่อได้คือ' }
+    ] }
 ];
-/* ธาตุที่เข้ากันตามหลักตะวันตก: ไฟ–ลม เสริมกัน, ดิน–น้ำ เสริมกัน */
 const FRIEND = { 'ไฟ':'ลม', 'ลม':'ไฟ', 'ดิน':'น้ำ', 'น้ำ':'ดิน' };
-function elementRelation(a, b) {
-  if (a === b) return 'same';
-  if (FRIEND[a] === b) return 'friend';
-  return 'tension';
-}
-/* ขั้ววของไพ่ ใช้ประเมิน "แนวโน้ม" ของคำตอบ */
+const elementRelation = (a, b) => a === b ? 'same' : FRIEND[a] === b ? 'friend' : 'tension';
+
 const CHALLENGING = new Set(['The Tower','Death','The Devil','The Moon','The Hanged Man',
-  'Five of Wands','Nine of Wands','Ten of Wands','Five of Cups','Eight of Cups',
-  'Three of Swords','Five of Swords','Seven of Swords','Eight of Swords','Nine of Swords','Ten of Swords',
-  'Five of Pentacles','Four of Pentacles','Two of Swords']);
+  'Five of Wands','Nine of Wands','Ten of Wands','Five of Cups','Eight of Cups','Four of Cups',
+  'Two of Swords','Three of Swords','Five of Swords','Seven of Swords','Eight of Swords','Nine of Swords','Ten of Swords',
+  'Five of Pentacles','Four of Pentacles']);
 const SUPPORTIVE = new Set(['The Sun','The Star','The World','The Empress','Temperance','Strength','The Magician',
   'Ace of Wands','Four of Wands','Six of Wands','Ace of Cups','Two of Cups','Three of Cups','Nine of Cups','Ten of Cups',
   'Ace of Swords','Six of Swords','Ace of Pentacles','Three of Pentacles','Nine of Pentacles','Ten of Pentacles','Six of Pentacles']);
 function polarity(card, reversed) {
   let p = CHALLENGING.has(card.n) ? -1 : SUPPORTIVE.has(card.n) ? 1 : 0;
-  if (reversed) p = p === 0 ? -0.5 : (p > 0 ? 0 : -0.2);   // กลับหัว = พลังติดขัด / กำลังคลี่คลาย
+  if (reversed) p = p === 0 ? -0.5 : (p > 0 ? 0 : -0.2);
   return p;
 }
 
-/* ---------- 1) เข้าใจตัวตนก่อน ---------- */
+/* ---------- ตัวตนจาก Sun / Moon / Rising ---------- */
 function buildPersona(chart) {
   const sun = SIGNS[chart.sun.index], moon = SIGNS[chart.moon.index];
   const rising = chart.rising ? SIGNS[chart.rising.index] : null;
@@ -968,191 +1413,351 @@ function buildPersona(chart) {
   const dominant = Object.keys(count).sort((a, b) => count[b] - count[a])[0];
   const rel = elementRelation(sun.el, moon.el);
 
-  let core = `แก่นของคุณคือคนธาตุ${sun.el} — สิ่งที่ขับเคลื่อนคุณจริง ๆ คือ${ELEMENT_INFO[sun.el].drive} `
+  let core = `แก่นของเธอคือคนธาตุ${sun.el} — สิ่งที่ขับเคลื่อนเธอจริง ๆ คือ${ELEMENT_INFO[sun.el].drive} `
     + `ส่วนโลกข้างในเป็นธาตุ${moon.el} ที่ต้องการ${ELEMENT_INFO[moon.el].need}`;
-  if (rel === 'same') core += ` — สองชั้นนี้ไปทางเดียวกัน คุณจึงค่อนข้างรู้ว่าตัวเองต้องการอะไร และเวลาตัดสินใจก็ไม่ค่อยขัดแย้งในใจ`;
-  else if (rel === 'friend') core += ` — สองชั้นนี้คนละธาตุแต่เข้ากันได้ดี สิ่งที่คุณอยากทำกับสิ่งที่ใจต้องการมักหาทางลงตัวกันได้`;
-  else core += ` — ตรงนี้แหละคือความขัดแย้งประจำตัวคุณ: สิ่งที่คุณ "อยากเป็น" กับสิ่งที่ใจ "ต้องการเพื่อจะรู้สึกปลอดภัย" ไม่ได้ไปทางเดียวกัน `
-    + `หลายครั้งคุณเลยตัดสินใจอย่างหนึ่งแล้วมานั่งไม่สบายใจทีหลัง`;
+  if (rel === 'same') core += ` — สองชั้นนี้ไปทางเดียวกัน เธอจึงรู้ตัวว่าต้องการอะไร และไม่ค่อยขัดแย้งกับตัวเองเวลาตัดสินใจ`;
+  else if (rel === 'friend') core += ` — คนละธาตุแต่เข้ากันได้ดี สิ่งที่เธออยากทำกับสิ่งที่ใจต้องการมักหาทางลงตัวกันได้`;
+  else core += ` — และนี่คือความขัดแย้งประจำตัวเธอ: สิ่งที่เธออยากเป็น กับสิ่งที่ใจต้องการเพื่อจะรู้สึกปลอดภัย ไม่ได้ไปทางเดียวกัน `
+    + `เธอเลยตัดสินใจอย่างหนึ่งแล้วมานั่งไม่สบายใจทีหลังอยู่บ่อย ๆ`;
 
   const face = rising
-    ? `คนส่วนใหญ่เจอคุณครั้งแรกจะเห็น "ราศี${rising.th}ขึ้น" ก่อน ซึ่งเป็นคนละชั้นกับตัวจริงข้างใน `
+    ? `สิ่งที่คนเห็นก่อนคือราศี${rising.th}ขึ้น ซึ่งเป็นคนละชั้นกับตัวจริงข้างใน `
       + (elementRelation(rising.el, sun.el) === 'tension'
-          ? `และเพราะหน้ากากนี้เป็นธาตุ${rising.el} ในขณะที่แกนคุณเป็นธาตุ${sun.el} คนจึงมักเข้าใจคุณผิดในตอนแรก`
-          : `ซึ่งไปในทางเดียวกับแกนข้างในพอสมควร คนจึงอ่านคุณได้ไม่ยากนัก`)
-    : `คุณไม่ได้ระบุเวลาเกิด เลยยังอ่าน Rising ไม่ได้ — ส่วนที่อ่านได้ตอนนี้คือแกนกลางกับโลกข้างในเท่านั้น`;
+          ? `หน้ากากนี้เป็นธาตุ${rising.el} ขณะที่แกนเธอเป็นธาตุ${sun.el} คนจึงมักเข้าใจเธอผิดในตอนแรก`
+          : `และไปทางเดียวกับแกนข้างในพอสมควร คนจึงอ่านเธอได้ไม่ยากนัก`)
+    : `เธอไม่ได้ระบุเวลาเกิด เลยยังอ่าน Rising ไม่ได้ — ที่อ่านได้ตอนนี้คือแกนกลางกับโลกข้างใน`;
+  const strength = `จุดแข็งที่หยิบมาใช้ได้เลย: ${sun.tags[0]} และข้างในเธอมี${ELEMENT_INFO[moon.el].drive}เป็นเข็มทิศ — ${MOD_INFO[sun.mod]}`;
+  const trap = `กับดักประจำตัว: ${ELEMENT_INFO[sun.el].risk} และเวลากดดัน ธาตุ${moon.el}ในตัวเธอมักพาไป${ELEMENT_INFO[moon.el].risk}`;
 
-  const strength = `จุดแข็งที่หยิบมาใช้ได้เลย: ${sun.tags[0]} และข้างในคุณมี${ELEMENT_INFO[moon.el].drive}เป็นเข็มทิศ `
-    + `— ${MOD_INFO[sun.mod]}`;
-  const trap = `กับดักประจำตัว: ${ELEMENT_INFO[sun.el].risk} และเวลากดดัน ธาตุ${moon.el}ในตัวคุณมักพาไป${ELEMENT_INFO[moon.el].risk}`;
-
-  return {
-    sun, moon, rising, chart,
-    sunEl: sun.el, moonEl: moon.el, risingEl: rising ? rising.el : null,
-    dominant, tension: rel === 'tension',
-    texts: { core, face, strength, trap },
-    label: `☉ ${sun.th} · ☽ ${moon.th}` + (rising ? ` · ↑ ${rising.th}` : '')
-  };
+  return { sun, moon, rising, chart, sunEl:sun.el, moonEl:moon.el, risingEl:rising ? rising.el : null,
+    dominant, tension: rel === 'tension', texts:{ core, face, strength, trap },
+    label:`☉ ${sun.th} · ☽ ${moon.th}` + (rising ? ` · ↑ ${rising.th}` : '') };
 }
 
-/* ---------- 2) เลนส์: ผูกไพ่แต่ละใบเข้ากับตัวตน ---------- */
+/* ---------- เลนส์ส่วนตัว: ผูกไพ่เข้ากับดวง ---------- */
 const ELEMENT_LENS = {
-  same: [
-    (e) => `ไพ่ใบนี้เป็นธาตุ${e} ธาตุเดียวกับแกนของคุณ — แปลว่ามันพูดภาษาที่คุณถนัดอยู่แล้ว สิ่งที่มันบอกให้ทำ คุณทำได้โดยไม่ต้องฝืนตัวเอง`,
-    (e) => `ใบนี้ก็ธาตุ${e}อีกเหมือนแกนของคุณ เรื่องนี้จึงสะท้อนนิสัยตัวคุณเองมากกว่าจะเป็นเรื่องของปัจจัยภายนอก`,
-    (e) => `ธาตุ${e}ตรงกับแกนคุณอีกครั้ง ทางออกจึงอยู่ในสิ่งที่คุณถนัดอยู่แล้ว ไม่ต้องไปหาวิธีใหม่ให้เหนื่อย`
-  ],
-  friend: [
-    (e, s) => `ธาตุ${e}ของไพ่กับธาตุ${s}ของคุณเข้ากันได้ดี ไพ่กำลังเสนอวิธีที่ต่างจากที่คุณทำอยู่นิดหน่อย แต่ไม่ขัดกับนิสัยคุณ`,
-    (e, s) => `ธาตุ${e}ใบนี้เป็นเพื่อนกับธาตุ${s}ของคุณ สิ่งที่มันชี้จึงเป็นส่วนเติมเต็ม ไม่ใช่สิ่งที่ต้องเปลี่ยนตัวเองไปทั้งหมด`,
-    (e, s) => `ธาตุ${e}กับธาตุ${s}ของคุณไปด้วยกันได้ ก้าวนี้จะไม่รู้สึกฝืน ถ้าลงมือแล้วรู้สึกขัด แปลว่าคุณกำลังทำเกินที่ไพ่บอก`
-  ],
-  tension: [
-    (e, s) => `ไพ่เป็นธาตุ${e} ซึ่งฝืนกับธาตุ${s}ของคุณ — นี่คือส่วนที่จะรู้สึกยากที่สุด และมักเป็นบทเรียนที่ไพ่ตั้งใจจะสอนพอดี`,
-    (e, s) => `อีกใบก็ยังเป็นธาตุที่ไม่เข้ากับธาตุ${s}ของคุณ (ธาตุ${e}) แปลว่าจุดติดจริง ๆ อยู่ตรงที่คุณต้องใช้วิธีที่ไม่ใช่ท่าถนัด`,
-    (e, s) => `ทางที่ไพ่ชี้เป็นธาตุ${e} ซึ่งสวนกับธาตุ${s}ของคุณ ให้เผื่อใจว่าจะอึดอัดในช่วงแรก แล้วมันจะง่ายขึ้นเอง`
-  ]
+  same: [ e => `ไพ่เป็นธาตุ${e} ธาตุเดียวกับแกนของเธอ มันจึงพูดภาษาที่เธอถนัด สิ่งที่มันบอกให้ทำ เธอทำได้โดยไม่ต้องฝืน`,
+          e => `ธาตุ${e}อีกครั้ง เรื่องนี้จึงสะท้อนนิสัยของเธอเองมากกว่าปัจจัยภายนอก`,
+          e => `ธาตุ${e}ตรงกับแกนเธออีกใบ ทางออกอยู่ในสิ่งที่เธอถนัดอยู่แล้ว ไม่ต้องหาวิธีใหม่ให้เหนื่อย` ],
+  friend: [ (e,s) => `ธาตุ${e}ของไพ่กับธาตุ${s}ของเธอเข้ากันได้ วิธีที่ไพ่เสนอต่างจากที่เธอทำอยู่นิดเดียว ไม่ขัดกับนิสัย`,
+            (e,s) => `ธาตุ${e}เป็นเพื่อนกับธาตุ${s}ของเธอ สิ่งที่มันชี้คือส่วนเติมเต็ม ไม่ใช่การเปลี่ยนตัวเองทั้งหมด`,
+            (e,s) => `ธาตุ${e}กับธาตุ${s}ไปด้วยกันได้ ก้าวนี้จะไม่ฝืน ถ้าทำแล้วรู้สึกขัด แปลว่าเธอทำเกินที่ไพ่บอก` ],
+  tension: [ (e,s) => `ไพ่เป็นธาตุ${e} ซึ่งฝืนกับธาตุ${s}ของเธอ ตรงนี้จะรู้สึกยากที่สุด และมักเป็นบทเรียนที่ไพ่ตั้งใจสอนพอดี`,
+             (e,s) => `ธาตุ${e}ยังสวนกับธาตุ${s}ของเธออยู่ จุดติดจริง ๆ คือเธอต้องใช้ท่าที่ไม่ถนัด`,
+             (e,s) => `ทางที่ไพ่ชี้เป็นธาตุ${e} สวนกับธาตุ${s}ของเธอ เผื่อใจว่าจะอึดอัดช่วงแรก แล้วมันจะง่ายขึ้นเอง` ]
 };
-function personalLens(card, reversed, persona, posKey) {
-  const lines = [];
-  const relSun = elementRelation(card.e, persona.sunEl);
-  const variant = { main:0, ext1:1, ext2:2 }[posKey] || 0;
-  lines.push(ELEMENT_LENS[relSun][variant](card.e, persona.sunEl));
-
-  if (reversed && persona.moonEl === 'น้ำ') lines.push(`ไพ่กลับหัวบวกกับดวงจันทร์ธาตุน้ำของคุณ = ระวังการอ่านสถานการณ์ผ่านอารมณ์ล้วน ๆ รอให้ใจนิ่งก่อนค่อยสรุป`);
-  else if (reversed && persona.moonEl === 'ลม') lines.push(`ไพ่กลับหัวบวกกับดวงจันทร์ธาตุลม = คุณจะมีแนวโน้มคิดวนเรื่องนี้ในหัวหลายรอบ เขียนมันออกมาจะช่วยได้มากกว่าคิดต่อ`);
-  else if (reversed) lines.push(`ไพ่ใบนี้กลับหัว แปลว่าพลังของมันยังติดขัดอยู่ ไม่ใช่ว่าไม่มี — แค่ต้องเคลียร์อะไรบางอย่างก่อนถึงจะไหล`);
-
-  if (card.suit === 'swords' && persona.risingEl === 'ลม') lines.push(`คุณเป็นราศีลมขึ้นด้วย เจอไพ่ชุดดาบแบบนี้ระวังวิเคราะห์เพลินจนไม่ได้ลงมือสักที`);
-  if (card.suit === 'pentacles' && persona.sunEl === 'ไฟ') lines.push(`ไพ่เหรียญขอความอดทนแบบช้า ๆ ซึ่งเป็นสิ่งที่คนธาตุไฟอย่างคุณเกลียดที่สุด แต่คราวนี้มันจำเป็นจริง`);
-  if (card.suit === 'cups' && persona.sunEl === 'ดิน') lines.push(`ไพ่ถ้วยพูดเรื่องความรู้สึกล้วน ๆ ซึ่งคนธาตุดินอย่างคุณมักข้ามไปหาข้อเท็จจริงก่อน ลองอยู่กับความรู้สึกให้นานขึ้นอีกนิดในเรื่องนี้`);
-  if (card.suit === 'major') lines.push(`และเพราะเป็นไพ่ชุดใหญ่ เรื่องนี้ไม่ใช่เหตุการณ์ผ่าน ๆ แต่เป็นบทเรียนระดับที่เปลี่ยนทิศชีวิตคุณได้`);
-  if (posKey === 'ext2' && persona.tension) lines.push(`ข้อควรระวังเฉพาะคุณ: แกน${persona.sunEl}กับใจ${persona.moonEl}ของคุณมักดึงกันคนละทาง ตอนลงมือให้เช็กว่าคุณกำลังทำเพราะอยากทำจริง หรือทำเพราะกลัวจะไม่ปลอดภัย`);
-  return lines.slice(0, 3).join(' ');
+function personalLens(card, persona, i) {
+  return ELEMENT_LENS[elementRelation(card.e, persona.sunEl)][i](card.e, persona.sunEl);
 }
 
-/* ---------- 3) ตีความตามสถานการณ์ที่ถาม ---------- */
-function readCard(card, reversed, topic, persona, posIndex) {
-  const pos = POSITIONS[posIndex];
-  const base = reversed ? card.r : card.u;
-  const topical = topic.field ? card[topic.field] : null;
-  const body = `${pos.lead} “${card.th}${reversed ? ' (กลับหัว)' : ''}” — ${base}`;
-  const situ = topical
-    ? `พอเอามาวางกับ${topic.frame}ที่คุณถาม: ${topical}`
-    : `กับภาพรวมช่วงนี้: ${card.ad}`;
-  return { pos, card, reversed, body, situ, lens: personalLens(card, reversed, persona, pos.key) };
+/* ---------- อ่านไพ่ทีละใบตามสเปรด ---------- */
+const FEEL_NOTE_UP = [
+  c => `ความรู้สึกนี้ชัดพอที่เธอจะยอมรับได้แล้ว คำที่ตรงที่สุดตอนนี้คือ “${c.k[0]}”`,
+  c => `นี่คือสิ่งที่ทำงานอยู่ใต้การตัดสินใจของเธอแทบทุกครั้ง แม้เธอจะไม่ได้ตั้งใจให้มันมีเสียงก็ตาม`,
+  c => `เธอไม่เคยขอสิ่งนี้ตรง ๆ เพราะกลัวว่าขอแล้วจะไม่ได้ หรือกลัวว่าจะดูเรียกร้องเกินไป`
+];
+const FEEL_NOTE_REV = [
+  c => `ไพ่กลับหัวแปลว่าความรู้สึกนี้ยังไม่ถูกยอมรับ เธอรู้ว่ามันมีอยู่แต่ยังกดไว้ ซึ่งกดได้ไม่นานหรอก`,
+  c => `ไพ่กลับหัวตรงนี้แปลว่าเธอเก็บมันไว้ลึกจนเกือบลืมไปแล้วว่ามีอยู่ แต่มันยังออกฤทธิ์อยู่ทุกวัน`,
+  c => `ไพ่กลับหัวแปลว่าเธอเองก็ยังไม่ยอมรับว่าต้องการสิ่งนี้ เมื่อเธอยังไม่ยอมรับ ก็ไม่มีทางที่คนอื่นจะรู้`
+];
+function readOne(spread, i, pick, ctx) {
+  const { card, reversed } = pick, p = spread.pos[i];
+  const { persona, topic, analysis } = ctx;
+  const out = { pos:p, card, reversed, lines:[] };
+
+  if (spread.id === 'situation') {
+    out.lines.push(`${p.lead} “${card.th}${reversed ? ' กลับหัว' : ''}” — ${reversed ? card.r : card.u}`);
+    out.lines.push(topic.field ? `กับ${topic.frame}ที่ถามมา: ${card[topic.field]}` : `กับภาพรวมช่วงนี้: ${card.ad}`);
+  } else if (spread.id === 'feeling') {
+    const feel = FEEL[card.n];
+    out.lines.push(`${p.lead} “${card.th}${reversed ? ' กลับหัว' : ''}” — ${feel}`);
+    out.lines.push((reversed ? FEEL_NOTE_REV : FEEL_NOTE_UP)[i](card));
+  } else {
+    out.lines.push(`${p.lead} “${card.th}${reversed ? ' กลับหัว' : ''}” — ${reversed ? card.r : card.u}`);
+    out.lines.push(i === 0
+      ? `จังหวะเวลา: ${TIMING[card.suit]}`
+      : i === 1 ? `เงื่อนไขที่ต้องทำให้เกิด: ${card.ad}`
+                : `สิ่งที่ต้องปล่อย: ${reversed ? 'ความพยายามจะควบคุม' + card.k[0] : 'การยึด' + card.k[0] + 'ไว้แบบเดิม'} — ${card.ad}`);
+  }
+  out.lens = spread.id === 'feeling'
+    ? MOON_CARD_LENS(card, persona, i)
+    : personalLens(card, persona, i);
+  return out;
+}
+const MOON_LENS = {
+  same: [ (e) => `ไพ่ธาตุ${e}ตรงกับธาตุของดวงจันทร์เธอพอดี ความรู้สึกนี้จึงไม่ใช่เรื่องชั่วคราว มันคือวิธีที่ใจเธอทำงานอยู่แล้วตั้งแต่ต้น`,
+          (e) => `ธาตุ${e}อีกใบ ตรงกับดวงจันทร์เธอ — แปลว่าเธอคุ้นกับความรู้สึกนี้จนไม่ทันสังเกตว่ามันหนักแค่ไหน`,
+          (e) => `ธาตุ${e}ตรงกับดวงจันทร์เธออีกครั้ง สิ่งนี้ไม่ใช่เรื่องของสถานการณ์นี้เรื่องเดียว มันตามเธอมาหลายรอบแล้ว` ],
+  friend: [ (e,m) => `ไพ่ธาตุ${e}เข้ากับดวงจันทร์ธาตุ${m}ของเธอ ความรู้สึกนี้ระบายออกได้ไม่ยาก ถ้ามีสักคนให้พูดด้วย`,
+            (e,m) => `ธาตุ${e}กับดวงจันทร์ธาตุ${m}ของเธอไปด้วยกันได้ ความกลัวข้อนี้จึงจับต้องได้ ไม่ใช่เรื่องเลื่อนลอย`,
+            (e,m) => `ธาตุ${e}เข้ากับใจธาตุ${m}ของเธอ ถ้าเธอพูดสิ่งนี้ออกมา คนฟังจะเข้าใจง่ายกว่าที่เธอกลัว` ],
+  tension: [ (e,m) => `ไพ่ธาตุ${e}สวนกับดวงจันทร์ธาตุ${m}ของเธอ ความรู้สึกนี้เลยอธิบายให้ตัวเองฟังยาก และยิ่งอธิบายให้คนอื่นฟังยากเข้าไปอีก`,
+             (e,m) => `ธาตุ${e}ยังฝืนกับใจธาตุ${m}ของเธอ ความกลัวข้อนี้จึงมักโผล่มาในรูปอื่น เช่น หงุดหงิด เฉยชา หรือยุ่งจนไม่มีเวลาคิด`,
+             (e,m) => `ธาตุ${e}สวนกับดวงจันทร์ธาตุ${m}ของเธอ สิ่งที่เธอต้องการข้อนี้เลยขอออกมายาก เพราะมันไม่ใช่ภาษาที่เธอถนัดใช้` ]
+};
+function MOON_CARD_LENS(card, persona, i) {
+  return MOON_LENS[elementRelation(card.e, persona.moonEl)][i](card.e, persona.moonEl);
 }
 
+/* ---------- ประโยคที่อาจไม่อยากได้ยิน ---------- */
+const HARD_TRUTH = {
+  otherMind:'ตราบใดที่คำตอบของเรื่องนี้ยังอยู่ในมือเขา เธอจะไม่ได้ชีวิตตัวเองคืนสักวัน — และเขาไม่ได้แย่งไปด้วยซ้ำ เธอยื่นให้เอง',
+  endure:'ความอดทนของเธอในเรื่องนี้ไม่ใช่คุณธรรม มันคือค่าเช่าที่จ่ายไปเพื่อจะได้ไม่ต้องตัดสินใจ',
+  leave:'เธอไม่ได้กำลังหาคำตอบ เธอกำลังหาพยานมายืนยันว่าการไปของเธอไม่ใช่ความผิด',
+  permission:'ไม่มีใครมาอนุญาตให้เธอหรอก และถ้ารอต่อไป คนที่ปฏิเสธเธอบ่อยที่สุดจะกลายเป็นตัวเธอเอง',
+  why:'ต่อให้รู้เหตุผลครบทุกข้อ มันก็ไม่ทำให้เจ็บน้อยลงสักนิด สิ่งที่ลดความเจ็บได้คือเวลา กับการเลิกเปิดแผลดูทุกวัน',
+  selfblame:'เธอรับผิดในส่วนที่ไม่ใช่ของเธอ เพราะการเป็นคนผิดยังรู้สึกดีกว่าการยอมรับว่ามีเรื่องที่เธอคุมไม่ได้',
+  choice2:'ที่เลือกไม่ได้เพราะยังหวังว่าจะมีทางที่ไม่ต้องเสียอะไรเลย ทางนั้นไม่มี — และการไม่เลือกคือการยอมเสียทั้งสองทางแบบช้า ๆ',
+  tired:'เธอไม่ได้ต้องการคำตอบ เธอต้องการพัก และถ้าไม่พักเอง ร่างกายจะจัดการให้ในแบบที่เธอไม่ได้เลือก',
+  fear:'สิ่งที่เธอกลัวส่วนใหญ่จะไม่เกิดขึ้น แต่ราคาของการกลัวถูกจ่ายทุกวัน และรวมแล้วแพงกว่ามาก',
+  worth:'เวลาที่เสียไปแล้วมันเสียไปแล้ว การอยู่ต่อไม่ได้ทำให้มันกลับมา มันแค่ทำให้ยอดรวมสูงขึ้น',
+  money:'ตัวเลขที่เธอกลัวไม่ใช่ตัวเลขในบัญชี แต่คือภาพตัวเองในวันที่ต้องเอ่ยปากขอความช่วยเหลือ',
+  abandoned:'เขาไม่ได้ไปเพราะเธอไม่ดีพอ เขาไปเพราะเขาเลือกแบบนั้น — และการหาข้อบกพร่องของตัวเองต่อไปไม่ได้ทำให้เขากลับมา มันแค่ทำให้เธอเหลือน้อยลง',
+  timing:'การรอไม่ได้ทำให้คำตอบดีขึ้น มันแค่ทำให้เธอเหนื่อยกว่าเดิมตอนที่ต้องตัดสินใจอยู่ดี',
+  confirm:'ต่อให้มีสิบคนเห็นด้วยกับเธอ เธอก็ยังไม่สบายใจอยู่ดี เพราะคนที่เธอต้องการให้เชื่อ คือตัวเธอเอง',
+  future:'อนาคตในคำถามนี้ครึ่งหนึ่งเป็นของคนอื่น อีกครึ่งเป็นของเธอ — และเธอกำลังใช้เวลาเกือบทั้งหมดไปกับครึ่งที่ไม่ใช่ของตัวเอง',
+  _default:'ถ้าอีกสามเดือนเธอกลับมาถามคำถามเดิมโดยที่ยังไม่ได้ทำอะไรเลย นั่นแหละคือคำตอบ'
+};
+
+/* ---------- ประกอบคำอ่านทั้งหมด ---------- */
 function buildReading(persona, topicId, question, picks) {
   const topic = TOPICS.find(t => t.id === topicId) || TOPICS[4];
-  const cards = picks.map((p, i) => readCard(p.card, p.reversed, topic, persona, i));
+  const analysis = analyzeQuestion(question, topicId, persona);
+  const ctx = { persona, topic, analysis };
+  const spreads = SPREADS.map((sp, si) => ({
+    spread: sp,
+    cards: picks.slice(si * 3, si * 3 + 3).map((pk, i) => readOne(sp, i, pk, ctx))
+  }));
 
-  /* บทนำ: ทบทวนตัวตนก่อนตอบ */
-  const intro = `ก่อนตอบ ขอตั้งหลักที่ตัวคุณก่อน — คุณคือคนที่${persona.sun.tags[0]} `
-    + `ใจข้างในเป็นราศี${persona.moon.th} (${persona.moon.tags[0]}) `
-    + (persona.rising ? `และคนภายนอกเห็นคุณเป็นราศี${persona.rising.th} (${persona.rising.tags[0]}) ` : '')
-    + `ไพ่สามใบนี้จะถูกอ่านผ่านแว่นอันนี้ ไม่ใช่อ่านตามตำรากลาง ๆ`;
+  const S = spreads[0].cards, F = spreads[1].cards, P = spreads[2].cards;
+  /* ช่องว่างระหว่างสถานการณ์กับความรู้สึก คือจุดที่คนติด */
+  const gap = `สถานการณ์ข้างนอกพูดเรื่อง${S[0].card.k[0]} แต่ข้างในเธอพูดเรื่อง${F[0].card.k[0]} — `
+    + (elementRelation(S[0].card.e, F[0].card.e) === 'tension'
+        ? `สองอย่างนี้คนละภาษากันเลย ช่องว่างตรงนี้แหละที่ทำให้เธอตัดสินใจไม่ลงสักที ไม่ใช่เพราะข้อมูลไม่พอ`
+        : `สองอย่างนี้ไปทางเดียวกัน แปลว่าสิ่งที่เธอรู้สึกกับสิ่งที่เกิดขึ้นจริงตรงกัน เชื่อความรู้สึกตัวเองได้ในรอบนี้`);
 
-  /* แนวโน้มรวม */
-  let score = polarity(picks[0].card, picks[0].reversed) * 2
-            + polarity(picks[1].card, picks[1].reversed)
-            + polarity(picks[2].card, picks[2].reversed);
-  const revCount = picks.filter(p => p.reversed).length;
-  const majorCount = picks.filter(p => p.card.suit === 'major').length;
+  const futureScore = polarity(P[0].card, P[0].reversed) * 2 + polarity(P[1].card, P[1].reversed) + polarity(P[2].card, P[2].reversed);
+  const sitScore = polarity(S[0].card, S[0].reversed);
+  const score = futureScore + sitScore * 0.5;
   let lean, leanText;
-  if (score >= 1.5) { lean = 'เอียงไปทางบวกชัดเจน'; leanText = 'ไพ่ส่วนใหญ่หนุนคุณ ถ้าคิดจะขยับ นี่คือจังหวะที่ลมพัดตาม'; }
-  else if (score >= 0.3) { lean = 'ค่อนข้างดี'; leanText = 'ทิศทางโอเค แต่ยังต้องออกแรงเองอยู่พอสมควร ไม่ได้ลอยมาให้'; }
-  else if (score > -1) { lean = 'กลาง ๆ อยู่ที่คุณเลือก'; leanText = 'ไพ่ไม่ได้ฟันธงข้างใดข้างหนึ่ง แปลว่าผลลัพธ์ขึ้นกับสิ่งที่คุณตัดสินใจทำจริง ๆ มากกว่าปัจจัยภายนอก'; }
-  else { lean = 'ท้าทาย ต้องระวัง'; leanText = 'ไพ่เตือนว่ามีอุปสรรคจริง อย่าเพิ่งรีบตัดสินใจใหญ่ เคลียร์สิ่งที่ค้างก่อนแล้วค่อยเดิน'; }
+  if (score >= 1.5) { lean = 'เอียงไปทางบวกชัดเจน'; leanText = 'ไพ่ในสเปรดคำทำนายหนุนเธอเกือบทั้งหมด ถ้าจะขยับ นี่คือจังหวะที่แรงต้านน้อยที่สุด'; }
+  else if (score >= 0.3) { lean = 'ค่อนข้างดี แต่ต้องออกแรง'; leanText = 'ทิศทางถูก แต่ไม่มีอะไรลอยมาให้ ผลจะออกมาดีตามสัดส่วนที่เธอลงมือจริง'; }
+  else if (score > -1) { lean = 'กลาง ๆ — อยู่ที่เธอเลือก'; leanText = 'ไพ่ไม่ฟันธงข้างใดข้างหนึ่ง แปลว่าตัวแปรใหญ่ที่สุดในเรื่องนี้คือการตัดสินใจของเธอเอง ไม่ใช่ปัจจัยภายนอก'; }
+  else { lean = 'ท้าทาย ต้องระวัง'; leanText = 'ไพ่เตือนว่ามีอุปสรรคจริง อย่าเพิ่งตัดสินใจใหญ่ในสภาพนี้ เคลียร์เรื่องที่ค้างก่อนแล้วค่อยเดิน'; }
 
-  const flavor = [];
-  if (majorCount >= 2) flavor.push(`มีไพ่ชุดใหญ่ถึง ${majorCount} ใบ — เรื่องนี้ใหญ่กว่าที่คุณคิด มันเชื่อมกับบทเรียนหลักของชีวิตช่วงนี้`);
-  else if (majorCount === 0) flavor.push('ทั้งสามใบเป็นไพ่ชุดเล็ก แปลว่าเรื่องนี้อยู่ในระดับที่จัดการได้ด้วยการปรับเรื่องประจำวัน ไม่ต้องพลิกชีวิต');
-  if (revCount >= 2) flavor.push(`มีไพ่กลับหัว ${revCount} ใบ — พลังงานส่วนใหญ่ยังติดอยู่ข้างใน ต้องเคลียร์กับตัวเองก่อนไปเคลียร์กับคนอื่น`);
+  const revFeel = F.filter(c => c.reversed).length;
+  const majors = picks.filter(p => p.card.suit === 'major').length;
+  const notes = [];
+  if (revFeel >= 2) notes.push(`สเปรดความรู้สึกกลับหัว ${revFeel} ใบ — ส่วนใหญ่ของสิ่งที่เธอรู้สึกยังไม่ได้ถูกพูดออกมา แม้แต่กับตัวเอง`);
+  if (majors >= 4) notes.push(`ไพ่ชุดใหญ่มา ${majors} ใบจาก 9 — เรื่องนี้ไม่ใช่เหตุการณ์ผ่าน ๆ มันเชื่อกับบทเรียนหลักของชีวิตเธอช่วงนี้`);
+  else if (majors === 0) notes.push('ไม่มีไพ่ชุดใหญ่เลยสักใบ — ข่าวดีคือเรื่องนี้อยู่ในระดับที่จัดการได้ด้วยการปรับเรื่องประจำวัน ไม่ต้องพลิกชีวิต');
   const suits = picks.map(p => p.card.suit).filter(s => s !== 'major');
-  const domSuit = suits.sort((a, b) =>
-    suits.filter(s => s === b).length - suits.filter(s => s === a).length)[0];
-  if (domSuit && suits.filter(s => s === domSuit).length >= 2)
-    flavor.push(`ไพ่ชุด${SUIT_INFO[domSuit].th}มาสองใบ ประเด็นจริง ๆ ของคุณจึงอยู่ที่${SUIT_INFO[domSuit].about}`);
+  const domSuit = suits.sort((a, b) => suits.filter(s => s === b).length - suits.filter(s => s === a).length)[0];
+  if (domSuit && suits.filter(s => s === domSuit).length >= 4)
+    notes.push(`ไพ่ชุด${SUIT_INFO[domSuit].th}มาถึง ${suits.filter(s => s === domSuit).length} ใบ ประเด็นจริงของเธอจึงอยู่ที่${SUIT_INFO[domSuit].about}`);
 
-  /* สรุปแบบเพื่อนบอกเพื่อน */
-  const closing = `สรุปแบบเพื่อนบอกเพื่อนนะ: “${cards[0].card.th}” บอกว่าแก่นของเรื่องนี้คือ${cards[0].card.k[0]} · `
-    + `“${cards[1].card.th}” เตือนเรื่อง${cards[1].card.k[cards[1].card.k.length - 1]}ที่คุณอาจมองข้าม · `
-    + `ส่วน “${cards[2].card.th}” ชี้ทางว่าให้${cards[2].card.k[0]} — `
-    + (persona.tension
-        ? `และด้วยความที่ข้างในคุณมีสองเสียงดึงกันอยู่ตลอด อย่าเพิ่งเชื่อเสียงที่ดังที่สุดในหัวตอนนี้ รอให้มันเงียบลงก่อนสักคืน`
-        : `ข้อดีคือแกนกับใจของคุณไปทางเดียวกัน ถ้ารู้สึกว่า “ใช่” ก็มักจะใช่จริง เชื่อตัวเองได้มากกว่าที่คิด`);
+  const hardKey = analysis.drivers.find(d => HARD_TRUTH[d]) || '_default';
+  const hardTruth = HARD_TRUTH[hardKey];
+
+  const closing = `พูดแบบเพื่อนที่ไม่อยากปลอบให้เธอหลงทางนะ: สถานการณ์ตอนนี้คือ${S[0].card.k[0]} `
+    + `สิ่งที่เธอรู้สึกจริง ๆ คือ${F[0].card.k[0]} และทิศที่มันกำลังไปคือ${P[0].card.k[0]} `
+    + (analysis.hasOther
+        ? `ส่วนที่เธอคุมได้มีอยู่จริง แค่มันไม่ใช่ส่วนที่เธอเฝ้ามองอยู่ตอนนี้`
+        : `เรื่องนี้อยู่ในมือเธอมากกว่าที่เธอยอมรับ`);
 
   const todos = [
-    picks[0].card.ad,
-    picks[2].card.ad,
-    persona.sunEl === 'ไฟ' ? 'ก่อนลงมือ ให้เขียนสิ่งที่จะทำลงกระดาษหนึ่งบรรทัด กันตัวเองพุ่งเกินเป้า'
-      : persona.sunEl === 'ดิน' ? 'ตั้งเดดไลน์ให้ตัวเองสักวัน ไม่งั้นจะรอ “ให้พร้อมกว่านี้” ไปเรื่อย ๆ'
-      : persona.sunEl === 'ลม' ? 'เลิกหาข้อมูลเพิ่มได้แล้ว เลือกหนึ่งอย่างแล้วลงมือภายในสัปดาห์นี้'
-      : 'เช็กก่อนตัดสินใจว่าอารมณ์ตอนนี้เป็นของคุณจริง หรือรับมาจากคนอื่น'
+    P[1].card.ad,
+    persona.moonEl === 'น้ำ' ? 'เขียนสิ่งที่รู้สึกลงกระดาษก่อนคุยกับใคร จะได้แยกออกว่าอันไหนความรู้สึก อันไหนข้อเท็จจริง'
+      : persona.moonEl === 'ดิน' ? 'กำหนดเส้นตายให้ตัวเองไปเลยหนึ่งวัน ไม่งั้นจะรอ “ให้พร้อมกว่านี้” ไปอีกหลายเดือน'
+      : persona.moonEl === 'ลม' ? 'เลิกหาข้อมูลเพิ่ม แล้วถามตัวเองสั้น ๆ ว่า “ถ้าไม่ต้องอธิบายใครเลย ฉันจะเลือกอะไร”'
+      : 'ก่อนลงมือ รอให้ผ่านไปหนึ่งคืน แล้วดูว่ายังอยากทำแบบเดิมไหม',
+    `พูดสิ่งที่เธอต้องการออกมาตรง ๆ กับคนที่เกี่ยวข้องหนึ่งประโยค — เรื่องนี้ค้างเพราะไม่มีใครรู้ว่าเธอต้องการอะไร`
   ];
 
-  return { topic, question, intro, cards, lean, leanText, flavor, closing, todos, score };
+  return { topic, question, analysis, spreads, gap, lean, leanText, notes, hardTruth, closing, todos, score };
 }
 
-/* สับไพ่ด้วย Fisher–Yates + ตัวสุ่มเชิงเข้ารหัสเมื่อมี */
+/* ---------- สับไพ่ ---------- */
 function randInt(max) {
   if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
-    const buf = new Uint32Array(1);
-    const limit = Math.floor(0xFFFFFFFF / max) * max;
+    const buf = new Uint32Array(1), limit = Math.floor(0xFFFFFFFF / max) * max;
     let v; do { crypto.getRandomValues(buf); v = buf[0]; } while (v >= limit);
     return v % max;
   }
   return Math.floor(Math.random() * max);
 }
 function shuffleDeck() {
-  const arr = DECK.map(c => ({ card: c, reversed: randInt(100) < 32 }));   // ~32% กลับหัว
+  const arr = DECK.map(c => ({ card:c, reversed: randInt(100) < 32 }));
   for (let i = arr.length - 1; i > 0; i--) { const j = randInt(i + 1); [arr[i], arr[j]] = [arr[j], arr[i]]; }
   return arr;
 }
 </script>
-
+<script id="cardart">
+/* ═══════════════════════════════════════════════════════════════
+   หน้าไพ่ — วาดด้วย SVG ทั้งหมด ไม่มีรูปภาพภายนอก
+   ไพ่ชุดเล็ก: นับสัญลักษณ์ได้ตามเลข + รูปสัญลักษณ์บอกชุด
+   ไพ่ชุดใหญ่: ภาพเฉพาะของแต่ละใบ 22 แบบ
+   ═══════════════════════════════════════════════════════════════ */
+const PIPS = {
+  2:[[30,24],[30,60]], 3:[[30,18],[30,42],[30,66]],
+  4:[[18,24],[42,24],[18,60],[42,60]],
+  5:[[18,20],[42,20],[30,42],[18,64],[42,64]],
+  6:[[18,18],[42,18],[18,42],[42,42],[18,66],[42,66]],
+  7:[[18,16],[42,16],[30,32],[18,48],[42,48],[18,72],[42,72]],
+  8:[[18,14],[42,14],[18,34],[42,34],[18,54],[42,54],[18,74],[42,74]],
+  9:[[18,12],[42,12],[18,31],[42,31],[30,44],[18,57],[42,57],[18,76],[42,76]],
+  10:[[18,12],[42,12],[30,26],[18,38],[42,38],[18,58],[42,58],[30,70],[18,82],[42,82]]
+};
+const COURT = {
+  P:'<path d="M16 14h28v20q0 14-14 20q-14-6-14-20z" class="cl"/><path d="M30 20v10" class="cl"/>',
+  N:'<path d="M14 50q-2-22 14-26l10-8v12q10 6 8 22z" class="cl"/><circle cx="34" cy="26" r="2" class="cf"/>',
+  Q:'<path d="M14 46l3-24 7 9 6-14 6 14 7-9 3 24z" class="cl"/><circle cx="30" cy="12" r="3" class="cl"/>',
+  K:'<path d="M14 46V24l8 7 8-14 8 14 8-7v22z" class="cl"/><path d="M30 12V4M26 8h8" class="cl"/>'
+};
+/* ภาพเฉพาะของไพ่ชุดใหญ่ 22 ใบ (viewBox 0 0 60 92) */
+const MAJOR_ART = {
+'The Fool':'<path d="M12 72L40 26" class="cl"/><path d="M36 22c7-5 15-2 16 5 1 7-5 12-12 10-6-2-9-10-4-15z" class="cl"/><path d="M6 78h30" class="cl" opacity=".55"/><path d="M40 78h16" class="cl" opacity=".25" stroke-dasharray="3 4"/>',
+'The Magician':'<path d="M12 26c5-9 13-9 18 0 3 9 13 9 18 0-5-9-13-9-18 0-3 9-13 9-18 0z" class="cl"/><path d="M18 66h24M30 66V40" class="cl"/><circle cx="30" cy="36" r="4" class="cf"/>',
+'The High Priestess':'<rect x="8" y="26" width="7" height="40" class="cl"/><rect x="45" y="26" width="7" height="40" class="cl"/><path d="M36 32a12 12 0 1 0 0 26 15 15 0 0 1 0-26z" class="cf"/>',
+'The Empress':'<path d="M16 34l7-10 7 10 7-10 7 10z" class="cl"/><path d="M30 40v26M30 46l-8-6M30 46l8-6M30 54l-8-6M30 54l8-6" class="cl"/>',
+'The Emperor':'<rect x="16" y="30" width="28" height="34" rx="2" class="cl"/><path d="M16 42h28" class="cl"/><path d="M21 30v-8M39 30v-8" class="cl"/><circle cx="30" cy="36" r="3" class="cf"/>',
+'The Hierophant':'<path d="M8 40L30 22l22 18" class="cl"/><rect x="14" y="40" width="32" height="26" class="cl"/><path d="M30 48v12M25 53h10" class="cl"/>',
+'The Lovers':'<circle cx="22" cy="44" r="12" class="cl"/><circle cx="38" cy="44" r="12" class="cl"/><path d="M30 36l-4 5 4 5 4-5z" class="cf"/>',
+'The Chariot':'<path d="M10 26h40l-5 12H15z" class="cl"/><circle cx="30" cy="56" r="13" class="cl"/><path d="M30 43v26M17 56h26" class="cl"/>',
+'Strength':'<path d="M14 30c4-7 10-7 12 0 2 7 10 7 12 0" class="cl"/><circle cx="30" cy="52" r="13" class="cl"/><circle cx="25" cy="49" r="1.6" class="cf"/><circle cx="35" cy="49" r="1.6" class="cf"/><path d="M24 58q6 5 12 0" class="cl"/>',
+'The Hermit':'<path d="M20 26h20l-3 8H23z" class="cl"/><rect x="18" y="34" width="24" height="26" rx="3" class="cl"/><path d="M30 40l2.5 6 6 .5-4.5 4 1.5 6-5.5-3.5-5.5 3.5 1.5-6-4.5-4 6-.5z" class="cf"/><path d="M30 60v10" class="cl"/>',
+'Wheel of Fortune':'<circle cx="30" cy="46" r="20" class="cl"/><circle cx="30" cy="46" r="6" class="cf"/><path d="M30 26v40M10 46h40M16 32l28 28M44 32L16 60" class="cl"/>',
+'Justice':'<path d="M30 22v44M18 66h24M10 34h40" class="cl"/><path d="M10 34l-6 12h12zM50 34l-6 12h12z" class="cl"/>',
+'The Hanged Man':'<path d="M8 24h44M30 24v12" class="cl"/><circle cx="30" cy="42" r="6" class="cl"/><path d="M30 48v12M30 60l-8 8M30 60l8-3" class="cl"/>',
+'Death':'<path d="M16 70L44 24" class="cl"/><path d="M44 24q-20 1-24 15" class="cl"/><circle cx="24" cy="60" r="7" class="cl"/><circle cx="21" cy="58" r="1.6" class="cf"/><circle cx="27" cy="58" r="1.6" class="cf"/>',
+'Temperance':'<path d="M6 24h18l-3.5 13H9.5z" class="cl"/><path d="M36 54h18l-3.5 13H39.5z" class="cl"/><path d="M20 38q9 8 16 15" class="cl" stroke-dasharray="3 3.5"/><path d="M30 46q3-5 5 0-2.5 5-5 0z" class="cf"/>',
+'The Devil':'<path d="M16 40q14-20 28 0-4 22-14 22t-14-22z" class="cl"/><path d="M16 40l-8-10M44 40l8-10" class="cl"/><circle cx="24" cy="44" r="1.8" class="cf"/><circle cx="36" cy="44" r="1.8" class="cf"/><circle cx="22" cy="74" r="5" class="cl"/><circle cx="38" cy="74" r="5" class="cl"/>',
+'The Tower':'<path d="M17 74V36h26v38z" class="cl"/><path d="M15 36l15-12 15 12" class="cl"/><rect x="26" y="46" width="8" height="11" rx="4" class="cf"/><path d="M55 10L41 32h8l-9 16 20-26h-9z" class="cf"/>',
+'The Star':'<path d="M30 12l4 18 18 4-18 4-4 18-4-18-18-4 18-4z" class="cf"/><path d="M17 21l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" class="cf" opacity=".55" transform="translate(26,30) scale(.55)"/><path d="M15 70q3-6 6 0-3 6-6 0zM40 74q3-6 6 0-3 6-6 0z" class="cl"/>',
+'The Moon':'<path d="M38 22a16 16 0 1 0 0 30 20 20 0 0 1 0-30z" class="cf"/><path d="M10 70V54h8v16zM42 70V54h8v16z" class="cl"/><path d="M28 62q3-6 6 0-3 6-6 0z" class="cl"/>',
+'The Sun':'<circle cx="30" cy="44" r="13" class="cf"/><path d="M30 20v8M30 60v8M6 44h8M46 44h8M13 27l6 6M47 27l-6 6M13 61l6-6M47 61l-6-6" class="cl"/>',
+'Judgement':'<path d="M8 44l26-11v22z" class="cl"/><path d="M40 34q8 10 0 20M48 28q12 16 0 32" class="cl"/><path d="M14 62h12" class="cl"/>',
+'The World':'<ellipse cx="30" cy="46" rx="15" ry="21" class="cl"/><circle cx="30" cy="46" r="5" class="cf"/><circle cx="10" cy="24" r="2.5" class="cf"/><circle cx="50" cy="24" r="2.5" class="cf"/><circle cx="10" cy="68" r="2.5" class="cf"/><circle cx="50" cy="68" r="2.5" class="cf"/>'
+};
+const SUIT_PIP = {
+  wands:'<path d="M10 19V1" class="cl"/><path d="M10 7c3.6-.5 5.2-2.4 5-5.4-3.6.5-5.2 2.4-5 5.4z" class="cf"/><path d="M10 13c-3.6-.5-5.2-2.4-5-5.4 3.6.5 5.2 2.4 5 5.4z" class="cf"/>',
+  cups:'<path d="M3 4h14a7 7 0 0 1-14 0z" class="cf"/><path d="M10 11v5M6 17h8" class="cl"/>',
+  swords:'<path d="M10 0l2.6 5v8.4h-5.2V5z" class="cf"/><path d="M3.5 14h13" class="cl"/><path d="M10 14v5" class="cl"/><circle cx="10" cy="19.2" r="1.4" class="cf"/>',
+  pentacles:'<circle cx="10" cy="10" r="8" class="cl"/><path d="M10 4l1.8 5.6h5.9l-4.8 3.5 1.8 5.6-4.7-3.4-4.7 3.4 1.8-5.6-4.8-3.5h5.9z" class="cf" transform="translate(0,-1) scale(0.86) translate(1.6,2.2)"/>'
+};
+function cardArt(card) {
+  if (card.suit === 'major') return `<svg viewBox="2 8 56 68" class="art">${MAJOR_ART[card.n] || ''}</svg>`;
+  const pip = SUIT_PIP[card.suit];
+  if (card.num === 'A')
+    return `<svg viewBox="4 20 52 52" class="art"><circle cx="30" cy="46" r="23" class="ring"/>`
+      + `<g transform="translate(11,25) scale(1.9)">${pip}</g></svg>`;
+  if (COURT[card.num])
+    return `<svg viewBox="4 2 52 72" class="art">${COURT[card.num]}`
+      + `<g transform="translate(22,54) scale(0.8)">${pip}</g></svg>`;
+  const layout = PIPS[Number(card.num)] || [];
+  return `<svg viewBox="6 4 48 86" class="art">`
+    + layout.map(([x, y]) => `<g transform="translate(${x - 6},${y - 6}) scale(0.62)">${pip}</g>`).join('')
+    + `</svg>`;
+}
+/* variant: 'mini' (ในช่องสเปรด) | 'full' (ในคำอ่าน) */
+function cardFace(card, reversed, variant = 'full') {
+  const rev = reversed ? ' rev' : '';
+  return `<div class="tcard s-${card.suit} v-${variant}${rev}">
+    <div class="tcard-top"><span class="rank">${esc(card.num || '')}</span><span class="el">${esc(card.e)}</span></div>
+    <div class="tcard-art">${cardArt(card)}</div>
+    <div class="tcard-foot">
+      <div class="tname">${esc(card.th)}</div>
+      ${variant === 'full' ? `<div class="ten">${esc(card.n)}</div>
+      <div class="tkeys">${card.k.slice(0, 2).map(k => esc(k)).join(' · ')}</div>` : ''}
+    </div>
+    ${reversed ? '<div class="revbadge">⟲</div>' : ''}
+  </div>`;
+}
+</script>
 <script id="ui">
 /* ═══════════════════════════════════════════════════════════════
-   ส่วนที่ 5 — หน้าจอและการโต้ตอบ
+   ส่วนติดต่อผู้ใช้
    ═══════════════════════════════════════════════════════════════ */
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const GLYPHS = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'].map(g => g + '\uFE0E');
+const EL_TINT = { 'ไฟ':'#E2703C', 'ดิน':'#93B96A', 'ลม':'#9FB6DA', 'น้ำ':'#4FB3C9' };
 
-const state = { chart:null, persona:null, name:'', topic:null, question:'', deck:[], picks:[] };
+const state = { chart:null, persona:null, name:'', place:null, topic:null, question:'',
+                deck:[], picks:[], stage:0 };
 
 function show(id) {
   $$('.screen').forEach(s => s.classList.toggle('on', s.id === id));
   window.scrollTo({ top:0, behavior:'smooth' });
 }
 $$('[data-back]').forEach(b => b.addEventListener('click', () => show(b.dataset.back)));
+$('#go-form').addEventListener('click', () => show('s-form'));
 
-/* ---------- ตัวเลือกเขตเวลา ---------- */
-(function fillTz() {
-  const sel = $('#f-tz'), frag = document.createDocumentFragment();
-  for (let h = -12; h <= 14; h += 0.5) {
-    if (h === 13.5) continue;
-    const sign = h < 0 ? '−' : '+';
-    const a = Math.abs(h), hh = Math.floor(a), mm = (a - hh) * 60;
-    const o = document.createElement('option');
-    o.value = h;
-    o.textContent = `UTC${sign}${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
-    frag.appendChild(o);
+/* วงแหวนพื้นหลัง */
+(function () {
+  const g = $('#zring-spokes');
+  for (let i = 0; i < 12; i++) {
+    const a = (i * 30) * Math.PI / 180;
+    g.insertAdjacentHTML('beforeend',
+      `<line x1="${200 + 164 * Math.cos(a)}" y1="${200 - 164 * Math.sin(a)}" x2="${200 + 192 * Math.cos(a)}" y2="${200 - 192 * Math.sin(a)}" stroke="#E3BE79" stroke-width=".6"/>`
+      + `<text x="${200 + 178 * Math.cos(a)}" y="${200 - 178 * Math.sin(a)}" fill="#E3BE79" font-size="12" text-anchor="middle" dominant-baseline="middle">${GLYPHS[i]}</text>`);
   }
-  sel.appendChild(frag);
-  sel.value = String(-new Date().getTimezoneOffset() / 60);   // ค่าเริ่มต้น = เขตเวลาเครื่องผู้ใช้
 })();
 
-$('#go-form').addEventListener('click', () => show('s-form'));
-$('#btn-bkk').addEventListener('click', () => { $('#f-lat').value = 13.7563; $('#f-lon').value = 100.5018; $('#f-tz').value = '7'; });
-$('#btn-tzlon').addEventListener('click', () => {
-  const lon = parseFloat($('#f-lon').value);
-  if (isNaN(lon)) { $('#form-err').textContent = 'ใส่ longitude ก่อนถึงจะเดาเขตเวลาให้ได้'; return; }
-  const guess = Math.round(lon / 15);
-  $('#f-tz').value = String(Math.max(-12, Math.min(14, guess)));
+/* ---------- เขตเวลาสำรอง ---------- */
+(function fillTz() {
+  const sel = $('#f-tz');
+  for (let h = -12; h <= 14; h += 0.5) {
+    if (h === 13.5) continue;
+    const sign = h < 0 ? '−' : '+', a = Math.abs(h), hh = Math.floor(a), mm = (a - hh) * 60;
+    sel.insertAdjacentHTML('beforeend',
+      `<option value="${h}">UTC${sign}${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}</option>`);
+  }
+  sel.value = String(-new Date().getTimezoneOffset() / 60);
+})();
+
+/* ---------- ค้นหาสถานที่เกิด ---------- */
+const placeInput = $('#f-place'), placeList = $('#place-list');
+let comboIdx = -1, comboItems = [];
+function closeCombo() { placeList.hidden = true; placeInput.setAttribute('aria-expanded', 'false'); comboIdx = -1; }
+function renderCombo(q) {
+  comboItems = searchPlaces(q);
+  if (!comboItems.length) { closeCombo(); return; }
+  placeList.innerHTML = comboItems.map((p, i) =>
+    `<button type="button" data-i="${i}"><span>${esc(p.th)}</span><span class="reg">${esc(p.region)}</span></button>`).join('');
+  placeList.hidden = false;
+  placeInput.setAttribute('aria-expanded', 'true');
+  placeList.querySelectorAll('button').forEach(b => b.addEventListener('click', () => choosePlace(comboItems[+b.dataset.i])));
+}
+function choosePlace(p) {
+  state.place = p;
+  placeInput.value = p.th;
+  closeCombo();
+  $('#f-lat').value = p.lat; $('#f-lon').value = p.lon; $('#f-tz').value = String(p.tz);
+  $('#place-picked').hidden = false;
+  $('#place-picked').innerHTML = `<span>ใช้พิกัด</span> <b>${p.lat.toFixed(4)}°, ${p.lon.toFixed(4)}°</b>
+    <span>· เขตเวลา</span> <b>UTC${p.tz < 0 ? '−' : '+'}${String(Math.abs(p.tz)).padStart(2,'0').replace('.5',':30').replace('.75',':45')}</b>`;
+  $('#dst-box').hidden = !p.dst;
+  if (!p.dst) $('#f-dst').checked = false;
   $('#form-err').textContent = '';
+}
+placeInput.addEventListener('input', e => { state.place = null; $('#place-picked').hidden = true; renderCombo(e.target.value); });
+placeInput.addEventListener('focus', e => { if (e.target.value) renderCombo(e.target.value); });
+placeInput.addEventListener('keydown', e => {
+  if (placeList.hidden) return;
+  const btns = placeList.querySelectorAll('button');
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    comboIdx = (comboIdx + (e.key === 'ArrowDown' ? 1 : -1) + btns.length) % btns.length;
+    btns.forEach((b, i) => b.classList.toggle('act', i === comboIdx));
+    btns[comboIdx].scrollIntoView({ block:'nearest' });
+  } else if (e.key === 'Enter') {
+    e.preventDefault(); choosePlace(comboItems[comboIdx >= 0 ? comboIdx : 0]);
+  } else if (e.key === 'Escape') closeCombo();
 });
+document.addEventListener('click', e => { if (!e.target.closest('.combo')) closeCombo(); });
 $('#f-notime').addEventListener('change', e => { $('#f-time').disabled = e.target.checked; });
 
 /* ---------- คำนวณดวง ---------- */
@@ -1161,18 +1766,18 @@ $('#go-chart').addEventListener('click', () => {
   const dateStr = $('#f-date').value;
   const noTime = $('#f-notime').checked;
   const timeStr = noTime ? '12:00' : $('#f-time').value;
-  const lat = parseFloat($('#f-lat').value), lon = parseFloat($('#f-lon').value);
-  const tz = parseFloat($('#f-tz').value);
+  let lat = parseFloat($('#f-lat').value), lon = parseFloat($('#f-lon').value), tz = parseFloat($('#f-tz').value);
 
   if (!dateStr) return err.textContent = 'ใส่วันเกิดก่อนนะ';
   if (!timeStr) return err.textContent = 'ใส่เวลาเกิด หรือติ๊ก “ไม่รู้เวลาเกิด”';
-  if (isNaN(lat) || lat < -90 || lat > 90) return err.textContent = 'latitude ต้องอยู่ระหว่าง −90 ถึง 90';
-  if (isNaN(lon) || lon < -180 || lon > 180) return err.textContent = 'longitude ต้องอยู่ระหว่าง −180 ถึง 180';
+  if (isNaN(lat) || isNaN(lon)) return err.textContent = 'เลือกสถานที่เกิดจากรายการก่อน (หรือกรอกพิกัดเองในหัวข้อด้านล่าง)';
+  if (Math.abs(lat) > 90 || Math.abs(lon) > 180) return err.textContent = 'พิกัดไม่ถูกต้อง — latitude ต้องอยู่ใน −90…90 และ longitude −180…180';
   if (isNaN(tz)) return err.textContent = 'เลือกเขตเวลาด้วย';
+  if ($('#f-dst').checked) tz += 1;
 
   const [Y, M, D] = dateStr.split('-').map(Number);
   const [h, mi] = timeStr.split(':').map(Number);
-  if (Y < 1600 || Y > 2200) return err.textContent = 'รองรับปีเกิดระหว่าง ค.ศ. 1600–2200 (สูตรจะเริ่มคลาดนอกช่วงนี้)';
+  if (Y < 1600 || Y > 2200) return err.textContent = 'รองรับปีเกิด ค.ศ. 1600–2200';
 
   state.name = $('#f-name').value.trim();
   state.chart = computeChart({ year:Y, month:M, day:D, hour:h, minute:mi, lat, lon, tzOffset:tz, hasTime:!noTime });
@@ -1181,45 +1786,85 @@ $('#go-chart').addEventListener('click', () => {
   show('s-persona');
 });
 
+/* ---------- วงล้อดวงชะตา ---------- */
+function wheelSVG(chart) {
+  const C = 200, R = 192, R2 = 152, HUB = 62;
+  const pt = (lon, r) => {
+    const a = (180 - lon) * Math.PI / 180;
+    return [C + r * Math.cos(a), C - r * Math.sin(a)];
+  };
+  let s = `<svg viewBox="0 0 400 400" class="wheel" role="img" aria-label="วงล้อราศีแสดงตำแหน่งดวงอาทิตย์ ดวงจันทร์ และลัคนา">`;
+  for (let i = 0; i < 12; i++) {
+    const [x1, y1] = pt(i * 30, R2), [x2, y2] = pt(i * 30 + 30, R2);
+    const [x3, y3] = pt(i * 30 + 30, R), [x4, y4] = pt(i * 30, R);
+    s += `<path d="M${x1} ${y1} A${R2} ${R2} 0 0 0 ${x2} ${y2} L${x3} ${y3} A${R} ${R} 0 0 1 ${x4} ${y4} Z"
+      fill="${EL_TINT[SIGNS[i].el]}" opacity=".13"/>`;
+    const [gx, gy] = pt(i * 30 + 15, (R + R2) / 2);
+    s += `<text class="glyph" x="${gx}" y="${gy}">${GLYPHS[i]}</text>`;
+    const [sx, sy] = pt(i * 30, HUB), [ex, ey] = pt(i * 30, R);
+    s += `<line class="spoke" x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}"/>`;
+  }
+  for (let d = 0; d < 360; d += 10) {
+    const [ax, ay] = pt(d, R2), [bx, by] = pt(d, R2 - (d % 30 === 0 ? 10 : 5));
+    s += `<line class="tick" x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}"/>`;
+  }
+  s += `<circle class="ring" cx="${C}" cy="${C}" r="${R}"/><circle class="ring" cx="${C}" cy="${C}" r="${R2}"/>
+        <circle class="ring" cx="${C}" cy="${C}" r="${HUB}" opacity=".5"/>`;
+  const marks = [
+    { lon:chart.sunLon, sym:'☉', col:'#E3BE79', lab:'Sun' },
+    { lon:chart.moonLon, sym:'☽', col:'#CFE2FF', lab:'Moon' }
+  ];
+  if (chart.rising) marks.push({ lon:chart.ascLon, sym:'ASC', col:'#8B7BE8', lab:'Rising', asc:true });
+  for (const m of marks) {
+    const [x1, y1] = pt(m.lon, HUB), [x2, y2] = pt(m.lon, R2 - 6);
+    const [tx, ty] = pt(m.lon, R2 - 26);
+    s += `<line class="mkline" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${m.col}" opacity=".75"/>
+          <circle cx="${x2}" cy="${y2}" r="3" fill="${m.col}"/>
+          <text class="mk" x="${tx}" y="${ty}" fill="${m.col}" font-size="${m.asc ? 10 : 15}">${m.sym}</text>`;
+  }
+  return s + `</svg>`;
+}
+
+/* ---------- หน้าตัวตน ---------- */
 function renderPersona() {
   const c = state.chart, p = state.persona;
-  $('#persona-title').textContent = state.name ? `ตัวตนของ${state.name}` : 'ตัวตนของคุณ';
-  $('#read-who').textContent = state.name || 'คุณ';
-
-  const meta = [`Julian Day ${c.jd.toFixed(4)}`,
-    `☉ ${c.sunLon.toFixed(2)}°`, `☽ ${c.moonLon.toFixed(2)}°`];
-  if (c.rising) meta.push(`ASC ${c.ascLon.toFixed(2)}°`, `MC ราศี${SIGNS[c.mc.index].th} ${c.mc.label}`);
-  $('#chart-meta').innerHTML = meta.map(m => `<span>${esc(m)}</span>`).join('');
+  $('#persona-title').textContent = state.name ? `ตัวตนของ${state.name}` : 'ตัวตนของเธอ';
+  $('#read-who').textContent = state.name || 'เธอ';
+  $('#read-chart').textContent = p.label;
+  $('#wheel-host').innerHTML = wheelSVG(c);
 
   const rows = [
-    { role:'Sun · ดวงอาทิตย์', sub:'แกนกลาง / สิ่งที่ขับเคลื่อนคุณ', sign:SIGNS[c.sun.index], pos:c.sun, key:'sun' },
-    { role:'Moon · ดวงจันทร์', sub:'โลกข้างใน / อารมณ์และความปลอดภัย', sign:SIGNS[c.moon.index], pos:c.moon, key:'moon' }
+    { sym:'☉', lab:'Sun · ดวงอาทิตย์', pos:c.sun, key:'sun', note:'แกนกลาง / สิ่งที่ขับเคลื่อน' },
+    { sym:'☽', lab:'Moon · ดวงจันทร์', pos:c.moon, key:'moon', note:'โลกข้างใน / ความปลอดภัย' }
   ];
-  if (c.rising) rows.push({ role:'Rising · ลัคนา', sub:'ภาพที่คนอื่นเห็นก่อนรู้จักคุณจริง', sign:SIGNS[c.rising.index], pos:c.rising, key:'rising' });
+  if (c.rising) rows.push({ sym:'↑', lab:'Rising · ลัคนา', pos:c.rising, key:'rising', note:'ภาพที่คนเห็นก่อน' });
 
-  $('#big-three').innerHTML = rows.map(r => `
-    <div class="bigcard">
-      <div class="glyph">${r.sign.glyph}</div>
-      <div class="role">${esc(r.role)}</div>
-      <div class="signname">ราศี${esc(r.sign.th)} <span style="font-size:14px;color:var(--muted)">${esc(r.sign.en)}</span></div>
-      <div class="deg">${esc(r.pos.label)} · ธาตุ${esc(r.sign.el)} · ${esc(r.sign.mod)} · ${esc(r.sign.ruler)}</div>
-      <div class="hint" style="margin:8px 0 0">${esc(r.sub)}</div>
-      <p>${esc(r.sign[r.key])}</p>
-      <div class="tags">${r.sign.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>
-    </div>`).join('') + (c.rising ? '' : `
-    <div class="bigcard"><div class="glyph">↑</div><div class="role">Rising · ลัคนา</div>
-      <div class="signname">ยังอ่านไม่ได้</div>
-      <p>ลัคนาเปลี่ยนราศีทุก ๆ ประมาณ 2 ชั่วโมง ถ้าไม่รู้เวลาเกิดก็เดาไม่ได้จริง ๆ — ถ้าหาสูติบัตรเจอเมื่อไหร่ กลับมากรอกใหม่ได้เลย</p></div>`);
+  $('#wheel-legend').innerHTML = rows.map(r => {
+    const sg = SIGNS[r.pos.index];
+    return `<div class="row"><div class="sym">${r.sym}</div><div>
+      <div class="lab">${esc(r.lab)}</div>
+      <div class="val">ราศี${esc(sg.th)} <span class="deg">${esc(r.pos.label)}</span></div>
+      <div class="deg">ธาตุ${esc(sg.el)} · ${esc(sg.mod)} · ${esc(r.note)}</div></div></div>`;
+  }).join('') + (c.rising ? '' :
+    `<div class="row"><div class="sym">↑</div><div><div class="lab">Rising · ลัคนา</div>
+      <div class="val" style="font-size:15px">ยังอ่านไม่ได้</div>
+      <div class="deg">ลัคนาเปลี่ยนราศีทุก ~2 ชั่วโมง ถ้าไม่รู้เวลาเกิดก็เดาไม่ได้จริง ๆ</div></div></div>`)
+    + `<div class="deg" style="margin-top:4px">MC ${c.mc ? 'ราศี' + SIGNS[c.mc.index].th + ' ' + c.mc.label : '—'} · Julian Day ${c.jd.toFixed(4)}</div>`;
 
-  const notes = [];
-  if (c.moonSpeedNote) notes.push(c.moonSpeedNote);
+  $('#big-three').innerHTML = rows.map(r => {
+    const sg = SIGNS[r.pos.index];
+    return `<div class="bigcard"><div class="glyph">${GLYPHS[r.pos.index]}</div>
+      <div class="role">${esc(r.lab)}</div>
+      <div class="signname">ราศี${esc(sg.th)} <span class="deg">${esc(sg.en)}</span></div>
+      <div class="deg">${esc(r.pos.label)} · ธาตุ${esc(sg.el)} · ${esc(sg.mod)} · ${esc(sg.ruler)}</div>
+      <p>${esc(sg[r.key])}</p>
+      <div class="tags">${sg.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div></div>`;
+  }).join('');
+
   $('#persona-read').innerHTML =
-    `<p>${esc(p.texts.core)}</p>
-     <p>${esc(p.texts.face)}</p>
-     <p>${esc(p.texts.strength)}</p>
-     <p>${esc(p.texts.trap)}</p>
-     <p class="hint">ธาตุเด่นในดวงคุณคือธาตุ${esc(p.dominant)} · ${esc(p.label)}</p>
-     ${notes.map(n => `<p class="hint" style="color:#ffd9a8">⚠︎ ${esc(n)}</p>`).join('')}`;
+    `<p>${esc(p.texts.core)}</p><p>${esc(p.texts.face)}</p><p>${esc(p.texts.strength)}</p><p>${esc(p.texts.trap)}</p>
+     <p class="hint">ธาตุเด่นในดวงเธอคือธาตุ${esc(p.dominant)} · ${esc(p.label)}</p>
+     ${c.moonSpeedNote ? `<p class="hint" style="color:#FFD9A8">⚠︎ ${esc(c.moonSpeedNote)}</p>` : ''}`;
 }
 
 /* ---------- คำถาม ---------- */
@@ -1230,86 +1875,96 @@ $$('#topics .chip').forEach(ch => ch.addEventListener('click', () => {
 }));
 $('#f-q').addEventListener('input', e => $('#q-count').textContent = e.target.value.length);
 $('#go-question').addEventListener('click', () => show('s-question'));
-
 $('#go-deck').addEventListener('click', () => {
   const q = $('#f-q').value.trim();
   if (!state.topic) return $('#q-err').textContent = 'เลือกหมวดคำถามก่อนนะ';
-  if (q.length < 5) return $('#q-err').textContent = 'พิมพ์คำถามให้ชัดอีกนิด (อย่างน้อย 5 ตัวอักษร) — ถามชัด ไพ่ตอบชัด';
+  if (q.length < 8) return $('#q-err').textContent = 'เล่ามาอีกนิด (อย่างน้อย 8 ตัวอักษร) — ถามชัด ไพ่ตอบชัด';
   state.question = q;
   $('#deck-q').textContent = q;
   newDeck();
   show('s-deck');
 });
 
-/* ---------- สำรับไพ่ ---------- */
+/* ---------- เปิดไพ่ 3 สเปรด ---------- */
 function newDeck() {
   state.deck = shuffleDeck();
   state.picks = [];
+  state.stage = 0;
   $('#go-read').disabled = true;
   const deck = $('#deck');
   deck.classList.remove('done');
-  deck.innerHTML = state.deck.map((_, i) =>
-    `<button class="back" data-i="${i}" aria-label="ไพ่ใบที่ ${i + 1}"></button>`).join('');
+  deck.innerHTML = state.deck.map((_, i) => `<button class="back" data-i="${i}" aria-label="ไพ่ใบที่ ${i + 1}"></button>`).join('');
   deck.querySelectorAll('.back').forEach(b => b.addEventListener('click', () => pick(b)));
-  renderSlots();
+  renderStage();
 }
-function renderSlots() {
-  $('#slots').innerHTML = POSITIONS.map((p, i) => {
-    const picked = state.picks[i];
+function renderStage() {
+  const done = state.picks.length >= 9;
+  const sp = SPREADS[Math.min(state.stage, 2)];
+  $('#stage-eyebrow').textContent = `สเปรดที่ ${state.stage + 1} จาก 3`;
+  $('#stage-title').textContent = sp.title;
+  $('#stage-sub').textContent = sp.sub;
+  $('#stageline').innerHTML = SPREADS.map((s, i) =>
+    `<span class="stagepill ${i === state.stage && !done ? 'on' : ''} ${i < state.stage || done ? 'done' : ''}">${s.num}. ${esc(s.title)} ${i < state.stage || done ? '✓' : ''}</span>`).join('');
+  const base = state.stage * 3;
+  $('#slots').innerHTML = sp.pos.map((p, i) => {
+    const picked = state.picks[base + i];
     if (!picked) return `<div class="slot"><b>${esc(p.tag)}</b><span>${esc(p.role)}</span></div>`;
-    return `<div class="slot filled">${cardFace(picked.card, picked.reversed, true)}
-      <div class="sname">${esc(picked.card.th)}</div>
-      ${picked.reversed ? '<div class="srev">กลับหัว</div>' : ''}</div>`;
+    return cardFace(picked.card, picked.reversed, 'mini');
   }).join('');
-  const left = 3 - state.picks.length;
-  $('#deck-hint').textContent = left > 0
-    ? `ทำใจให้นิ่ง นึกถึงคำถาม แล้วเลือกอีก ${left} ใบ — ใบที่ 1 = ไพ่หลัก · ใบที่ 2–3 = ไพ่ขยาย`
-    : 'ครบสามใบแล้ว กดเปิดคำอ่านได้เลย';
+  const left = 3 - (state.picks.length - base);
+  $('#deck-hint').textContent = done
+    ? 'ครบ 9 ใบแล้ว กดเปิดคำอ่านได้เลย'
+    : left === 0 ? `ครบสเปรด “${sp.title}” แล้ว — กำลังเข้าสเปรดถัดไป…`
+    : `นึกถึงคำถามค้างไว้ แล้วเลือกอีก ${left} ใบสำหรับสเปรด “${sp.title}”`;
+  if (done) { $('#deck').classList.add('done'); $('#go-read').disabled = false; }
 }
 function pick(btn) {
-  if (state.picks.length >= 3 || btn.classList.contains('gone')) return;
-  const item = state.deck[Number(btn.dataset.i)];
-  state.picks.push(item);
+  if (state.picks.length >= 9 || btn.classList.contains('gone')) return;
+  state.picks.push(state.deck[Number(btn.dataset.i)]);
   btn.classList.add('gone');
-  renderSlots();
-  if (state.picks.length === 3) { $('#deck').classList.add('done'); $('#go-read').disabled = false; }
+  if (state.picks.length % 3 === 0 && state.picks.length < 9) {
+    renderStage();
+    setTimeout(() => { state.stage = state.picks.length / 3; renderStage(); }, 850);
+  } else renderStage();
 }
 $('#btn-reshuffle').addEventListener('click', newDeck);
 
-/* หน้าไพ่วาดด้วย CSS + ตัวอักษรล้วน ไม่มีรูปภาพภายนอก */
-function cardFace(card, reversed, mini) {
-  return `<div class="face${reversed ? ' rev' : ''}" style="${mini ? 'width:60px;padding:6px' : ''}">
-      <div class="fnum">${esc(card.num || '')}</div>
-      <div class="fsym">${card.g}</div>
-      ${mini ? '' : `<div class="fname">${esc(card.th)}</div><div class="fsuit">${esc(card.suitTh)}</div>`}
-    </div>`;
-}
-
-/* ---------- แสดงคำอ่าน ---------- */
+/* ---------- คำอ่าน ---------- */
 $('#go-read').addEventListener('click', () => {
   const r = buildReading(state.persona, state.topic, state.question, state.picks);
-  $('#read-topic').textContent = (TOPICS.find(t => t.id === state.topic) || {}).label || 'คำถาม';
+  $('#read-topic').textContent = r.topic.label;
   $('#read-q').textContent = r.question;
-  $('#read-lens').textContent = r.intro;
 
-  $('#read-cards').innerHTML = r.cards.map((c, i) => `
-    <div class="panel readcard${i === 0 ? ' main' : ''}">
-      <div>${cardFace(c.card, c.reversed)}</div>
-      <div>
-        <div class="pos">${esc(c.pos.tag)} · ${esc(c.pos.role)}</div>
-        <div class="cardtitle">${esc(c.card.th)} <span style="font-size:14px;color:var(--muted)">${esc(c.card.n)}</span></div>
-        <span class="orient${c.reversed ? ' r' : ''}">${c.reversed ? '⟲ กลับหัว' : '↑ ตั้งตรง'}</span>
-        <span class="orient">ธาตุ${esc(c.card.e)}</span>
-        <p>${esc(c.body)}</p>
-        <p>${esc(c.situ)}</p>
-        <div class="lens">🔭 อ่านผ่านดวงของคุณ: ${esc(c.lens)}</div>
-      </div>
+  const a = r.analysis;
+  $('#read-subtext').innerHTML = `<div class="lab">สิ่งที่อยู่เบื้องหลังคำถามนี้</div>
+    ${a.reads.map(t => `<p>${esc(t)}</p>`).join('')}
+    <p>${esc(a.moonLine)}${a.maskLine ? ' ' + esc(a.maskLine) : ''}</p>
+    <p>${esc(a.tensionLine)}</p>
+    <div class="realq"><span>คำถามจริงที่จะตอบให้</span>“${esc(a.realQ)}”</div>`;
+
+  $('#read-spreads').innerHTML = r.spreads.map(({ spread, cards }) => `
+    <div class="panel">
+      <div class="spreadhead"><div class="spreadnum">${spread.num}</div>
+        <div><h3 class="grad" style="margin:0">${esc(spread.title)}</h3>
+          <p class="hint" style="margin:0">${esc(spread.sub)}</p></div></div>
+      ${cards.map((c, i) => `
+        <div class="readcard${i === 0 ? ' main' : ''}">
+          <div>${cardFace(c.card, c.reversed, 'full')}</div>
+          <div>
+            <div class="pos">${esc(c.pos.tag)} · ${esc(c.pos.role)}</div>
+            ${c.lines.map(l => `<p>${esc(l)}</p>`).join('')}
+            <div class="lens">${esc(c.lens)}</div>
+          </div>
+        </div>`).join('')}
     </div>`).join('');
 
-  $('#read-summary').innerHTML = `
-    <h3 class="grad">สรุปรวม</h3>
+  $('#read-hard').innerHTML = `<div class="qlab">ประโยคที่อาจไม่อยากได้ยิน</div>
+    <p>${esc(r.hardTruth)}</p>`;
+
+  $('#read-summary').innerHTML = `<h3 class="grad">สรุปรวม</h3>
+    <p><b>ช่องว่างที่ต้องรู้:</b> ${esc(r.gap)}</p>
     <p><b>แนวโน้ม:</b> ${esc(r.lean)} — ${esc(r.leanText)}</p>
-    ${r.flavor.map(f => `<p>${esc(f)}</p>`).join('')}
+    ${r.notes.map(n => `<p>${esc(n)}</p>`).join('')}
     <p>${esc(r.closing)}</p>
     <h3 style="margin-top:18px">ทำได้เลยตั้งแต่สัปดาห์นี้</h3>
     <ol class="todo">${r.todos.map(t => `<li>${esc(t)}</li>`).join('')}</ol>`;
@@ -1319,7 +1974,7 @@ $('#go-read').addEventListener('click', () => {
 $('#go-again').addEventListener('click', () => {
   $('#f-q').value = ''; $('#q-count').textContent = '0';
   $$('#topics .chip').forEach(c => c.classList.remove('on'));
-  state.topic = null; state.picks = [];
+  state.topic = null; state.picks = []; state.stage = 0;
   show('s-question');
 });
 $('#go-print').addEventListener('click', () => window.print());
