@@ -188,6 +188,13 @@ select option{background:#131434;color:var(--text)}
 .subtext p{margin:8px 0 0;font-size:15px;color:#E6E1F7}
 .realq{margin-top:12px;font-size:16px;color:#fff;border-top:1px solid rgba(255,255,255,.12);padding-top:12px}
 .realq span{color:var(--gold);font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;display:block;margin-bottom:4px}
+.directbox{margin-top:14px;padding:14px 16px;border-radius:12px;border:1px solid var(--line2)}
+.directbox .lab{font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--gold2)}
+.directbox .verdict{font-size:18px;font-weight:400;margin-top:6px;line-height:1.6;color:#fff}
+.directbox.pos{border-color:rgba(147,185,106,.55);background:rgba(147,185,106,.12)}
+.directbox.mix{border-color:rgba(227,190,121,.55);background:rgba(227,190,121,.1)}
+.directbox.neu{border-color:rgba(159,182,218,.45);background:rgba(159,182,218,.08)}
+.directbox.neg{border-color:rgba(233,160,180,.55);background:rgba(233,160,180,.1)}
 .facts{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
 .fact{display:inline-flex;align-items:baseline;gap:7px;font-size:13px;padding:6px 13px;border-radius:10px;
   border:1px solid var(--line);background:rgba(255,255,255,.03)}
@@ -212,11 +219,6 @@ select option{background:#131434;color:var(--text)}
 .readcard.main .tcard{box-shadow:0 0 0 1px var(--cline),0 14px 34px rgba(0,0,0,.55)}
 .pos{font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--gold2)}
 .readcard p{margin:9px 0 0;font-size:15px;color:#E1DBF0}
-.lens{margin-top:12px;padding:10px 14px;border-left:2px solid var(--gold2);background:rgba(227,190,121,.07);
-  border-radius:0 10px 10px 0;font-size:14px;color:#F1E8D6}
-.hardtruth{border-color:rgba(233,160,180,.5);background:linear-gradient(150deg,rgba(90,30,55,.42),rgba(20,14,40,.8))}
-.hardtruth .qlab{color:var(--rose)}
-.hardtruth p{font-size:17px;color:#FFE7EE;margin:10px 0 0;line-height:1.75}
 .summary{background:linear-gradient(150deg,rgba(64,52,124,.5),rgba(16,18,44,.86));border-color:var(--line2)}
 .summary p{font-size:15.5px}
 .todo{margin:12px 0 0;padding-left:20px}
@@ -237,12 +239,12 @@ select option{background:#131434;color:var(--text)}
   .sky,.stars,.zring{display:none}
   .btnrow,.steps,.deck,.deckhead,.slots{display:none!important}
   .panel,.readcard,.bigcard{background:#fff!important;border-color:#bbb;box-shadow:none;color:#111;break-inside:avoid}
-  h1,h2,h3,.grad,.qtxt,.readcard p,.summary p,.todo li,.bigcard p,.subtext p,.hardtruth p,.realq{
+  h1,h2,h3,.grad,.qtxt,.readcard p,.summary p,.todo li,.bigcard p,.subtext p,.realq,.directbox .verdict{
     color:#111!important;-webkit-text-fill-color:#111;background:none}
   .eyebrow,.pos,.qlab,.deg,.role{color:#6B5320!important}
   .hint,.tag,.dim{color:#444!important}
-  .lens{background:#F5F1E7!important;color:#2A2312!important}
-  .subtext{background:#F0EEFA!important}.hardtruth{background:#FBEEF2!important}
+  .subtext{background:#F0EEFA!important}
+  .directbox{background:#F3F1FA!important;border-color:#bbb!important}
 }
 </style>
 </head>
@@ -1440,11 +1442,26 @@ function parseOptions(q) {
   }
   return null;
 }
+/* จับคำถามแบบ "จะ...ไหม/มั้ย/หรือเปล่า" แล้วดึง "การกระทำ" ที่ถามจริง ๆ ออกมา
+   เช่น "จะได้คุยกันไหม" → action = "ได้คุยกัน" — ใช้ตอบตรง ๆ แทนการพูดกว้าง ๆ */
+function extractYesNo(q) {
+  const m = q.match(/(.{2,40}?)(ไหม|มั้ย|หรือเปล่า|รึเปล่า|หรือไม่)[\s?？]*$/);
+  if (!m) return null;
+  let action = m[1]
+    .replace(/^(อยากรู้ว่า|ไม่รู้ว่า|สงสัยว่า|คิดว่า|รู้สึกว่า|กลัวว่า|ว่า)\s*/, '')
+    .replace(/^จะ/, '')
+    .replace(/[,\s]+$/, '')
+    .trim();
+  if (action.length < 2 || action.length > 40) return null;
+  if (/^(หรือ|ระหว่าง)/.test(action)) return null;   // เดี๋ยวชนกับคำถามแบบสองตัวเลือก ให้ parseOptions จัดการแทน
+  return { action };
+}
 function extractContext(q, topicId) {
   const people = PEOPLE.filter(p => p[0].test(q)).slice(0, 2).map(p => ({ key:p[1], ref:p[2] }));
   const events = EVENTS_SEEN.filter(e => e[0].test(q)).slice(0, 3).map(e => e[1]);
   const duration = parseDuration(q);
   const options = parseOptions(q);
+  const yesNo = options ? null : extractYesNo(q);
   const topic = TOPICS.find(t => t.id === topicId) || TOPICS[TOPICS.length - 1];
   const other = people.length ? people[0].ref
     : /เขา|เค้า|อีกฝ่าย|คู่กรณี|คนนั้น/.test(q) ? 'อีกฝ่าย' : null;
@@ -1486,7 +1503,7 @@ function extractContext(q, topicId) {
     'หลังเรื่องจบ':'ในทางข้อเท็จจริงเรื่องจบไปแล้ว สิ่งที่ยังเดินอยู่คือผลของมัน ไม่ใช่ตัวเรื่อง',
     'กลางเรื่อง':'เรื่องยังอยู่กลางทาง ยังเปลี่ยนทิศได้อยู่'
   };
-  return { facts, summary, phaseRead: PHASE_READ[phase], people, other, events, duration, options, phase, topic,
+  return { facts, summary, phaseRead: PHASE_READ[phase], people, other, events, duration, options, yesNo, phase, topic,
            thin: facts.length <= 2 };
 }
 
@@ -1595,6 +1612,15 @@ function polarity(card, reversed) {
   if (reversed) p = p === 0 ? -0.5 : (p > 0 ? 0 : -0.2);
   return p;
 }
+
+/* คำตอบตรง ๆ สำหรับคำถามแบบ "จะ...ไหม" — ใช้คะแนนรวมของไพ่ที่จั่วได้จริง ไม่ใช่ค่าคงที่ */
+const YESNO_BUCKETS = [
+  { min: 1.5,       label:'มีโอกาสสูงที่จะเกิดขึ้นจริง', tone:'pos' },
+  { min: 0.3,       label:'มีทางเกิด แต่ต้องมีใครสักคนขยับก่อน ไม่ใช่ปล่อยให้มันเกิดเอง', tone:'mix' },
+  { min: -1,        label:'ยังไม่ชัดไปทางใดทางหนึ่ง ขึ้นอยู่กับการกระทำที่ยังไม่เกิดขึ้น', tone:'neu' },
+  { min: -Infinity, label:'แนวโน้มยังไม่ไปทางนั้น อย่างน้อยก็ไม่ใช่ในเงื่อนไขตอนนี้', tone:'neg' }
+];
+const yesNoVerdict = score => YESNO_BUCKETS.find(b => score >= b.min);
 
 /* ---------- core ดวง ---------- */
 const CORE_REL_TEXT = {
@@ -1736,6 +1762,9 @@ function buildReading(persona, topicId, question, picks) {
   else if (score > -1) { lean = 'ยังไม่ตัดสิน'; leanText = 'ไพ่ไม่ได้ล็อกผลไว้ทางใดทางหนึ่ง ตัวแปรที่ใหญ่ที่สุดคือการเคลื่อนไหวครั้งต่อไปของคนในเรื่อง'; }
   else { lean = 'ทางขรุขระ'; leanText = 'ไพ่ชี้ว่ามีอุปสรรคจริงในช่วงนี้ และมันจะไม่หายไปเองถ้าไม่มีอะไรเปลี่ยน'; }
 
+  /* ถ้าถามแบบ "จะ...ไหม" ให้ตอบตรงประเด็นนั้นก่อนเลย แทนคำกว้าง ๆ */
+  const directAnswer = ctx.yesNo ? { action: ctx.yesNo.action, verdict: yesNoVerdict(score) } : null;
+
   const forecast = {
     headline: eventLine(mainCard, mainRev),
     timing: TIMING[mainCard.suit],
@@ -1776,7 +1805,7 @@ function buildReading(persona, topicId, question, picks) {
   if (ctx.options) advice.push(`ถ้าจะเลือกระหว่าง “${ctx.options[0]}” กับ “${ctx.options[1]}” ให้ดูสัญญาณนี้ก่อน: ${SIGN_BY_SUIT[P[0].card.suit]}`);
   else advice.push(`สิ่งที่ควรจับตาในสองสัปดาห์นี้: ${SIGN_BY_SUIT[P[0].card.suit]}`);
 
-  return { topic: ctx.topic, question, ctx, sub, understanding, spreads, forecast, lean, leanText, notes, prepare, advice, score };
+  return { topic: ctx.topic, question, ctx, sub, understanding, spreads, forecast, directAnswer, lean, leanText, notes, prepare, advice, score };
 }
 
 /* ---------- สับไพ่ ---------- */
@@ -2113,7 +2142,10 @@ $('#go-read').addEventListener('click', () => {
     `<span class="fact"><span>${esc(f.k)}</span><b>${esc(f.v)}</b></span>`).join('');
   $('#read-understanding').innerHTML = `<div class="lab">สิ่งที่อ่านได้จากคำถาม</div>
     ${r.understanding.map(t => `<p>${esc(t)}</p>`).join('')}
-    <div class="realq"><span>คำถามที่จะตอบให้จริง ๆ</span>“${esc(r.sub.realQ)}”</div>`;
+    ${r.directAnswer ? `<div class="directbox ${r.directAnswer.verdict.tone}">
+        <div class="lab">คำตอบตรง ๆ สำหรับ “${esc(r.directAnswer.action)}”</div>
+        <div class="verdict">${esc(r.directAnswer.verdict.label)}</div>
+      </div>` : `<div class="realq"><span>คำถามที่จะตอบให้จริง ๆ</span>“${esc(r.sub.realQ)}”</div>`}`;
 
   $('#read-spreads').innerHTML = r.spreads.map(({ spread, cards }) => `
     <div class="panel">
