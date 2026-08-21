@@ -1445,9 +1445,22 @@ function parseOptions(q) {
 /* จับคำถามแบบ "จะ...ไหม/มั้ย/หรือเปล่า" แล้วดึง "การกระทำ" ที่ถามจริง ๆ ออกมา
    เช่น "จะได้คุยกันไหม" → action = "ได้คุยกัน" — ใช้ตอบตรง ๆ แทนการพูดกว้าง ๆ */
 function extractYesNo(q) {
-  const m = q.match(/(.{2,40}?)(ไหม|มั้ย|หรือเปล่า|รึเปล่า|หรือไม่)[\s?？]*$/);
-  if (!m) return null;
-  let action = m[1]
+  const end = q.match(/(ไหม|มั้ย|หรือเปล่า|รึเปล่า|หรือไม่)[\s?？]*$/);
+  if (!end) return null;
+  const endIdx = end.index;
+  /* หาคำเริ่มประโยคคำถาม (ควร/จะ/อยาก/ต้อง) ที่อยู่ใกล้คำลงท้ายที่สุด — ไม่ใช่ตัวแรกสุดของทั้งประโยค
+     กันปัญหาประโยคยาวที่มีอนุประโยคอื่นแทรกอยู่ก่อนคำถามจริง เช่น
+     "...กลัวว่าจะมีคนอื่นหรือเขาเบื่อเราแล้ว ควรทักไปก่อนไหม" ต้องจับแค่ "ควรทักไปก่อน" ไม่ใช่ทั้งประโยค */
+  let startIdx = -1;
+  for (const trig of ['ควร', 'อยาก', 'ต้อง', 'จะ']) {
+    const idx = q.lastIndexOf(trig, endIdx - 1);
+    if (idx > startIdx) startIdx = idx;
+  }
+  if (startIdx === -1) startIdx = Math.max(0, endIdx - 30);
+  const preSubject = q.slice(Math.max(0, startIdx - 8), startIdx).match(/(เขา|เค้า|แฟน|มัน|หัวหน้า)\s*$/);
+  if (preSubject) startIdx -= preSubject[0].length;
+
+  let action = q.slice(startIdx, endIdx)
     .replace(/^(อยากรู้ว่า|ไม่รู้ว่า|สงสัยว่า|คิดว่า|รู้สึกว่า|กลัวว่า|ว่า)\s*/, '')
     .replace(/^จะ/, '')
     .replace(/[,\s]+$/, '')
@@ -1456,9 +1469,27 @@ function extractYesNo(q) {
   if (/^(หรือ|ระหว่าง)/.test(action)) return null;   // เดี๋ยวชนกับคำถามแบบสองตัวเลือก ให้ parseOptions จัดการแทน
   return { action };
 }
+/* ห้ามพูดสิ่งที่แค่ "กลัวว่า/สงสัยว่า" เหมือนเป็นเรื่องที่เกิดขึ้นแล้วจริง ๆ —
+   ต้องเช็คว่าก่อนหน้าคำที่แมตช์มีคำบ่งบอกความกังวล/ความไม่แน่ใจอยู่ไหม
+   ถ้ามี ให้แยกไปเป็น "สิ่งที่กังวลอยู่" คนละกลุ่มกับ "สิ่งที่เกิดขึ้นแล้ว" */
+const HEDGE_RE = /(กลัวว่า|สงสัยว่า|คิดว่า|เหมือนจะ|อาจจะ|รู้สึกว่า|ไม่แน่ใจว่า)/;
+function findEvents(q) {
+  const events = [], worries = [];
+  for (const [re, label] of EVENTS_SEEN) {
+    const m = re.exec(q);
+    if (!m) continue;
+    /* หาคำบ่งบอกความกังวลได้ทั้งก่อนคำที่แมตช์ (เผื่อมีประธาน/กริยาช่วยแทรกกลาง เช่น "สงสัยว่าเขาจะ")
+       และหลังคำที่แมตช์ (เผื่อลงท้ายแบบ "...นอกใจหรือเปล่า/มั้ย") */
+    const before = q.slice(Math.max(0, m.index - 24), m.index);
+    const after = q.slice(m.index + m[0].length, m.index + m[0].length + 12);
+    const hedged = HEDGE_RE.test(before) || /หรือเปล่า|รึเปล่า|มั้ย|หรือไม่/.test(after);
+    (hedged ? worries : events).push(label);
+  }
+  return { events: events.slice(0, 3), worries: worries.slice(0, 2) };
+}
 function extractContext(q, topicId) {
   const people = PEOPLE.filter(p => p[0].test(q)).slice(0, 2).map(p => ({ key:p[1], ref:p[2] }));
-  const events = EVENTS_SEEN.filter(e => e[0].test(q)).slice(0, 3).map(e => e[1]);
+  const { events, worries } = findEvents(q);
   const duration = parseDuration(q);
   const options = parseOptions(q);
   const yesNo = options ? null : extractYesNo(q);
@@ -1477,6 +1508,7 @@ function extractContext(q, topicId) {
   if (duration) facts.push({ k:'ระยะเวลา', v:duration.text });
   people.forEach(p => facts.push({ k:'ผู้เกี่ยวข้อง', v:p.key }));
   events.forEach(e => facts.push({ k:'สิ่งที่เกิดขึ้นแล้ว', v:e }));
+  worries.forEach(w => facts.push({ k:'สิ่งที่กังวลอยู่ (ยังไม่ยืนยัน)', v:w }));
   if (options) facts.push({ k:'ทางเลือกที่วางไว้', v:`${options[0]} / ${options[1]}` });
   facts.push({ k:'ช่วงของเรื่อง', v:phase });
   facts.push({ k:'หมวด', v:topic.label });
@@ -1493,6 +1525,7 @@ function extractContext(q, topicId) {
   else if (other) bits.push(`เรื่องที่มี${other}เป็นอีกฝั่งของสมการ`);
   else bits.push(`เรื่อง${topic.frame}ที่ยังไม่ลงตัว`);
   if (events.length) bits.push(`สิ่งที่เกิดไปแล้วคือ${events.slice(0, 2).join(' กับ')}`);
+  if (worries.length) bits.push(`สิ่งที่กังวลอยู่ลึก ๆ คือ${worries.slice(0, 2).join(' กับ')} แต่ตรงนี้ยังเป็นแค่ความกลัว ไม่มีอะไรยืนยันว่าเกิดขึ้นจริง`);
   if (options) bits.push(`ตอนนี้มีสองทางวางอยู่ตรงหน้า: ${options[0]} กับ ${options[1]}`);
   const summary = bits.join(' · ');
 
