@@ -1085,12 +1085,13 @@ const FEEL = {
 };
 /* จังหวะเวลาโดยประมาณจากชุดไพ่ ใช้ในสเปรดคำทำนาย */
 const TIMING = {
-  swords:'เร็ว — ระดับวันถึงสัปดาห์ เรื่องนี้จะชัดเร็วกว่าที่คิด',
-  wands:'ค่อนข้างเร็ว — ระดับสัปดาห์ถึงเดือน ถ้าเธอขยับก่อน มันจะเร็วขึ้นอีก',
-  cups:'ช้าแบบค่อยเป็นค่อยไป — ระดับหลายสัปดาห์ถึงเดือน เร่งไม่ได้เพราะมันขึ้นกับใจคน',
-  pentacles:'ช้าและเป็นขั้นตอน — ระดับหลายเดือน แต่ผลที่ได้จะอยู่กับเธอนาน',
-  major:'ไม่ใช่เรื่องของปฏิทิน — มันจะเปลี่ยนตอนที่เธอเปลี่ยนมุมมอง ไม่ใช่ตอนที่ถึงวันที่'
+  swords:card=>`เร็ว — ระดับวันถึงสัปดาห์ เรื่อง${kw2(card)}จะชัดเร็วกว่าที่คิด`,
+  wands:card=>`ค่อนข้างเร็ว — ระดับสัปดาห์ถึงเดือน ถ้าเธอขยับเรื่อง${kw2(card)}ก่อน มันจะเร็วขึ้นอีก`,
+  cups:card=>`ช้าแบบค่อยเป็นค่อยไป — ระดับหลายสัปดาห์ถึงเดือน เร่งไม่ได้เพราะเรื่อง${kw2(card)}ขึ้นกับใจคน`,
+  pentacles:card=>`ช้าและเป็นขั้นตอน — ระดับหลายเดือน เพราะเรื่อง${kw2(card)}ต้องสร้างไปตามลำดับ แต่ผลที่ได้จะอยู่กับเธอนาน`,
+  major:card=>`ไม่ใช่เรื่องของปฏิทิน — มันจะเปลี่ยนตอนที่เธอเปลี่ยนมุมมองต่อเรื่อง${kw2(card)} ไม่ใช่ตอนที่ถึงวันที่`
 };
+function timingText(card) { return TIMING[card.suit](card); }
 </script>
 <script id="events">
 /* ═══════════════════════════════════════════════════════════════
@@ -1187,12 +1188,13 @@ function eventLine(card, reversed) {
 }
 /* สัญญาณที่จะได้เห็นก่อน ใช้ยืนยันว่าคำทำนายกำลังเดินตามทาง */
 const SIGN_BY_SUIT = {
-  wands:'มีคนเริ่มลงมือหรือประกาศอะไรบางอย่างก่อนที่จะคุยกันเสร็จ',
-  cups:'น้ำเสียงและความถี่ในการติดต่อจะเปลี่ยนก่อนคำพูดจะเปลี่ยน',
-  swords:'จะมีการพูดตรง ๆ หรือข้อความที่เขียนเป็นลายลักษณ์อักษรเข้ามา',
-  pentacles:'จะเห็นการเปลี่ยนแปลงที่ตัวเลข ตาราง หรือข้อตกลงก่อนที่คนจะพูดถึงมัน',
-  major:'จะมีเหตุการณ์ที่ไม่ได้อยู่ในแผนของใครเลยเข้ามาเป็นตัวจุด'
+  wands:card=>`มีคนเริ่มลงมือหรือประกาศเรื่อง${kw2(card)}ก่อนที่จะคุยกันเสร็จ`,
+  cups:card=>`น้ำเสียงและความถี่ในการติดต่อเรื่อง${kw2(card)}จะเปลี่ยนก่อนคำพูดจะเปลี่ยน`,
+  swords:card=>`จะมีการพูดตรง ๆ หรือข้อความที่เขียนเป็นลายลักษณ์อักษรเรื่อง${kw2(card)}เข้ามา`,
+  pentacles:card=>`จะเห็นการเปลี่ยนแปลงที่ตัวเลข ตาราง หรือข้อตกลงเรื่อง${kw2(card)}ก่อนที่คนจะพูดถึงมัน`,
+  major:card=>`จะมีเหตุการณ์เรื่อง${kw2(card)}ที่ไม่ได้อยู่ในแผนของใครเลยเข้ามาเป็นตัวจุด`
 };
+function signByCard(card) { return SIGN_BY_SUIT[card.suit](card); }
 </script>
 <script id="places">
 /* ═══════════════════════════════════════════════════════════════
@@ -1815,7 +1817,7 @@ function feelingLines(i, card, rev) {
 function forecastLines(i, card, rev, ctx) {
   if (i === 0) return [
     eventLine(card, rev),
-    `กรอบเวลา: ${TIMING[card.suit]}`
+    `กรอบเวลา: ${timingText(card)}`
   ];
   const branches = actionBranches(ctx);
   if (branches) {
@@ -1875,9 +1877,9 @@ function buildReading(persona, topicId, question, picks) {
   const branches = actionBranches(ctx);
   const forecast = {
     headline: eventLine(mainCard, mainRev),
-    timing: TIMING[mainCard.suit],
+    timing: timingText(mainCard),
     mechanism: `${SUN_MECHANISM[persona.sun.th]}`,
-    firstSign: `${SIGN_BY_SUIT[mainCard.suit]} — และ${MOON_FIRSTSIGN[persona.moon.th]}`,
+    firstSign: `${signByCard(mainCard)} — และ${MOON_FIRSTSIGN[persona.moon.th]}`,
     options: branches ? [
       { label: branches[0].label, line: eventLine(P[1].card, P[1].reversed),
         cost: `ปิดทาง “${branches[0].other}” ไปโดยปริยาย และต้องรับมือเรื่อง${kw2(P[1].card)}` },
@@ -1910,8 +1912,8 @@ function buildReading(persona, topicId, question, picks) {
   const advice = [];
   advice.push(`จากไพ่ “${P[0].card.th}” ในสเปรดคำทำนาย: ${P[0].card.ad}`);
   advice.push(`จากไพ่ “${S[0].card.th}” ที่เป็นแกนของสถานการณ์: ${S[0].card.ad}`);
-  if (ctx.options) advice.push(`ถ้าจะเลือกระหว่าง “${ctx.options[0]}” กับ “${ctx.options[1]}” ให้ดูสัญญาณนี้ก่อน: ${SIGN_BY_SUIT[P[0].card.suit]}`);
-  else advice.push(`สิ่งที่ควรจับตาในสองสัปดาห์นี้: ${SIGN_BY_SUIT[P[0].card.suit]}`);
+  if (ctx.options) advice.push(`ถ้าจะเลือกระหว่าง “${ctx.options[0]}” กับ “${ctx.options[1]}” ให้ดูสัญญาณนี้ก่อน: ${signByCard(P[0].card)}`);
+  else advice.push(`สิ่งที่ควรจับตาในสองสัปดาห์นี้: ${signByCard(P[0].card)}`);
 
   return { topic: ctx.topic, question, ctx, sub, understanding, spreads, forecast, directAnswer, lean, leanText, notes, prepare, advice, score };
 }
