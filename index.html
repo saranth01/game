@@ -219,6 +219,7 @@ select option{background:#131434;color:var(--text)}
 .readcard.main .tcard{box-shadow:0 0 0 1px var(--cline),0 14px 34px rgba(0,0,0,.55)}
 .pos{font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--gold2)}
 .readcard p{margin:9px 0 0;font-size:15px;color:#E1DBF0}
+.synthline{margin:16px 0 0;padding-top:14px;border-top:1px dashed rgba(255,255,255,.12);font-size:14px;line-height:1.75;color:var(--gold2);font-style:normal}
 .summary{background:linear-gradient(150deg,rgba(64,52,124,.5),rgba(16,18,44,.86));border-color:var(--line2)}
 .summary p{font-size:15.5px}
 .todo{margin:12px 0 0;padding-left:20px}
@@ -1741,6 +1742,43 @@ const RISING_EFFECT = {
 
 /* ---------- ไพ่แต่ละใบ พูดถึงเรื่องข้างนอกเป็นหลัก ---------- */
 function nameOf(card, rev) { return `“${card.th}${rev ? ' กลับหัว' : ''}”`; }
+/* คีย์เวิร์ดดิบทีละคำ ("เร็วแรง") อ่านลอย ๆ เหมือนป้ายแท็ก — เอาสองคำมาต่อกันให้เป็นวลีที่อ่านลื่นขึ้น */
+function kw2(card) { return card.k.slice(0, 2).join('และ'); }
+
+/* สังเคราะห์ 3 ใบในสเปรดให้เห็นแพทเทิร์นร่วม ไม่ใช่แค่ 3 คำอธิบายแยกที่บังเอิญอยู่ด้วยกัน
+   คืน null ถ้าไม่มีอะไรเด่นพอ (ปล่อยให้ 3 ใบพูดแทนตัวเองไปตามปกติ) */
+function spreadSynthesis(cards) {
+  const els = cards.map(c => c.card.e), suits = cards.map(c => c.card.suit);
+  const revCount = cards.filter(c => c.reversed).length;
+  const majors = suits.filter(s => s === 'major').length;
+  if (new Set(els).size === 1)
+    return `ทั้งสามใบเป็นธาตุ${els[0]}ล้วน — เรื่องนี้ไม่ได้มีหลายมุมอย่างที่คิด มันคือเรื่องเดียวที่ย้ำซ้ำอยู่ตลอด`;
+  if (new Set(suits).size === 1 && suits[0] !== 'major')
+    return `ทั้งสามใบอยู่ในชุด${SUIT_INFO[suits[0]].th}เดียวกัน — สนามจริงของสเปรดนี้คือ${SUIT_INFO[suits[0]].about}`;
+  if (majors >= 2)
+    return `มีไพ่ชุดใหญ่ ${majors} ใบเฉพาะสเปรดนี้ — จุดนี้ของเรื่องหนักกว่าที่คิดไว้ ไม่ใช่แค่เหตุการณ์ผ่าน ๆ`;
+  if (revCount >= 2)
+    return `ไพ่กลับหัว ${revCount} ใบในสเปรดนี้ — ส่วนใหญ่ของสิ่งที่เกิดขึ้นตรงนี้ยังไม่ถูกพูดออกมาตรง ๆ`;
+  return null;
+}
+
+/* รวม ctx.options (สองตัวเลือกที่ระบุชื่อ) กับ ctx.yesNo (คำถามแบบจะ...ไหม)
+   ให้ใช้โครงเดียวกัน — ฝั่งหนึ่งคือ "ลงมือ" อีกฝั่งคือ "ปล่อยไว้" */
+function actionBranches(ctx) {
+  if (ctx.options) return [
+    { label: ctx.options[0], other: ctx.options[1] },
+    { label: ctx.options[1], other: ctx.options[0] }
+  ];
+  if (ctx.yesNo) {
+    const bareAction = ctx.yesNo.action.replace(/^(ควร|อยาก|ต้อง)/, '');
+    const doIt = `ลงมือ${bareAction}เอง`;
+    return [
+      { label: doIt, other: 'ปล่อยไว้เฉย ๆ ไม่ทำอะไร' },
+      { label: 'ปล่อยไว้เฉย ๆ ไม่ทำอะไร', other: doIt }
+    ];
+  }
+  return null;
+}
 
 function situationLines(i, card, rev, ctx) {
   const topical = ctx.topic.field ? card[ctx.topic.field] : card.ad;
@@ -1753,7 +1791,7 @@ function situationLines(i, card, rev, ctx) {
     const lines = [
       other ? `ฝั่ง${other}ตอนนี้อยู่ในโหมด ${nameOf(card, rev)} — ${rev ? card.r : card.u}`
             : `ปัจจัยที่ยังไม่ถูกพูดถึงคือ ${nameOf(card, rev)} — ${rev ? card.r : card.u}`,
-      `แปลว่าเรื่องแนว “${card.k[0]}” มีน้ำหนักกับสถานการณ์นี้มากกว่าที่มองเห็นจากข้างนอก`
+      `แปลว่าเรื่อง${kw2(card)}มีน้ำหนักกับสถานการณ์นี้มากกว่าที่มองเห็นจากข้างนอก`
     ];
     if (other) lines.push(`ในใจ${other}ตอนนี้: ${FEEL[card.n]}${rev ? ' — แม้จะไม่แสดงออกมาให้เห็นก็ตาม' : ''}`);
     return lines;
@@ -1779,17 +1817,17 @@ function forecastLines(i, card, rev, ctx) {
     eventLine(card, rev),
     `กรอบเวลา: ${TIMING[card.suit]}`
   ];
-  const opt = ctx.options ? ctx.options[i - 1] : null;
-  if (opt) {
-    const otherOpt = ctx.options[i === 1 ? 1 : 0];
+  const branches = actionBranches(ctx);
+  if (branches) {
+    const b = branches[i - 1];
     return [
-      `ถ้าเลือกทาง “${opt}” — ${eventLine(card, rev)}`,
-      `ราคาของทางนี้: ทาง “${otherOpt}” จะปิดลงโดยปริยาย และสิ่งที่ต้องรับมือระหว่างทางคือเรื่องแนว “${card.k[0]}”`
+      `ถ้าเลือกทาง “${b.label}” — ${eventLine(card, rev)}`,
+      `ราคาของทางนี้: ทาง “${b.other}” จะปิดลงโดยปริยาย และสิ่งที่ต้องรับมือระหว่างทางคือเรื่อง${kw2(card)}`
     ];
   }
   if (i === 1) return [
     `ถ้าปล่อยให้เดินแบบนี้ต่อโดยไม่มีใครทำอะไร — ${eventLine(card, rev)}`,
-    `จุดที่จะเห็นชัดก่อนคือเรื่องแนว “${card.k[0]}”`
+    `จุดที่จะเห็นชัดก่อนคือเรื่อง${kw2(card)}`
   ];
   return [
     `ตัวแปรที่จะพลิกผลลัพธ์คือ ${nameOf(card, rev)} — ${eventLine(card, rev)}`,
@@ -1801,15 +1839,15 @@ function forecastLines(i, card, rev, ctx) {
 function buildReading(persona, topicId, question, picks) {
   const ctx = extractContext(question, topicId);
   const sub = readSubtext(question, ctx);
-  const spreads = SPREADS.map((sp, si) => ({
-    spread: sp,
-    cards: picks.slice(si * 3, si * 3 + 3).map((pk, i) => {
+  const spreads = SPREADS.map((sp, si) => {
+    const cards = picks.slice(si * 3, si * 3 + 3).map((pk, i) => {
       const lines = sp.id === 'situation' ? situationLines(i, pk.card, pk.reversed, ctx)
                   : sp.id === 'feeling'   ? feelingLines(i, pk.card, pk.reversed)
                                           : forecastLines(i, pk.card, pk.reversed, ctx);
       return { pos: sp.pos[i], card: pk.card, reversed: pk.reversed, lines };
-    })
-  }));
+    });
+    return { spread: sp, cards, synthesis: spreadSynthesis(cards) };
+  });
   const S = spreads[0].cards, F = spreads[1].cards, P = spreads[2].cards;
 
   /* เข้าใจสถานการณ์ก่อน — เป็นข้อเท็จจริงกับกลไก ไม่ใช่คำสอน */
@@ -1832,19 +1870,22 @@ function buildReading(persona, topicId, question, picks) {
   /* ถ้าถามแบบ "จะ...ไหม" ให้ตอบตรงประเด็นนั้นก่อนเลย แทนคำกว้าง ๆ */
   const directAnswer = ctx.yesNo ? { action: ctx.yesNo.action, verdict: yesNoVerdict(score) } : null;
 
+  /* รวม ctx.options กับ ctx.yesNo เป็นโครงเดียวกัน — ถ้าคำถามชี้ทางไว้แล้ว (ไม่ว่าจะสองตัวเลือก
+     หรือแบบจะ...ไหม) ให้คำทำนายพูดถึงทางนั้นตรง ๆ แทนกรอบทั่วไป "ถ้าปล่อยไว้ / ตัวแปรพลิกผล" */
+  const branches = actionBranches(ctx);
   const forecast = {
     headline: eventLine(mainCard, mainRev),
     timing: TIMING[mainCard.suit],
     mechanism: `${SUN_MECHANISM[persona.sun.th]}`,
     firstSign: `${SIGN_BY_SUIT[mainCard.suit]} — และ${MOON_FIRSTSIGN[persona.moon.th]}`,
-    options: ctx.options ? [
-      { label: ctx.options[0], line: eventLine(P[1].card, P[1].reversed),
-        cost: `ปิดทาง “${ctx.options[1]}” ไปโดยปริยาย และต้องรับมือเรื่องแนว “${P[1].card.k[0]}”` },
-      { label: ctx.options[1], line: eventLine(P[2].card, P[2].reversed),
-        cost: `ปิดทาง “${ctx.options[0]}” ไปโดยปริยาย และต้องรับมือเรื่องแนว “${P[2].card.k[0]}”` }
+    options: branches ? [
+      { label: branches[0].label, line: eventLine(P[1].card, P[1].reversed),
+        cost: `ปิดทาง “${branches[0].other}” ไปโดยปริยาย และต้องรับมือเรื่อง${kw2(P[1].card)}` },
+      { label: branches[1].label, line: eventLine(P[2].card, P[2].reversed),
+        cost: `ปิดทาง “${branches[1].other}” ไปโดยปริยาย และต้องรับมือเรื่อง${kw2(P[2].card)}` }
     ] : null,
-    ifNothing: ctx.options ? null : eventLine(P[1].card, P[1].reversed),
-    pivot: ctx.options ? null : eventLine(P[2].card, P[2].reversed)
+    ifNothing: branches ? null : eventLine(P[1].card, P[1].reversed),
+    pivot: branches ? null : eventLine(P[2].card, P[2].reversed)
   };
 
   /* หมายเหตุระดับสำรับ — แปลเป็นเงื่อนไขของคำทำนาย ไม่ใช่คำเทศน์ */
@@ -1862,7 +1903,7 @@ function buildReading(persona, topicId, question, picks) {
   /* สิ่งที่ต้องเตรียมใจ — ผูกกับไพ่ที่หนักที่สุดในสเปรดคำทำนาย */
   const worst = [P[0], P[1], P[2]].sort((a, b) => polarity(a.card, a.reversed) - polarity(b.card, b.reversed))[0];
   const prepare = polarity(worst.card, worst.reversed) < 0
-    ? `${nameOf(worst.card, worst.reversed)} บอกว่าช่วงนี้จะมีเรื่องแนว “${worst.card.k[0]}” เข้ามาจริง เตรียมใจไว้ว่าเส้นทางนี้จะไม่ราบรื่นตลอด แต่มันมีปลายทาง ไม่ใช่หลุมที่ลงแล้วไม่ขึ้น`
+    ? `${nameOf(worst.card, worst.reversed)} บอกว่า${eventLine(worst.card, worst.reversed)} เตรียมใจไว้ว่าเส้นทางนี้จะไม่ราบรื่นตลอด แต่มันมีปลายทาง ไม่ใช่หลุมที่ลงแล้วไม่ขึ้น`
     : `ไพ่ไม่ได้เตือนเรื่องใหญ่ในรอบนี้ สิ่งที่ต้องเตรียมมีอย่างเดียวคืออย่าเผลอทำให้เรื่องช้าลงเองด้วยการรอจังหวะที่สมบูรณ์แบบ`;
 
   /* คำแนะนำ — ท้ายสุด และมาจากไพ่ ไม่ใช่จากการวิเคราะห์นิสัย */
@@ -2214,7 +2255,7 @@ $('#go-read').addEventListener('click', () => {
         <div class="verdict">${esc(r.directAnswer.verdict.label)}</div>
       </div>` : `<div class="realq"><span>คำถามที่จะตอบให้จริง ๆ</span>“${esc(r.sub.realQ)}”</div>`}`;
 
-  $('#read-spreads').innerHTML = r.spreads.map(({ spread, cards }) => `
+  $('#read-spreads').innerHTML = r.spreads.map(({ spread, cards, synthesis }) => `
     <div class="panel">
       <div class="spreadhead"><div class="spreadnum">${spread.num}</div>
         <div><h3 class="grad" style="margin:0">${esc(spread.title)}</h3>
@@ -2227,6 +2268,7 @@ $('#go-read').addEventListener('click', () => {
             ${c.lines.map(l => `<p>${esc(l)}</p>`).join('')}
           </div>
         </div>`).join('')}
+      ${synthesis ? `<p class="synthline">${esc(synthesis)}</p>` : ''}
     </div>`).join('');
 
   const f = r.forecast;
